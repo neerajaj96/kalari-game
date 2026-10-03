@@ -39,6 +39,31 @@ for b in re.findall(r'\[node name="(\w+)" type="Button"', tscn):
     if b not in gd:
         errs.append(f"hud: button {b} not referenced in hud.gd")
 
+# 5. Spawns must sit over solid floor (infinite-fall guard)
+def v3(s):
+    m = re.search(r"Vector3\(([^)]+)\)", s)
+    return tuple(float(x) for x in m.group(1).split(",")) if m else None
+
+wl = open(BASE + "/scripts/world_loader.gd").read()
+spawns = dict(re.findall(r"var (\w+_spawn) := (Vector3\([^)]+\))", wl))
+floors = {}
+for name, scene in [("school", "scenes/school.tscn"), ("village", "scenes/village.tscn")]:
+    src = open(BASE + "/" + scene).read()
+    box = re.search(r'\[node name="(Floor|Ground)"[^\]]*\][^\[]*?size = (Vector3\([^)]+\))[^\[]*?position = (Vector3\([^)]+\))', src, re.S)
+    if box:
+        floors[name] = (v3(box.group(2)), v3(box.group(3)))
+for key, scene in [("school_spawn", "school"), ("village_spawn", "village")]:
+    if key not in spawns:
+        errs.append(f"world_loader: {key} missing")
+    elif scene in floors:
+        px, _, pz = v3(spawns[key])
+        (fx, _, fz), (qx, _, qz) = floors[scene]
+        if not (qx - fx / 2 <= px <= qx + fx / 2 and qz - fz / 2 <= pz <= qz + fz / 2):
+            errs.append(f"{scene}: spawn {key} off the floor")
+main = open(BASE + "/scripts/main.gd").read()
+if "Vector3(0, 1, 6)" in main:
+    errs.append("main.gd: stale off-floor spawn (0,1,6) still present")
+
 if errs:
     print("CHECK FAILED:")
     for e in errs:

@@ -31,7 +31,9 @@ func _ready() -> void:
 	player = ps.instantiate()
 	player.add_to_group("player")
 	add_child(player)
-	player.position = Vector3(0, 1, 6)
+	player.position = Vector3(0, 1, 0)
+	if world.has_method("_place_player"):
+		world._place_player()
 	# HUD
 	var hs: PackedScene = load("res://scenes/ui/hud.tscn")
 	if hs == null:

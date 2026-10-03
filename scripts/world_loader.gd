@@ -7,6 +7,9 @@ const VILLAGE := "res://scenes/village.tscn"
 var current: Node = null
 var school_path := SCHOOL
 var village_path := VILLAGE
+# Spawn points verified over solid floor in each scene.
+var school_spawn := Vector3(0, 1, 0)
+var village_spawn := Vector3(0, 1, 4)
 
 func _ready() -> void:
 	_resolve_zones()
@@ -37,6 +40,18 @@ func load_world(path: String) -> void:
 		return
 	current = ps.instantiate()
 	add_child(current)
+	_place_player()
+
+func _place_player() -> void:
+	# Player persists across worlds; seat it on this world's spawn.
+	var p = get_tree().get_first_node_in_group("player")
+	if p == null:
+		return
+	if current != null and "School" in str(current.name):
+		p.position = school_spawn
+	else:
+		p.position = village_spawn
+	p.velocity = Vector3.ZERO
 
 func go_school() -> void:
 	load_world(school_path)

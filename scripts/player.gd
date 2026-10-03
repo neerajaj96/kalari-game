@@ -44,6 +44,21 @@ func _exit_tree() -> void:
 
 var _dead := false
 
+func _respawn_fall() -> void:
+	# Kill-floor: any fall below the world seats the fighter back on spawn.
+	var w = get_tree().get_first_node_in_group("world")
+	if w != null and w.get("current") != null:
+		if "School" in str(w.current.name) and w.get("school_spawn") != null:
+			position = w.school_spawn
+		elif w.get("village_spawn") != null:
+			position = w.village_spawn
+		else:
+			position = Vector3(0, 1, 0)
+	else:
+		position = Vector3(0, 1, 0)
+	velocity = Vector3.ZERO
+	_say("Gurukkal steadies you. Watch the pit edge.")
+
 func _check_death() -> void:
 	if combat.state != CombatState.S.DOWN or _dead:
 		return
@@ -144,6 +159,9 @@ func add_buff(kind: String, mult: float, dur: float) -> void:
 
 func _physics_process(delta: float) -> void:
 	combat.tick(delta)
+	if position.y < -10.0:
+		_respawn_fall()
+		return
 	if _buff_regen_t > 0.0:
 		_buff_regen_t -= delta
 		combat.regen_mult = _buff_regen
