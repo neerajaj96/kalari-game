@@ -1,6 +1,8 @@
 extends CharacterBody3D
 # Simple deterministic bandit AI: chase -> strike in range -> cooldown. No ML.
 
+const CombatState = preload("res://scripts/combat_state.gd")
+
 @export var speed := 3.6
 @export var attack_range := 2.2
 @export var damage := 10.0
@@ -57,7 +59,7 @@ func _die(marma: bool) -> void:
 	# Pay XP + quest kill. 60 bandit + 30 marma bonus (matches xp_sources).
 	var game = get_tree().get_first_node_in_group("game")
 	if game:
-		if game.get("xp_rank") != null:
+		if game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
 			var up: bool = game.xp_rank.add_xp(90 if marma else 60)
 			if up and game.get("hud") != null:
 				game.hud.say("Rank up! %s" % game.xp_rank.title())

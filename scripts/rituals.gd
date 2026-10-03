@@ -16,7 +16,11 @@ func _ready() -> void:
 		return
 	var j = JSON.parse_string(f.get_as_text())
 	if j is Dictionary:
-		slots = j.get("slots", [])
+		for s in j.get("slots", []):
+			if s is Dictionary and s.has("name") and s.has("fetch") and s.has("xp"):
+				slots.append(s)
+			else:
+				push_warning("nitya: skipping malformed slot")
 
 func current() -> Dictionary:
 	if slots.is_empty():

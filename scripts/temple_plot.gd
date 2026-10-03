@@ -18,7 +18,11 @@ func _ready() -> void:
 		return
 	var j = JSON.parse_string(f.get_as_text())
 	if j is Dictionary:
-		phases = j.get("phases", [])
+		for p in j.get("phases", []):
+			if p is Dictionary and p.has("id") and p.has("rank_needed") and p.has("needs") and p.has("xp"):
+				phases.append(p)
+			else:
+				push_warning("temple_plot: skipping malformed phase")
 
 func on_supply() -> void:
 	supply += 1
@@ -53,7 +57,7 @@ func _process(delta: float) -> void:
 		return
 	var p: Dictionary = phases[phase]
 	var game = get_tree().get_first_node_in_group("game")
-	if game == null or game.get("xp_rank") == null:
+	if game == null or game.get("xp_rank") == null or game.xp_rank.get("rank") == null:
 		return
 	if game.xp_rank.rank < int(p.get("rank_needed", 1)):
 		return
@@ -67,9 +71,9 @@ func _done(p: Dictionary, game: Node) -> bool:
 	if needs.has("supply") and supply < int(needs["supply"]):
 		return false
 	if needs.has("kills") or needs.has("kills_total"):
-		var kills := 0
-		if game.get("quest_log") != null:
-			kills = game.quest_log.kills
+		if game.get("quest_log") == null or game.quest_log.get("kills") == null:
+			return false
+		var kills: int = game.quest_log.kills
 		if needs.has("kills") and kills < int(needs["kills"]):
 			return false
 		if needs.has("kills_total") and kills < int(needs["kills_total"]):

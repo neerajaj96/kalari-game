@@ -41,9 +41,16 @@ func load_world(path: String) -> void:
 	current = ps.instantiate()
 	add_child(current)
 	# Fresh world, fresh flags: stale zone state never crosses worlds.
+	# An active breath session ends at the border (place changed its meaning).
 	var game = get_tree().get_first_node_in_group("game")
-	if game and game.get("sadhana") != null and game.sadhana.has_method("set_zone"):
-		game.sadhana.set_zone(false, false)
+	if game:
+		if game.get("sadhana") != null:
+			if game.sadhana.has_method("set_zone"):
+				game.sadhana.set_zone(false, false)
+			if game.sadhana.get("active") == true and game.sadhana.has_method("stop"):
+				game.sadhana.stop()
+				if game.get("hud") != null:
+					game.hud.say("Session released at the border.")
 	_place_player()
 
 func _place_player() -> void:

@@ -21,6 +21,8 @@ func _process(delta: float) -> void:
 func start(place: String) -> String:
 	if active:
 		return "Session ongoing: %d/11 breaths. Breathe." % (count / 2)
+	if place == "":
+		return "No ground here: stand in the pit, at the door, or on the mat."
 	if cooldown_t > 0.0:
 		return "Breath settles... rest %ds before next session." % int(cooldown_t)
 	var game = get_tree().get_first_node_in_group("game")
@@ -86,7 +88,7 @@ func place_of_player() -> String:
 	var w = get_tree().get_first_node_in_group("world")
 	if w and w.get("current") != null and "School" in str(w.current.name):
 		return "kalari"
-	return "temple"
+	return ""
 
 var _forest := false
 var _temple := false

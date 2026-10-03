@@ -47,6 +47,12 @@ jobs:
       - name: Pre-heat import cache
         run: godot --headless --editor --quit || true
 
+      - name: Assert class cache (boot depends on it)
+        run: |
+          test -f .godot/global_script_class_cache.cfg
+          grep -q XPRank .godot/global_script_class_cache.cfg
+          grep -q CombatState .godot/global_script_class_cache.cfg
+
       - name: Create debug keystore (APK must be signed or Android rejects it)
         run: |
           mkdir -p ~/.android

@@ -2,6 +2,8 @@ extends CharacterBody3D
 # Player: joystick (left) + buttons (right). Keyboard WASD/arrows fallback for PC test.
 # Vadivu: block = Simha turtle, dodge = Sarpa slip.
 
+const CombatState = preload("res://scripts/combat_state.gd")
+
 @export var speed := 4.5
 @export var turn_speed := 10.0
 
@@ -90,7 +92,7 @@ func _count_rep() -> void:
 	# Tutorial reps: Attack strikes inside the school pit count as mey reps.
 	# At 5 reps the first quest pays out once.
 	var game = get_tree().get_first_node_in_group("game")
-	if game == null or game.get("quest_log") == null:
+	if game == null or game.get("quest_log") == null or not game.quest_log.has_method("add_reps"):
 		return
 	var w = get_tree().get_first_node_in_group("world")
 	var in_school := w != null and w.get("current") != null and "School" in str(w.current.name)

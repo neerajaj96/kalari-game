@@ -22,7 +22,7 @@ func _fire(b: Node) -> void:
 	if not b.is_in_group("player"):
 		return
 	var game = get_tree().get_first_node_in_group("game")
-	if game == null or game.get("rituals") == null:
+	if game == null or game.get("rituals") == null or not game.rituals.has_method("on_market_zone"):
 		return
 	var msg: String = game.rituals.on_market_zone()
 	if game.get("plot") != null and game.plot.has_method("on_supply"):

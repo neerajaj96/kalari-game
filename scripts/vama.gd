@@ -45,11 +45,11 @@ func _process(delta: float) -> void:
 	if not enabled or stage >= 4:
 		return
 	var game = get_tree().get_first_node_in_group("game")
-	if game == null or game.get("xp_rank") == null:
+	if game == null or game.get("xp_rank") == null or game.xp_rank.get("rank") == null:
 		return
 	if game.xp_rank.rank < 3:
 		return
-	if game.get("rituals") == null or game.rituals.idx < 3:
+	if game.get("rituals") == null or game.rituals.get("idx") == null or game.rituals.idx < 3:
 		return
 	if stage == 0:
 		stage = 1
@@ -60,16 +60,16 @@ func _process(delta: float) -> void:
 	elif stage == 2 and game.get("sadhana") != null and game.sadhana.has_method("is_in_temple") and game.sadhana.is_in_temple():
 		_finish(150, "kula_kundalini", "Axis felt: mooladhara to sahasrara. Next: defeat 1 bandit steadily.")
 		stage = 3
-		if game.get("quest_log") != null:
+		if game.get("quest_log") != null and game.quest_log.get("kills") != null:
 			kills_at_kula = game.quest_log.kills
 	elif stage == 3:
-		if game.get("quest_log") != null and kills_at_kula >= 0 and game.quest_log.kills > kills_at_kula:
+		if game.get("quest_log") != null and game.quest_log.get("kills") != null and kills_at_kula >= 0 and game.quest_log.kills > kills_at_kula:
 			_finish(180, "kamya_defense_only", "Vira resolve proven. Carry it quietly; protect, never flaunt.")
 			stage = 4
 
 func _finish(xp_gain: int, tab: String, msg: String) -> void:
 	var game = get_tree().get_first_node_in_group("game")
-	if game and game.get("xp_rank") != null:
+	if game and game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
 		game.xp_rank.add_xp(xp_gain)
 	_say("%s (+%d XP)" % [msg, xp_gain])
 	var hud = get_tree().get_first_node_in_group("hud")

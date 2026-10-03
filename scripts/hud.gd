@@ -147,19 +147,21 @@ func _on_rain() -> void:
 
 func _on_ritual() -> void:
 	var game = get_tree().get_first_node_in_group("game")
-	if game == null or game.get("rituals") == null:
+	if game == null or game.get("rituals") == null or not game.rituals.has_method("start"):
+		say("Seva unavailable.")
 		return
 	say(game.rituals.start())
 
 func _on_sadhana() -> void:
 	var game = get_tree().get_first_node_in_group("game")
-	if game == null or game.get("sadhana") == null:
+	if game == null or game.get("sadhana") == null or not game.sadhana.has_method("start"):
+		say("Sadhana unavailable.")
 		return
 	say(game.sadhana.start(game.sadhana.place_of_player()))
 
 func _on_breathe() -> void:
 	var game = get_tree().get_first_node_in_group("game")
-	if game == null or game.get("sadhana") == null:
+	if game == null or game.get("sadhana") == null or not game.sadhana.has_method("tap"):
 		return
 	say(game.sadhana.tap())
 
@@ -169,13 +171,24 @@ func _load_tabs() -> void:
 		return
 	var mj = JSON.parse_string(f.get_as_text())
 	if mj is Dictionary:
-		_tabs = mj.get("tabs", [])
+		_tabs = []
+		for t in mj.get("tabs", []):
+			if t is Dictionary:
+				_tabs.append(t)
+			else:
+				push_warning("meru_tabs: skipping non-dict entry")
+	var uj_tabs: Array = []
 	var u := FileAccess.open("res://data/user_texts.json", FileAccess.READ)
 	if u != null:
-		var uj = JSON.parse_string(u.get_as_text())
-		if uj is Dictionary:
-			var extra: Array = uj.get("tabs", [])
-			_tabs.append_array(extra)
+		var ujd = JSON.parse_string(u.get_as_text())
+		if ujd is Dictionary:
+			for t in ujd.get("tabs", []):
+				if t is Dictionary:
+					uj_tabs.append(t)
+	_tabs.append_array(uj_tabs)
+	if tabs_list == null:
+		push_warning("HUD missing TabsList, encyclopedia off")
+		return
 	tabs_list.clear()
 	for i in _tabs.size():
 		var entry: Dictionary = _tabs[i]
@@ -188,16 +201,18 @@ func _on_tabs() -> void:
 
 func _on_plot() -> void:
 	var game = get_tree().get_first_node_in_group("game")
-	if game == null or game.get("plot") == null:
+	if game == null or game.get("plot") == null or not game.plot.has_method("status"):
+		say("Plot unavailable.")
 		return
 	say(game.plot.status())
 
 func _on_marga() -> void:
 	var game = get_tree().get_first_node_in_group("game")
-	if game == null or game.get("vama") == null:
+	if game == null or game.get("vama") == null or not game.vama.has_method("toggle"):
+		say("Marga unavailable.")
 		return
 	var msg: String = game.vama.toggle()
-	if game.vama.enabled:
+	if game.vama.enabled and game.vama.has_method("status"):
 		msg += " " + game.vama.status()
 	say(msg)
 
@@ -208,7 +223,7 @@ func _on_tab_selected(i: int) -> void:
 	_show_tab(i)
 
 func _show_tab(i: int) -> void:
-	if i < 0 or i >= _tabs.size():
+	if i < 0 or i >= _tabs.size() or not (_tabs[i] is Dictionary):
 		return
 	var t: Dictionary = _tabs[i]
 	var src := ""
@@ -222,6 +237,8 @@ func _show_tab(i: int) -> void:
 
 func show_tab_by_id(tab_id: String) -> void:
 	for i in _tabs.size():
+		if not (_tabs[i] is Dictionary):
+			continue
 		if str(_tabs[i].get("id", "")) == tab_id:
 			tabs_list.select(i)
 			_show_tab(i)
@@ -288,7 +305,7 @@ func _process(_delta: float) -> void:
 		var kv := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 		if kv.length() > 0.05:
 			player.set_move(kv)
-	if player and xp:
+	if player and xp and player.get("combat") != null:
 		var hp: float = player.combat.hp
 		var st: float = player.combat.stamina
 		hp_label.text = "HP %.0f  ST %.0f" % [hp, st]

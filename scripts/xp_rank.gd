@@ -21,8 +21,16 @@ func load_data() -> void:
 		push_warning("gurukkal_ranks.json malformed, using defaults")
 		ranks = [{ "rank": 1, "title": "Vidhyarthi", "xp_needed": 0 }, { "rank": 2, "title": "Meithari", "xp_needed": 300 }, { "rank": 3, "title": "Kolthari", "xp_needed": 800 }]
 		return
-	ranks = j.get("ranks", [])
+	ranks = []
 	xp_sources = j.get("xp_sources", {})
+	for r in j.get("ranks", []):
+		if r is Dictionary and r.has("rank") and r.has("xp_needed") and r.has("title"):
+			ranks.append(r)
+		else:
+			push_warning("gurukkal_ranks: skipping malformed rank entry")
+	if ranks.is_empty():
+		push_warning("gurukkal_ranks.json empty, using defaults")
+		ranks = [{ "rank": 1, "title": "Vidhyarthi", "xp_needed": 0 }, { "rank": 2, "title": "Meithari", "xp_needed": 300 }, { "rank": 3, "title": "Kolthari", "xp_needed": 800 }]
 
 func add_xp(amount: int) -> bool:
 	xp += amount
