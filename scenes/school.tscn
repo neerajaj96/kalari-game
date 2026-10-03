@@ -29,8 +29,6 @@ size = Vector3(3.0, 2.0, 3.0)
 script = ExtResource("9")
 preset = 0
 
-[node name="School" type="Node3D"]
-
 [node name="Floor" type="CSGBox3D" parent="."]
 material = ExtResource("1")
 size = Vector3(12.8, 0.2, 6.4)

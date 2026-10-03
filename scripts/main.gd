@@ -23,7 +23,6 @@ func _ready() -> void:
 		push_error("world_loader missing, worlds will not load")
 		return
 	world.add_to_group("world")
-	add_child(world)
 	# Player
 	var ps: PackedScene = load("res://scenes/player.tscn")
 	if ps == null:

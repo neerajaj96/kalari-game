@@ -17,6 +17,8 @@ var _tabs: Array = []
 
 var _last_hp := 100.0
 var _flash := 0.0
+var _boot_t := 0.0
+var _boot_checked := false
 var _moves: Array = []
 var _weapons: Array = []
 
@@ -273,6 +275,14 @@ func _input(event: InputEvent) -> void:
 			knob.position = Vector2(58, 58) + d * 45.0
 
 func _process(_delta: float) -> void:
+	if not _boot_checked:
+		_boot_t += _delta
+		if _boot_t >= 2.0:
+			_boot_checked = true
+			var w = get_tree().get_first_node_in_group("world")
+			if w == null or w.get("current") == null:
+				say("BOOT ERROR: 3D world failed to load. Note this text and report it.")
+				return
 	# Keyboard fallback
 	if player and joy_id == -1:
 		var kv := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")

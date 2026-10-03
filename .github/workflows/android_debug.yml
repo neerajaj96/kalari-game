@@ -41,6 +41,9 @@ jobs:
           unzip -q Godot_v${GODOT_VERSION}_export_templates.tpz
           mv templates/* ~/.local/share/godot/export_templates/${TEMPLATE_VER}/
 
+      - name: Pre-check (fail fast on bad scenes/refs)
+        run: python3 tools/check.py
+
       - name: Pre-heat import cache
         run: godot --headless --editor --quit || true
 
