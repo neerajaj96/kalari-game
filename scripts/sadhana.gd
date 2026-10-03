@@ -11,9 +11,18 @@ var half := false # false=inhale next, true=exhale next
 
 const TARGET := 22
 
+var cooldown_t := 0.0
+const COOLDOWN := 45.0
+
+func _process(delta: float) -> void:
+	if cooldown_t > 0.0:
+		cooldown_t = maxf(0.0, cooldown_t - delta)
+
 func start(place: String) -> String:
 	if active:
 		return "Session ongoing: %d/11 breaths. Breathe." % (count / 2)
+	if cooldown_t > 0.0:
+		return "Breath settles... rest %ds before next session." % int(cooldown_t)
 	var game = get_tree().get_first_node_in_group("game")
 	var rank := 1
 	if game and game.get("xp_rank") != null:
@@ -45,6 +54,7 @@ func stop() -> String:
 
 func _complete() -> String:
 	active = false
+	cooldown_t = COOLDOWN
 	var table := { "kalari": 30, "temple": 50, "forest": 80 }
 	var xp_gain: int = int(table.get(kind, 30))
 	var game = get_tree().get_first_node_in_group("game")

@@ -46,18 +46,20 @@ var _dead := false
 
 func _respawn_fall() -> void:
 	# Kill-floor: any fall below the world seats the fighter back on spawn.
+	_respawn_to_spawn()
+	velocity = Vector3.ZERO
+	_say("Gurukkal steadies you. Watch the pit edge.")
+
+func _respawn_to_spawn() -> void:
 	var w = get_tree().get_first_node_in_group("world")
 	if w != null and w.get("current") != null:
 		if "School" in str(w.current.name) and w.get("school_spawn") != null:
 			position = w.school_spawn
-		elif w.get("village_spawn") != null:
+			return
+		if w.get("village_spawn") != null:
 			position = w.village_spawn
-		else:
-			position = Vector3(0, 1, 0)
-	else:
-		position = Vector3(0, 1, 0)
-	velocity = Vector3.ZERO
-	_say("Gurukkal steadies you. Watch the pit edge.")
+			return
+	position = Vector3(0, 1, 0)
 
 func _check_death() -> void:
 	if combat.state != CombatState.S.DOWN or _dead:
@@ -70,7 +72,7 @@ func _check_death() -> void:
 	combat.hp = 100.0
 	combat.stamina = 100.0
 	combat.state = CombatState.S.STANCE
-	position = Vector3(0, 1, 6)
+	_respawn_to_spawn()
 	_dead = false
 	_say("Back on your feet. Breathe.")
 
@@ -95,18 +97,23 @@ func _count_rep() -> void:
 	if not in_school:
 		return
 	var n: int = game.quest_log.add_reps(1)
-	if n == 5 and game.get("xp_rank") != null:
-		game.xp_rank.add_xp(120)
-		_say("5 reps! Gurukkal nods. First quest done (+120 XP). Go Village.")
+	if game.get("xp_rank") != null:
+		if n == 5:
+			game.xp_rank.add_xp(120)
+			_say("5 reps! Gurukkal nods. First quest done (+120 XP). Go Village.")
+		elif n > 5:
+			game.xp_rank.add_xp(1)
 
 func _ring_bell() -> void:
-	# Attack doubles as temple bell when in OFFER phase near sanctum.
-	var game2 = get_tree().get_first_node_in_group("game")
-	if game2 == null or game2.get("rituals") == null:
+	# Attack doubles as temple bell only at the sanctum door (OFFER phase).
+	var game = get_tree().get_first_node_in_group("game")
+	if game == null or game.get("rituals") == null:
 		return
-	if not game2.rituals.has_method("on_bell"):
+	if game.get("sadhana") == null or not game.sadhana.has_method("is_in_temple") or not game.sadhana.is_in_temple():
 		return
-	var msg: String = game2.rituals.on_bell()
+	if not game.rituals.has_method("on_bell"):
+		return
+	var msg: String = game.rituals.on_bell()
 	if msg != "":
 		_say(msg)
 
@@ -248,7 +255,7 @@ func _deal_melee_delayed() -> void:
 		_deal_melee()
 
 func _deal_melee() -> void:
-	# 2.4m frontal 90-degree arc. Back-stab = marma (1.5x).
+	# 2.4m frontal 90-degree arc (dot 0.7). Back-stab = marma (1.5x).
 	var fwd := -global_transform.basis.z
 	fwd.y = 0.0
 	fwd = fwd.normalized()
@@ -261,7 +268,7 @@ func _deal_melee() -> void:
 		to.y = 0.0
 		if to.length() > 2.4:
 			continue
-		if fwd.dot(to.normalized()) < 0.35:
+		if fwd.dot(to.normalized()) < 0.7:
 			continue
 		# Marma if player is behind enemy (enemy facing away)
 		var e_fwd: Vector3 = -e.global_transform.basis.z

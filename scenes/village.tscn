@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/enemy.tscn" id="1"]
 [ext_resource type="Material" path="res://materials/ground_green.tres" id="2"]
@@ -32,6 +32,9 @@ size = Vector3(0.5, 2.0, 3.0)
 
 [sub_resource type="BoxShape3D" id="triggershape"]
 size = Vector3(3.0, 2.0, 3.0)
+
+[sub_resource type="BoxShape3D" id="sanctumshape"]
+size = Vector3(4.5, 2.0, 3.5)
 
 [node name="Village" type="Node3D"]
 script = ExtResource("10")
@@ -136,7 +139,7 @@ script = ExtResource("14")
 position = Vector3(4.2, 1.0, 0)
 
 [node name="TriggerShape" type="CollisionShape3D" parent="TempleComplex/SanctumTrigger"]
-shape = SubResource("triggershape")
+shape = SubResource("sanctumshape")
 
 [node name="Sopana1" type="CSGBox3D" parent="TempleComplex"]
 material = ExtResource("12")
@@ -349,6 +352,13 @@ position = Vector3(3.0, 0.5, 3.0)
 material = ExtResource("4")
 size = Vector3(2.8, 0.15, 1.6)
 position = Vector3(3.0, 1.6, 3.0)
+
+[node name="MarketZone2" type="Area3D" parent="."]
+script = ExtResource("15")
+position = Vector3(3.0, 1.0, 3.0)
+
+[node name="ZoneShape" type="CollisionShape3D" parent="MarketZone2"]
+shape = SubResource("triggershape")
 
 [node name="Coconut1" type="CSGBox3D" parent="."]
 material = ExtResource("9")

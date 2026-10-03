@@ -1,9 +1,10 @@
 extends CharacterBody3D
 # Simple deterministic bandit AI: chase -> strike in range -> cooldown. No ML.
 
-@export var speed := 2.8
+@export var speed := 3.6
 @export var attack_range := 2.2
 @export var damage := 10.0
+@export var max_hp := 120.0
 
 var combat := CombatState.new()
 var target: Node3D = null
@@ -12,7 +13,9 @@ var think_cd := 0.0
 func _ready() -> void:
 	add_to_group("bandit")
 	add_child(combat)
+	combat.hp = max_hp
 	combat.state = CombatState.S.STANCE
+	think_cd = randf_range(0.3, 1.1) # stagger pack attacks
 
 var _dead := false
 
@@ -20,6 +23,8 @@ func apply_hit(dmg: float, is_marma: bool = false) -> void:
 	if _dead:
 		return
 	combat.take_hit(dmg, is_marma)
+	if combat.state != CombatState.S.DOWN and randf() < 0.35:
+		combat.try_dodge() # slip back, uses own stamina
 	_flash()
 	_hitstop()
 	if combat.state == CombatState.S.DOWN:
@@ -57,7 +62,7 @@ func _die(marma: bool) -> void:
 			if up and game.get("hud") != null:
 				game.hud.say("Rank up! %s" % game.xp_rank.title())
 		if game.get("quest_log") != null and game.quest_log.has_method("add_kill"):
-			var k: int = game.quest_log.add_kill()
+			var k: int = game.quest_log.add_kill(marma)
 			if game.get("hud") != null:
 				game.hud.say("Bandit down (%d). %s" % [k, "MARMA!" if marma else ""])
 	# Fall + free. Rotation tween keeps it headless-safe (no particles needed).

@@ -1,7 +1,7 @@
 {
   "weapons": [
     { "id": "none", "name": "Verumkai (empty hand)", "stage": "meythozhil", "damage_mult": 1.0, "unlock_rank": 1 },
-    { "id": "kettukari", "name": "Kettukari (long rattan staff, body-length, 3in thick)", "stage": "kolthari", "damage_mult": 1.6, "unlock_rank": 2 },
+    { "id": "kettukari", "name": "Kettukari (long rattan staff, body-length, 3in thick)", "stage": "kolthari", "damage_mult": 1.5, "unlock_rank": 2 },
     { "id": "cheruvadi", "name": "Cheruvadi/Muchaan (3-chaan, puli/kara wood, muna tip)", "stage": "kolthari", "damage_mult": 1.9, "unlock_rank": 3 },
     { "id": "otta_locked", "name": "Otta (curved pulinkombu, kayalkanda guard) - LOCKED", "stage": "kolthari", "damage_mult": 2.2, "unlock_rank": 4 },
     { "id": "vaal_paricha_locked", "name": "Vaal + Paricha (sword + shield) - LOCKED", "stage": "ankathari", "damage_mult": 2.8, "unlock_rank": 5 },

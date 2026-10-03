@@ -28,7 +28,11 @@ func start() -> String:
 		return "Finish current seva first."
 	phase = "FETCH"
 	var c: Dictionary = current()
-	return "%s: bring %s from market stall, then come to the temple door." % [c.get("name", "Seva"), c.get("fetch", "flowers")]
+	var hint := ""
+	var w = get_tree().get_first_node_in_group("world")
+	if w != null and w.get("current") != null and "School" in str(w.current.name):
+		hint = " (market is in the Village — travel first)"
+	return "%s: bring %s from market stall, then come to the temple door.%s" % [c.get("name", "Seva"), c.get("fetch", "flowers"), hint]
 
 func on_market_zone() -> String:
 	if phase != "FETCH":

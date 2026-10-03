@@ -84,7 +84,7 @@ ranks = DATA.get(BASE + "/data/gurukkal_ranks.json", {}).get("ranks", [])
 needs = [int(r.get("xp_needed", -1)) for r in ranks]
 if needs != sorted(needs) or (needs and needs[0] != 0):
     errs.append("gurukkal_ranks: xp_needed must ascend from 0")
-for key in ["meyppayattu_rep", "bandit_defeat", "quest_complete", "daily_uzhichil", "tournament_win"]:
+for key in ["meyppayattu_rep", "bandit_defeat", "marma_bonus", "quest_q01", "quest_q02", "quest_q03", "seva_avg", "sadhana_kalari", "sadhana_temple", "sadhana_forest"]:
     if key not in DATA.get(BASE + "/data/gurukkal_ranks.json", {}).get("xp_sources", {}):
         warns.append(f"gurukkal_ranks: xp_sources lacks '{key}'")
 
@@ -101,14 +101,48 @@ for p in DATA.get(BASE + "/data/temple_plot.json", {}).get("phases", []):
 try:
     moves = {m["id"]: m for m in DATA[BASE + "/data/moves.json"]["moves"]}
     weaps = {w["id"]: w for w in DATA[BASE + "/data/weapons.json"]["weapons"]}
-    r1 = moves["mey_02_valinjamarnnu"]
-    hits = 100.0 / (float(r1["damage"]) * float(weaps["none"]["damage_mult"]))
-    if hits > 15 or hits < 2:
-        warns.append(f"combat: rank-1 hits-to-kill {hits:.1f} outside 2..15")
-    if float(r1["stamina_cost"]) > 100:
+    curve = []
+    for mid, wid in [("mey_02_valinjamarnnu", "none"), ("kol_01_kettukari_strike", "kettukari"), ("kol_02_cheruvadi_head", "cheruvadi")]:
+        curve.append(float(moves[mid]["damage"]) * float(weaps[wid]["damage_mult"]))
+    if curve != sorted(curve):
+        errs.append(f"combat: damage curve not ascending {curve}")
+    for i, d in enumerate(curve):
+        hits = 120.0 / d
+        if hits > 15 or hits < 2:
+            warns.append(f"combat: rank{i + 1} hits-to-kill {hits:.1f} outside 2..15")
+    if float(moves["mey_02_valinjamarnnu"]["stamina_cost"]) > 100:
         errs.append("combat: rank-1 cost exceeds stamina pool")
 except Exception as e:
     warns.append(f"combat sanity skipped: {e}")
+
+# --- 7b. rank-4 earnability: pre-festival one-shots must cover rank 4 ---
+try:
+    pj = DATA[BASE + "/data/temple_plot.json"]["phases"]
+    pre = sum(int(p.get("xp", 0)) for p in pj if p.get("id") != "festival")
+    one_shots = 120 + 150 + 200 + pre + 120  # q01+q02+q03 + plot + 2 bandits
+    r4 = next(int(r["xp_needed"]) for r in ranks if int(r.get("rank", 0)) == 4)
+    if one_shots < r4:
+        errs.append(f"economy: one-shot total {one_shots} < rank4 {r4}")
+except Exception as e:
+    warns.append(f"earnability skipped: {e}")
+
+# --- 7c. gates + cooldowns present in code ---
+sg = open(BASE + "/scripts/sadhana.gd").read()
+if "COOLDOWN" not in sg or "cooldown_t" not in sg:
+    errs.append("sadhana: cooldown missing (spam farm)")
+pg = open(BASE + "/scripts/player.gd").read()
+if "is_in_temple" not in pg:
+    errs.append("player: bell lacks sanctum position check")
+eg = open(BASE + "/scripts/enemy_ai.gd").read()
+m = re.search(r"@export var speed := ([\d.]+)", eg)
+if not m or float(m.group(1)) < 3.0:
+    errs.append("enemy: bandit too slow (kiting exploit)")
+if "max_hp" not in eg:
+    warns.append("enemy: max_hp override missing (TTK math assumes 120)")
+qj = DATA.get(BASE + "/data/quests.json", {}).get("quests", [])
+for qid in ["q01_first_earth", "q02_market_escort", "q03_aromal_debt"]:
+    if qid not in [q.get("id") for q in qj]:
+        errs.append(f"quests.json: '{qid}' missing (code pays it)")
 
 # --- 8. sadhana/vama tables match code ---
 sj = DATA.get(BASE + "/data/sadhana.json", {}).get("sessions", {})

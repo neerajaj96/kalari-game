@@ -13,8 +13,8 @@
       "name": "Edavattam Market (Unniyarcha)",
       "giver": "Unniyarcha",
       "zone": "village_chirakkal",
-      "desc": "'Pennaaya njanum virakkunnilla, aanaya ningal virakkunenthe?' Escort Kunjiraman, no hidden knife (olivaal), win openly.",
-      "objectives": ["Reach market", "Defeat 1 bandit openly", "No stealth kill"],
+      "desc": "'Pennaaya njanum virakkunnilla, aanaya ningal virakkunenthe?' Defeat 1 bandit face-to-face. A back-stab pays marma XP but shames the escort — no quest bonus.",
+      "objectives": ["Defeat 1 bandit openly (no back-stab)", "Bonus auto-paid (+150 XP)"],
       "xp": 150
     },
     {
@@ -22,8 +22,8 @@
       "name": "Tulunadu Debt (Aromal Chekavar hook)",
       "giver": "Aromal",
       "zone": "village_chirakkal",
-      "desc": "Earn blade by clearing debt. Duel betrayer in 42ft ankam is endgame - this slice only earns kettukari.",
-      "objectives": ["Defeat 2 bandits", "Return to Guru", "Unlock kettukari"],
+      "desc": "Debt of the blade: put down 2 bandits. Kettukari comes with Rank 2, earned in the pit. Bonus auto-paid (+200 XP).",
+      "objectives": ["Defeat 2 bandits (any way)", "Bonus auto-paid (+200 XP)"],
       "xp": 200
     }
   ]

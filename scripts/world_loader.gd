@@ -40,6 +40,10 @@ func load_world(path: String) -> void:
 		return
 	current = ps.instantiate()
 	add_child(current)
+	# Fresh world, fresh flags: stale zone state never crosses worlds.
+	var game = get_tree().get_first_node_in_group("game")
+	if game and game.get("sadhana") != null and game.sadhana.has_method("set_zone"):
+		game.sadhana.set_zone(false, false)
 	_place_player()
 
 func _place_player() -> void:
