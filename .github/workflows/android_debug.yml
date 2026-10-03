@@ -44,7 +44,16 @@ jobs:
       - name: Pre-heat import cache
         run: godot --headless --editor --quit || true
 
+      - name: Create debug keystore (APK must be signed or Android rejects it)
+        run: |
+          mkdir -p ~/.android
+          keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore ~/.android/debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 10000 -deststoretype pkcs12
+
       - name: Export debug APK (no Gradle, prebuilt template)
+        env:
+          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /home/runner/.android/debug.keystore
+          GODOT_ANDROID_KEYSTORE_DEBUG_USER: androiddebugkey
+          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
         run: |
           mkdir -p build/android
           godot --headless --export-debug "Android-Debug" build/android/kalari-debug.apk
