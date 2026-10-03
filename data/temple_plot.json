@@ -1,0 +1,13 @@
+{
+  "king": "Kolathiri of Chirakkal",
+  "deity": "Bhadrakali",
+  "phases": [
+    { "id": "sthala", "n": 1, "name": "Sthala & Vastu", "rank_needed": 1, "needs": { "visit_hermitage": true, "visit_sanctum": true }, "xp": 100, "brief": "Walk the land: touch hermitage mat and temple door. King surveys with you." },
+    { "id": "shilanyasa", "n": 2, "name": "Shilanyasa Foundation", "rank_needed": 1, "needs": { "supply": 2 }, "xp": 120, "brief": "Carry 2 foundation stones from market to site (walk to stall 2x)." },
+    { "id": "adhisthana", "n": 3, "name": "Adhisthana Granite", "rank_needed": 2, "needs": { "supply": 2, "kills": 1 }, "xp": 150, "brief": "Granite plinth: 2 loads + drive off 1 saboteur-bandit." },
+    { "id": "walls", "n": 4, "name": "Walls & Timber", "rank_needed": 2, "needs": { "supply": 3 }, "xp": 150, "brief": "Laterite + forest timber: 3 loads from market." },
+    { "id": "roof", "n": 5, "name": "Roof & Kalasha", "rank_needed": 3, "needs": { "supply": 2, "kills_total": 2 }, "xp": 200, "brief": "Copper crown: 2 loads + 2 total bandits down (site is coveted)." },
+    { "id": "dwaja", "n": 6, "name": "Dwaja & Abhisheka", "rank_needed": 3, "needs": { "supply": 1, "kills_total": 3 }, "xp": 200, "brief": "Raise the mast, guard the night: 1 load + 3 total bandits down." },
+    { "id": "festival", "n": 7, "name": "Festival & Ankam (locked)", "rank_needed": 4, "needs": {}, "xp": 300, "brief": "Needs Rank 4 Otta-yogi (future update). The temple stands; the duel awaits." }
+  ]
+}

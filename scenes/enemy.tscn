@@ -1,0 +1,49 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy_ai.gd" id="1"]
+[ext_resource type="Material" path="res://materials/skin.tres" id="2"]
+[ext_resource type="Material" path="res://materials/sash_red.tres" id="3"]
+[ext_resource type="Script" path="res://scripts/vadivu_pose.gd" id="4"]
+
+[sub_resource type="CapsuleShape3D" id="cap"]
+radius = 0.4
+height = 1.7
+
+[sub_resource type="BoxMesh" id="mesh"]
+size = Vector3(0.8, 1.7, 0.8)
+
+[sub_resource type="SphereMesh" id="headmesh"]
+radius = 0.25
+height = 0.5
+
+[node name="Enemy" type="CharacterBody3D"]
+script = ExtResource("1")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("cap")
+position = Vector3(0, 0.9, 0)
+
+[node name="Body" type="MeshInstance3D" parent="."]
+material_override = ExtResource("2")
+mesh = SubResource("mesh")
+position = Vector3(0, 0.9, 0)
+
+[node name="Sash" type="MeshInstance3D" parent="."]
+material_override = ExtResource("3")
+mesh = SubResource("mesh")
+position = Vector3(0, 0.9, 0)
+scale = Vector3(1.05, 0.25, 1.05)
+
+[node name="Head" type="MeshInstance3D" parent="."]
+material_override = ExtResource("2")
+mesh = SubResource("headmesh")
+position = Vector3(0, 1.95, 0)
+
+[node name="Headband" type="MeshInstance3D" parent="."]
+material_override = ExtResource("3")
+mesh = SubResource("headmesh")
+position = Vector3(0, 2.02, 0)
+scale = Vector3(1.05, 0.3, 1.05)
+
+[node name="Vadivu" type="Node" parent="."]
+script = ExtResource("4")

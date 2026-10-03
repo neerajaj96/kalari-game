@@ -1,0 +1,439 @@
+[gd_scene load_steps=21 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/enemy.tscn" id="1"]
+[ext_resource type="Material" path="res://materials/ground_green.tres" id="2"]
+[ext_resource type="Material" path="res://materials/wall_cream.tres" id="3"]
+[ext_resource type="Material" path="res://materials/thatch.tres" id="4"]
+[ext_resource type="Material" path="res://materials/shrine_red.tres" id="5"]
+[ext_resource type="Material" path="res://materials/leaf.tres" id="6"]
+[ext_resource type="Material" path="res://materials/water.tres" id="7"]
+[ext_resource type="Material" path="res://materials/laterite.tres" id="8"]
+[ext_resource type="Material" path="res://materials/wood.tres" id="9"]
+[ext_resource type="Script" path="res://scripts/lighting_preset.gd" id="10"]
+[ext_resource type="Script" path="res://scripts/follow_camera.gd" id="11"]
+[ext_resource type="Material" path="res://materials/granite.tres" id="12"]
+[ext_resource type="Material" path="res://materials/copper.tres" id="13"]
+[ext_resource type="Script" path="res://scripts/sanctum_trigger.gd" id="14"]
+[ext_resource type="Script" path="res://scripts/market_zone.gd" id="15"]
+[ext_resource type="Script" path="res://scripts/hermitage_zone.gd" id="16"]
+
+[sub_resource type="Environment" id="env"]
+background_mode = 1
+background_color = Color(0.53, 0.75, 0.95, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.9, 0.95, 1, 1)
+ambient_light_energy = 0.6
+
+[sub_resource type="BoxMesh" id="rainmesh"]
+size = Vector3(0.03, 0.25, 0.03)
+
+[sub_resource type="BoxShape3D" id="barriershape"]
+size = Vector3(0.5, 2.0, 3.0)
+
+[sub_resource type="BoxShape3D" id="triggershape"]
+size = Vector3(3.0, 2.0, 3.0)
+
+[node name="Village" type="Node3D"]
+script = ExtResource("10")
+preset = 1
+
+[node name="Ground" type="CSGBox3D" parent="."]
+material = ExtResource("2")
+size = Vector3(30.0, 0.2, 24.0)
+position = Vector3(0, -0.1, -3.0)
+
+[node name="House1" type="CSGBox3D" parent="."]
+material = ExtResource("3")
+size = Vector3(4.0, 3.0, 4.0)
+position = Vector3(-8.0, 1.5, -6.0)
+
+[node name="House1Roof" type="CSGBox3D" parent="."]
+material = ExtResource("4")
+size = Vector3(4.6, 0.3, 4.6)
+position = Vector3(-8.0, 3.2, -6.0)
+rotation = Vector3(0, 0.785, 0)
+
+[node name="House2" type="CSGBox3D" parent="."]
+material = ExtResource("3")
+size = Vector3(4.0, 3.0, 4.0)
+position = Vector3(8.0, 1.5, -6.0)
+
+[node name="House2Roof" type="CSGBox3D" parent="."]
+material = ExtResource("4")
+size = Vector3(4.6, 0.3, 4.6)
+position = Vector3(8.0, 3.2, -6.0)
+rotation = Vector3(0, 0.785, 0)
+
+[node name="TempleComplex" type="Node3D" parent="."]
+position = Vector3(0, 0, -10.0)
+
+[node name="Adhisthana" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(4.2, 0.6, 4.2)
+position = Vector3(0, 0.3, 0)
+
+[node name="Srikovil" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("8")
+size = Vector3(3.2, 2.6, 3.2)
+position = Vector3(0, 1.9, 0)
+
+[node name="TimberBand" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+size = Vector3(3.4, 0.3, 3.4)
+position = Vector3(0, 3.3, 0)
+
+[node name="RoofMain" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("4")
+size = Vector3(4.6, 0.25, 4.6)
+position = Vector3(0, 3.9, 0)
+rotation = Vector3(0, 0.785, 0)
+
+[node name="Shikhara" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("8")
+size = Vector3(1.6, 0.8, 1.6)
+position = Vector3(0, 4.4, 0)
+
+[node name="Kalasham" type="CSGSphere3D" parent="TempleComplex"]
+material = ExtResource("13")
+radius = 0.22
+height = 0.44
+position = Vector3(0, 5.0, 0)
+
+[node name="DoorEast" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+size = Vector3(0.1, 1.8, 1.0)
+position = Vector3(1.62, 1.5, 0)
+
+[node name="DwarapalakaL" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(0.35, 1.4, 0.35)
+position = Vector3(1.7, 1.1, -0.85)
+
+[node name="DwarapalakaR" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(0.35, 1.4, 0.35)
+position = Vector3(1.7, 1.1, 0.85)
+
+[node name="Peetha" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(1.0, 0.8, 1.0)
+position = Vector3(0, 1.0, 0)
+
+[node name="GarbhaDeepam" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("5")
+size = Vector3(0.2, 0.3, 0.2)
+position = Vector3(0.9, 1.6, 0)
+
+[node name="SanctumBarrier" type="StaticBody3D" parent="TempleComplex"]
+position = Vector3(2.0, 1.0, 0)
+
+[node name="BarrierShape" type="CollisionShape3D" parent="TempleComplex/SanctumBarrier"]
+shape = SubResource("barriershape")
+position = Vector3(0, 0, 0)
+
+[node name="SanctumTrigger" type="Area3D" parent="TempleComplex"]
+script = ExtResource("14")
+position = Vector3(4.2, 1.0, 0)
+
+[node name="TriggerShape" type="CollisionShape3D" parent="TempleComplex/SanctumTrigger"]
+shape = SubResource("triggershape")
+
+[node name="Sopana1" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(0.6, 0.2, 1.6)
+position = Vector3(2.1, 0.1, 0)
+
+[node name="Sopana2" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(0.6, 0.2, 1.6)
+position = Vector3(2.6, 0.3, 0)
+
+[node name="Sopana3" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(0.6, 0.2, 1.6)
+position = Vector3(3.1, 0.5, 0)
+
+[node name="Pranala" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(0.8, 0.15, 0.25)
+position = Vector3(0, 1.2, 1.9)
+
+[node name="NamaskaraBase" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(2.6, 0.4, 2.6)
+position = Vector3(5.2, 0.2, 0)
+
+[node name="NamaskaraP1" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+size = Vector3(0.25, 2.2, 0.25)
+position = Vector3(4.3, 1.5, -0.9)
+
+[node name="NamaskaraP2" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+size = Vector3(0.25, 2.2, 0.25)
+position = Vector3(6.1, 1.5, -0.9)
+
+[node name="NamaskaraP3" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+size = Vector3(0.25, 2.2, 0.25)
+position = Vector3(4.3, 1.5, 0.9)
+
+[node name="NamaskaraP4" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+size = Vector3(0.25, 2.2, 0.25)
+position = Vector3(6.1, 1.5, 0.9)
+
+[node name="NamaskaraRoof" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("4")
+size = Vector3(3.2, 0.2, 3.2)
+position = Vector3(5.2, 2.7, 0)
+
+[node name="NalaN" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("3")
+size = Vector3(14.0, 2.0, 0.3)
+position = Vector3(0, 1.0, -6.0)
+
+[node name="NalaS" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("3")
+size = Vector3(14.0, 2.0, 0.3)
+position = Vector3(0, 1.0, 6.0)
+
+[node name="NalaW" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("3")
+size = Vector3(0.3, 2.0, 12.0)
+position = Vector3(-7.0, 1.0, 0)
+
+[node name="NalaE_N" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("3")
+size = Vector3(0.3, 2.0, 4.0)
+position = Vector3(7.0, 1.0, -4.0)
+
+[node name="NalaE_S" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("3")
+size = Vector3(0.3, 2.0, 4.0)
+position = Vector3(7.0, 1.0, 4.0)
+
+[node name="Thidappalli" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("3")
+size = Vector3(2.0, 1.8, 2.0)
+position = Vector3(-4.5, 0.9, -4.5)
+
+[node name="ThidappalliRoof" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("4")
+size = Vector3(2.4, 0.15, 2.4)
+position = Vector3(-4.5, 1.9, -4.5)
+
+[node name="Vilakku1" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("5")
+size = Vector3(0.25, 0.4, 0.25)
+position = Vector3(-4.0, 0.5, -5.5)
+
+[node name="Vilakku2" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("5")
+size = Vector3(0.25, 0.4, 0.25)
+position = Vector3(-1.5, 0.5, -5.5)
+
+[node name="Vilakku3" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("5")
+size = Vector3(0.25, 0.4, 0.25)
+position = Vector3(1.0, 0.5, -5.5)
+
+[node name="Vilakku4" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("5")
+size = Vector3(0.25, 0.4, 0.25)
+position = Vector3(3.5, 0.5, -5.5)
+
+[node name="Balikkal" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("8")
+size = Vector3(0.8, 1.2, 0.8)
+position = Vector3(9.0, 0.6, 0)
+
+[node name="BalikkalRoof" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("4")
+size = Vector3(2.0, 0.15, 2.0)
+position = Vector3(9.0, 2.2, 0)
+
+[node name="DwajaPole" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+size = Vector3(0.25, 6.0, 0.25)
+position = Vector3(11.0, 3.0, 0)
+
+[node name="DwajaTop" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("13")
+size = Vector3(0.5, 0.5, 0.5)
+position = Vector3(11.0, 6.2, 0)
+
+[node name="DeepaPole" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(0.3, 3.0, 0.3)
+position = Vector3(12.5, 1.5, 1.5)
+
+[node name="DeepaLamp" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("5")
+size = Vector3(0.4, 0.3, 0.4)
+position = Vector3(12.5, 3.1, 1.5)
+
+[node name="KoothamBase" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("12")
+size = Vector3(5.0, 0.4, 4.0)
+position = Vector3(9.0, 0.2, -8.5)
+
+[node name="KoothamRoof" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("4")
+size = Vector3(5.6, 0.2, 4.6)
+position = Vector3(9.0, 2.8, -8.5)
+
+[node name="GanapatiCell" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("8")
+size = Vector3(1.2, 1.4, 1.2)
+position = Vector3(-5.5, 0.7, 3.5)
+
+[node name="Pushkarni" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("7")
+size = Vector3(4.0, 0.1, 4.0)
+position = Vector3(-10.5, 0.05, 3.0)
+
+[node name="Althara" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("8")
+size = Vector3(2.0, 0.5, 2.0)
+position = Vector3(-10.5, 0.25, -3.0)
+
+[node name="Arayal" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+size = Vector3(0.35, 4.0, 0.35)
+position = Vector3(-10.5, 2.5, -3.0)
+
+[node name="ArayalTop" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("6")
+size = Vector3(2.4, 0.5, 2.4)
+position = Vector3(-10.5, 4.5, -3.0)
+
+[node name="GopuramBase" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("3")
+size = Vector3(1.0, 3.0, 4.0)
+position = Vector3(14.0, 1.5, 0)
+
+[node name="GopuramTop" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("4")
+size = Vector3(1.4, 1.2, 4.6)
+position = Vector3(14.0, 3.6, 0)
+
+[node name="MarketStall1" type="CSGBox3D" parent="."]
+material = ExtResource("9")
+size = Vector3(2.4, 1.0, 1.2)
+position = Vector3(-3.0, 0.5, 1.0)
+
+[node name="MarketMat1" type="CSGBox3D" parent="."]
+material = ExtResource("4")
+size = Vector3(2.8, 0.15, 1.6)
+position = Vector3(-3.0, 1.6, 1.0)
+
+[node name="MarketGoods1" type="CSGBox3D" parent="."]
+material = ExtResource("6")
+size = Vector3(1.8, 0.4, 0.8)
+position = Vector3(-3.0, 1.2, 1.0)
+
+[node name="MarketZone" type="Area3D" parent="."]
+script = ExtResource("15")
+position = Vector3(-3.0, 1.0, 1.0)
+
+[node name="ZoneShape" type="CollisionShape3D" parent="MarketZone"]
+shape = SubResource("triggershape")
+
+[node name="MarketStall2" type="CSGBox3D" parent="."]
+material = ExtResource("9")
+size = Vector3(2.4, 1.0, 1.2)
+position = Vector3(3.0, 0.5, 3.0)
+
+[node name="MarketMat2" type="CSGBox3D" parent="."]
+material = ExtResource("4")
+size = Vector3(2.8, 0.15, 1.6)
+position = Vector3(3.0, 1.6, 3.0)
+
+[node name="Coconut1" type="CSGBox3D" parent="."]
+material = ExtResource("9")
+size = Vector3(0.4, 5.0, 0.4)
+position = Vector3(-4.0, 2.5, 6.0)
+
+[node name="Coconut1Top" type="CSGBox3D" parent="."]
+material = ExtResource("6")
+size = Vector3(2.2, 0.4, 2.2)
+position = Vector3(-4.0, 5.0, 6.0)
+
+[node name="Coconut2" type="CSGBox3D" parent="."]
+material = ExtResource("9")
+size = Vector3(0.4, 5.0, 0.4)
+position = Vector3(6.0, 2.5, 7.0)
+
+[node name="Coconut2Top" type="CSGBox3D" parent="."]
+material = ExtResource("6")
+size = Vector3(2.2, 0.4, 2.2)
+position = Vector3(6.0, 5.0, 7.0)
+
+[node name="Backwater" type="CSGBox3D" parent="."]
+material = ExtResource("7")
+size = Vector3(30.0, 0.1, 6.0)
+position = Vector3(0, -0.05, 12.0)
+
+[node name="SandStrip" type="CSGBox3D" parent="."]
+material = ExtResource("8")
+size = Vector3(30.0, 0.15, 1.5)
+position = Vector3(0, -0.05, 8.5)
+
+[node name="HermitMat" type="CSGBox3D" parent="."]
+material = ExtResource("4")
+size = Vector3(1.2, 0.1, 1.2)
+position = Vector3(-8.0, 0.1, 8.5)
+
+[node name="HermitStone1" type="CSGBox3D" parent="."]
+material = ExtResource("12")
+size = Vector3(0.5, 0.6, 0.5)
+position = Vector3(-9.0, 0.3, 8.0)
+
+[node name="HermitStone2" type="CSGBox3D" parent="."]
+material = ExtResource("12")
+size = Vector3(0.5, 0.6, 0.5)
+position = Vector3(-7.0, 0.3, 9.0)
+
+[node name="HermitageZone" type="Area3D" parent="."]
+script = ExtResource("16")
+position = Vector3(-8.0, 1.0, 8.5)
+
+[node name="ZoneShape" type="CollisionShape3D" parent="HermitageZone"]
+shape = SubResource("triggershape")
+
+[node name="Bandit1" parent="." instance=ExtResource("1")]
+position = Vector3(5, 0, 2)
+
+[node name="Bandit2" parent="." instance=ExtResource("1")]
+position = Vector3(-5, 0, 4)
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.9, 0.3, 0)
+
+[node name="WorldEnv" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="Rain" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 150
+lifetime = 1.2
+emission_shape = 3
+emission_box_extents = Vector3(15, 1, 4)
+direction = Vector3(0, -1, 0)
+spread = 5.0
+gravity = Vector3(0, -18, 0)
+initial_velocity_min = 8.0
+initial_velocity_max = 12.0
+scale_amount_min = 0.02
+scale_amount_max = 0.05
+color = Color(0.7, 0.8, 0.9, 0.7)
+draw_pass_1 = SubResource("rainmesh")
+position = Vector3(0, 8, 0)
+
+[node name="Camera" type="Camera3D" parent="."]
+script = ExtResource("11")
+position = Vector3(0, 7.0, 11.0)
+rotation = Vector3(-0.55, 0, 0)
+current = true
+offset = Vector3(0, 7.0, 10.0)

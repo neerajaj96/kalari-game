@@ -1,0 +1,18 @@
+{
+  "ranks": [
+    { "rank": 1, "title": "Vidhyarthi (student)", "xp_needed": 0, "unlocks": ["mey_01", "mey_02", "uzhichil_heal"] },
+    { "rank": 2, "title": "Meithari-cleared", "xp_needed": 300, "unlocks": ["kukkuda_kick", "kettukari"] },
+    { "rank": 3, "title": "Kolthari-cleared", "xp_needed": 800, "unlocks": ["cheruvadi", "village_quests", "tournament_demo"] },
+    { "rank": 4, "title": "Otta-yogi (future)", "xp_needed": 1600, "unlocks": ["otta"] },
+    { "rank": 5, "title": "Ankathari-veeran (future)", "xp_needed": 3000, "unlocks": ["vaal_paricha"] },
+    { "rank": 6, "title": "Gurukkal (future)", "xp_needed": 5000, "unlocks": ["urumi", "mantra_upadesha"] }
+  ],
+  "xp_sources": {
+    "meyppayattu_rep": 5,
+    "bandit_defeat": 60,
+    "quest_complete": 120,
+    "daily_uzhichil": 10,
+    "tournament_win": 200
+  },
+  "rules": "No belts. Trust unlock per book: corrupt schools 5-6yrs teach nothing; earnest student + good guru = all in 6 months (monsoon 3-4mo/yr). Dakshina first/last day. Mantra-upadesha only after mastery."
+}

@@ -1,0 +1,131 @@
+{
+  "note": "Summaries in own words from Meru Tantra Vol 1 Hindi bhashya. Short PD verse quotes only. Full rituals unlock via in-game guru, symbolic on-screen.",
+  "tabs": [
+    {
+      "id": "meru_meru_mani",
+      "name_en": "Why 'Meru' Tantra",
+      "name_ml": "മേരു തന്ത്രം എന്തുകൊണ്ട്",
+      "what": "Mahakala's panchami-muktiTeaching strung like the central Meru bead of a mala; supreme among 108 tantras like Sumeru among mountains.",
+      "how_in_game": "Main quest hub named Meru; each completed sadhana adds a bead to your mala UI.",
+      "philosophy": "One thread (liberation) holds diverse beads (deities, paths). Unity without uniformity.",
+      "sources": ["Meru Tantra P1 vyavastha"]
+    },
+    {
+      "id": "pancha_devata",
+      "name_en": "Five faces, one God",
+      "name_ml": "പഞ്ചദേവതാ ഏകത്വം",
+      "what": "Ganapatya, Saura, Shakta, Vaishnava, Shaiva worship one all-faced Bhagavan; Kali is Krishna, Krishna is Kalika; the world is Shiva-Shakti-maya.",
+      "how_in_game": "Ishta-devata picker (Bhadrakali default for Kolathiri temple); other paths bless same XP.",
+      "philosophy": "Difference of names is the devotee's short sight; rivers differ, ocean one.",
+      "sources": ["Meru P1", "Padma Purana verse family", "Bhagavata 4th skandha idea"]
+    },
+    {
+      "id": "guru_shishya",
+      "name_en": "Guru and disciple rules",
+      "name_ml": "ഗുരു ശിഷ്യ ലക്ഷണം",
+      "what": "Guru needs ~20 virtues (pure conduct, mantra-vidhana knower, dayalu, shanta, desha-kala knower); disciple needs sincerity, not greed; greedy guru + siddhi-hungry disciple both fail, says text.",
+      "how_in_game": "Two gurus: Tantri-guru (temple) and Kalari-gurukkal (Tamil Agama/Agastyar/Siddha body lore). Diksha quiz gates progress.",
+      "philosophy": "Initiation is knowledge that burns sin; an undone guide cannot lift another.",
+      "sources": ["Meru P1 vyavastha"]
+    },
+    {
+      "id": "samskara_16_10",
+      "name_en": "16 samskaras + 10 mantra refinings",
+      "name_ml": "സംസ്കാരങ്ങൾ",
+      "what": "3 pre-birth + 10 life + 3 rites; plus mantra refinings: birth, enlivening, striking-awake, awareness, abhisheka, cleansing, nourishing, tarpana, kindling, concealing.",
+      "how_in_game": "Mantra-crafting track: each refining raises mantra accuracy/stability before purashcharana.",
+      "philosophy": "Sound, like a person, needs birth, food, bath and secrecy to mature.",
+      "sources": ["Meru P2 samskara"]
+    },
+    {
+      "id": "diksha_mandapa_kunda",
+      "name_en": "Diksha hall and fire pits",
+      "name_ml": "ദീക്ഷാ മണ്ഡപം കുണ്ഡം",
+      "what": "Mandapa types, vedi, kunda measures: square, circle, hexagon, octagon, 5/7/8-cornered; vastu-puja; shubha masa/nakshatra/tithi/vara/yoga/karana/lagna; dream-omen check; sarvatobhadra + varuna mandalas.",
+      "how_in_game": "Temple-build quests: raise mandapa, dig kunda shapes, pick muhurta on calendar, dream reading night event.",
+      "philosophy": "Space and time are prepared vessels; the rite pours into readiness.",
+      "sources": ["Meru P3 diksha"]
+    },
+    {
+      "id": "homa_18",
+      "name_en": "Fire offering in 18 steps",
+      "name_ml": "ഹോമവിധി",
+      "what": "Sattvika/rajasa/tamasa mantras; 18 kunda rites; agni-sthapana; eight-petal worship-seat in pit center; tantrika homa order.",
+      "how_in_game": "Homa checklist minigame; sattvika fire = calm buffs, rajasa = sharp, tamasa = heavy cost.",
+      "philosophy": "Fire eats form and returns light; offering is metabolism of desire.",
+      "sources": ["Meru P4 homa"]
+    },
+    {
+      "id": "ahnika_daily",
+      "name_en": "Daily round (ahnika)",
+      "name_ml": "ആഹ്നികം",
+      "what": "Bath, tilaka, tantric sandhya, Shiva-gayatri, vessel setup, bhuta-shuddhi (element cleansing), prana-pratishtha, inner/outer matrika nyasa, deity dhyana in both margas, Ganesha-mala, yogapitha, shalagrama by sect, avahana, puja, lamp-gift, food-gift, spirit-balance, triple worship.",
+      "how_in_game": "Daily loop UI in temple/kalari/forest; streaks grant steadiness (siddhi-sthira).",
+      "philosophy": "Day itself is the mandala; purification precedes invitation.",
+      "sources": ["Meru P5 ahnika"]
+    },
+    {
+      "id": "nyasa_matrika",
+      "name_en": "Placing sound on the body",
+      "name_ml": "ന്യാസം മാതൃക",
+      "what": "Kala, Keshavadi, Shrikanthadi, Bhuvaneshvari/Lakshmi/Kama/Shakti-Shri-Kama/Ganesha matrika sets + prapancha-yaga; sound placed on limbs before worship.",
+      "how_in_game": "Tap-sequence puzzles per set; correct order unlocks dhyana verse.",
+      "philosophy": "Body becomes the rosary; letters become limbs of the deity.",
+      "sources": ["Meru P5"]
+    },
+    {
+      "id": "purashcharana_counts",
+      "name_en": "Mantra counting discipline",
+      "name_ml": "പുരശ്ചരണം",
+      "what": "Pre-duties, fit place, fit mala (rudraksha glory, karma-mala, rules for all), forbidden acts during count, asana rules + banned seats, diet, time, siddhi means; Shabara track; japa itself is liberation-vehicle.",
+      "how_in_game": "Mala counter with place/bead/seat/diet buffs; Shabara = kali-age fast track.",
+      "philosophy": "Repetition is the chisel; count is the mallet.",
+      "sources": ["Meru P6 purashcharya"]
+    },
+    {
+      "id": "kamya_defense_only",
+      "name_en": "Wish-rites, defense only",
+      "name_ml": "കാമ്യകർമ്മം രക്ഷയ്ക്ക്",
+      "what": "Peace-rites plus stambhana (arrest), and harsher listed rites; damanotsava, pavitraropana; steadiness practices.",
+      "how_in_game": "Playable: shanti heal, stambhana shield, uchchatana repel saboteurs. Listed harsher rites appear in philosophy tab only, never castable.",
+      "philosophy": "Power must be fenced; siddhi without steadiness rots.",
+      "sources": ["Meru P7 siddhi-sthirikarana"]
+    },
+    {
+      "id": "mudra_upachara",
+      "name_en": "Hand seals and 16 hospitalities",
+      "name_ml": "മുദ്ര ഉപചാരം",
+      "what": "~100 seals (inviting, placing, presenting, armor, weapons, animals, goddesses) plus welcome/water/foot-water/sip/honey-bath/cloth/jewel/thread/scent/flower/smoke/lamp/food/morsel/breaths sequence.",
+      "how_in_game": "Gesture-trace minigame per seal; 16-step offering loop is the core temple interaction.",
+      "philosophy": "Hands speak first; hospitality precedes theology.",
+      "sources": ["Meru P8 mudra"]
+    },
+    {
+      "id": "kula_kundalini",
+      "name_en": "Kula is Kundalini",
+      "name_ml": "കുലം കുണ്ഡലിനി",
+      "what": "Kula = Kundalini Shakti, Akula = Maheshvara; knowing this makes one knower; prana is the Thread holding worlds.",
+      "how_in_game": "Dwaja-mast overlay shows mooladhara→sahasrara; breath bar visualizes rise symbolically.",
+      "philosophy": "Meru the mountain, Meru the bead, Meru the spine — one axis.",
+      "sources": ["Meru prastavana kula doctrine"]
+    },
+    {
+      "id": "kartavirya_deepa",
+      "name_en": "Kartavirya lamp gift",
+      "name_ml": "കാർത്തവീര്യ ദീപദാനം",
+      "what": "Special lamp-offering rite to Kartavirya for lost-and-found, protection of goods and travelers.",
+      "how_in_game": "Night escort quest: light row lamps to unlock safe-travel buff for supply runs.",
+      "philosophy": "Light lent to others returns as road.",
+      "sources": ["Meru title theme; P5 dipadana"]
+    },
+    {
+      "id": "vama_dakshina_equal",
+      "name_en": "Left and right, equal honor",
+      "name_ml": "വാമ ദക്ഷിണ സമത്വം",
+      "what": "Unlike books that mock the other side, this text treats both margas with equal weight; pashu/vira/divya/kaula are temperaments, and the guru assigns by nature.",
+      "how_in_game": "Path choice changes flavor text and helpers, never power; adult-gated Vama track is symbolic (flower/water, text verse, fade-to-black).",
+      "philosophy": "Sattvika, rajasika, tamasika natures need different doors into one house.",
+      "sources": ["Meru book intro + P1"]
+    }
+  ]
+}

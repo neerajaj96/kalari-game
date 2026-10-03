@@ -1,0 +1,58 @@
+name: Android Debug APK
+
+# Repo root IS the Godot project root (project.godot, .env at top level
+# after `gh repo create --source=.`). Do not add kalari-game/ prefixes.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  export-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone
+        uses: actions/checkout@v4
+
+      - name: Load env
+        run: grep ^GODOT_VERSION .env >> $GITHUB_ENV
+
+      - name: Install Godot + templates
+        run: |
+          echo "Godot $GODOT_VERSION"
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz
+          unzip -q Godot_v${GODOT_VERSION}_linux.x86_64.zip
+          sudo mv Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
+          sudo chmod +x /usr/local/bin/godot
+          TEMPLATE_VER=$(cat android/.build_version | tr -d '\r\n')
+          # hyphen (4.5-stable) vs dot (4.5.stable) pairing must hold
+          GODOT_DOT=$(echo "$GODOT_VERSION" | tr '-' '.')
+          if [ "$GODOT_DOT" != "$TEMPLATE_VER" ]; then
+            echo "Version mismatch: GODOT_VERSION=$GODOT_VERSION vs .build_version=$TEMPLATE_VER"
+            exit 1
+          fi
+          mkdir -p ~/.local/share/godot/export_templates/${TEMPLATE_VER}
+          unzip -q Godot_v${GODOT_VERSION}_export_templates.tpz
+          mv templates/* ~/.local/share/godot/export_templates/${TEMPLATE_VER}/
+
+      - name: Pre-heat import cache
+        run: godot --headless --editor --quit || true
+
+      - name: Export debug APK (no Gradle, prebuilt template)
+        run: |
+          mkdir -p build/android
+          godot --headless --export-debug "Android-Debug" build/android/kalari-debug.apk
+          ls -lh build/android/
+
+      - name: Release APK
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/android/kalari-debug.apk
+          name: Kalari Debug ${{ github.ref_name }}
+          generate_release_notes: true

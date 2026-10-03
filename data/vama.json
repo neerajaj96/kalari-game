@@ -1,0 +1,9 @@
+{
+  "gate": "18+ symbolic philosophy track. No explicit visuals, no intimate acts, no alcohol or transgression on screen. Flower and water stand in for tattvas; verses appear as text; screen fades before anything intimate. Off by default.",
+  "quests": [
+    { "id": "tattva", "n": 1, "name": "Five Elements Contemplation", "need": "forest_dhyana_done", "xp": 120, "brief": "Complete 1 Forest Dhyana; offer flower+water in mind. Opens vama_dakshina_equal tab." },
+    { "id": "kula", "n": 2, "name": "Kula-Kundalini Axis", "need": "sanctum_visit_after_tattva", "xp": 150, "brief": "Stand at the dwaja line (sanctum door) after Tattva. Opens kula_kundalini tab." },
+    { "id": "vira", "n": 3, "name": "Vira Resolve", "need": "one_bandit_after_kula", "xp": 180, "brief": "Defeat 1 bandit with steady mind (after Kula). Opens kamya_defense_only tab." }
+  ],
+  "requires": "Rank 3 + gate ON + tantri permission (3 seva completions via rituals idx>=3)"
+}

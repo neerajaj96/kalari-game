@@ -1,0 +1,153 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Material" path="res://materials/mud.tres" id="1"]
+[ext_resource type="Material" path="res://materials/laterite.tres" id="2"]
+[ext_resource type="Material" path="res://materials/wood.tres" id="3"]
+[ext_resource type="Material" path="res://materials/shrine_red.tres" id="4"]
+[ext_resource type="Material" path="res://materials/shrine_yellow.tres" id="5"]
+[ext_resource type="Material" path="res://materials/thatch.tres" id="6"]
+[ext_resource type="Script" path="res://scripts/lamp_flicker.gd" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/gurukkal.tscn" id="8"]
+[ext_resource type="Script" path="res://scripts/lighting_preset.gd" id="9"]
+[ext_resource type="Script" path="res://scripts/follow_camera.gd" id="10"]
+[ext_resource type="Script" path="res://scripts/gurukkal_zone.gd" id="11"]
+
+[sub_resource type="Environment" id="env"]
+background_mode = 1
+background_color = Color(0.35, 0.3, 0.25, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 0.85, 0.7, 1)
+ambient_light_energy = 0.5
+
+[sub_resource type="BoxMesh" id="petal"]
+size = Vector3(0.06, 0.02, 0.06)
+
+[sub_resource type="BoxShape3D" id="counselshape"]
+size = Vector3(3.0, 2.0, 3.0)
+
+[node name="School" type="Node3D"]
+script = ExtResource("9")
+preset = 0
+
+[node name="School" type="Node3D"]
+
+[node name="Floor" type="CSGBox3D" parent="."]
+material = ExtResource("1")
+size = Vector3(12.8, 0.2, 6.4)
+position = Vector3(0, -1.2, 0)
+
+[node name="MudPlatform" type="CSGBox3D" parent="."]
+material = ExtResource("2")
+size = Vector3(14.0, 0.6, 7.6)
+position = Vector3(0, -1.6, 0)
+
+[node name="PillarE" type="CSGBox3D" parent="."]
+material = ExtResource("3")
+size = Vector3(0.4, 6.4, 0.4)
+position = Vector3(6.4, 2.0, 0)
+
+[node name="PillarW" type="CSGBox3D" parent="."]
+material = ExtResource("3")
+size = Vector3(0.4, 6.4, 0.4)
+position = Vector3(-6.4, 2.0, 0)
+
+[node name="PootharaT1" type="CSGBox3D" parent="."]
+material = ExtResource("4")
+size = Vector3(1.2, 0.15, 1.2)
+position = Vector3(-5.5, -1.0, -2.5)
+
+[node name="PootharaT2" type="CSGBox3D" parent="."]
+material = ExtResource("4")
+size = Vector3(1.0, 0.15, 1.0)
+position = Vector3(-5.5, -0.85, -2.5)
+
+[node name="PootharaT3" type="CSGBox3D" parent="."]
+material = ExtResource("4")
+size = Vector3(0.8, 0.15, 0.8)
+position = Vector3(-5.5, -0.7, -2.5)
+
+[node name="PootharaT4" type="CSGBox3D" parent="."]
+material = ExtResource("4")
+size = Vector3(0.6, 0.15, 0.6)
+position = Vector3(-5.5, -0.55, -2.5)
+
+[node name="PootharaT5" type="CSGBox3D" parent="."]
+material = ExtResource("4")
+size = Vector3(0.4, 0.15, 0.4)
+position = Vector3(-5.5, -0.4, -2.5)
+
+[node name="Koombi" type="CSGSphere3D" parent="."]
+material = ExtResource("5")
+radius = 0.18
+height = 0.36
+position = Vector3(-5.5, -0.2, -2.5)
+
+[node name="Guruthara" type="CSGBox3D" parent="."]
+material = ExtResource("5")
+size = Vector3(0.6, 0.6, 0.6)
+position = Vector3(-4.0, -0.7, -2.5)
+
+[node name="OlaWallE_N" type="CSGBox3D" parent="."]
+material = ExtResource("6")
+size = Vector3(0.1, 2.0, 2.2)
+position = Vector3(6.9, 0.0, -2.0)
+
+[node name="OlaWallE_S" type="CSGBox3D" parent="."]
+material = ExtResource("6")
+size = Vector3(0.1, 2.0, 2.2)
+position = Vector3(6.9, 0.0, 2.0)
+
+[node name="OlaWallW" type="CSGBox3D" parent="."]
+material = ExtResource("6")
+size = Vector3(0.1, 2.0, 6.4)
+position = Vector3(-6.9, 0.0, 0)
+
+[node name="Roof" type="CSGBox3D" parent="."]
+material = ExtResource("6")
+size = Vector3(15.0, 0.2, 8.6)
+position = Vector3(0, 5.4, 0)
+
+[node name="Gurukkal" parent="." instance=ExtResource("8")]
+position = Vector3(-2.5, -1.1, -1.5)
+rotation = Vector3(0, 0.6, 0)
+
+[node name="GurukkalZone" type="Area3D" parent="."]
+script = ExtResource("11")
+position = Vector3(-2.5, 0.0, -1.5)
+
+[node name="ZoneShape" type="CollisionShape3D" parent="GurukkalZone"]
+shape = SubResource("counselshape")
+
+[node name="Lamp" type="OmniLight3D" parent="."]
+script = ExtResource("7")
+position = Vector3(-4.8, 0.8, -2.5)
+light_energy = 1.2
+omni_range = 8.0
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.8, 0.4, 0)
+
+[node name="WorldEnv" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="Petals" type="CPUParticles3D" parent="."]
+emitting = true
+amount = 24
+lifetime = 4.0
+direction = Vector3(0, -1, 0)
+spread = 25.0
+gravity = Vector3(0, -0.3, 0)
+initial_velocity_min = 0.2
+initial_velocity_max = 0.5
+scale_amount_min = 0.05
+scale_amount_max = 0.1
+color = Color(1, 0.85, 0.4, 1)
+draw_pass_1 = SubResource("petal")
+position = Vector3(-5.0, 1.5, -2.0)
+
+[node name="Camera" type="Camera3D" parent="."]
+script = ExtResource("10")
+position = Vector3(0, 6.0, 10.0)
+rotation = Vector3(-0.5, 0, 0)
+current = true
+offset = Vector3(0, 6.0, 9.0)

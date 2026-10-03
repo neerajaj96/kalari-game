@@ -1,0 +1,19 @@
+{
+  "zones": [
+    {
+      "id": "school_kuzhi",
+      "name": "Kuzhi-Kalari (42x21ft pit)",
+      "desc": "Waist-deep pit, 2ft mud platform, 2x21ft nedum-thoon E/W, entry east-north, ola mats, Poothara SW 5-tier + Guruthara, Bhadrakali worship. Weapons between W-pillar and Poothara.",
+      "scene": "res://scenes/school.tscn",
+      "enemies": []
+    },
+    {
+      "id": "village_chirakkal",
+      "name": "Chirakkal Village (Kannur)",
+      "desc": "Real Kerala compressed: homes, temple, backwater edge, market (Unniyarcha escort hook), bandit road.",
+      "scene": "res://scenes/village.tscn",
+      "enemies": ["bandit_1", "bandit_2"]
+    }
+  ],
+  "future_open_world": ["Wayanad forest", "Kochi backwaters", "tournament Anka-kalari 42ft", "Travancore Dronamballi school"]
+}

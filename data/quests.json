@@ -1,0 +1,30 @@
+{
+  "quests": [
+    {
+      "id": "q01_first_earth",
+      "name": "Touch the Earth",
+      "giver": "Gurukkal",
+      "zone": "school_kuzhi",
+      "steps": ["Enter right-foot", "Touch earth", "Bow Poothara+Guruthara", "Bow Guru feet", "Do 5 mey reps"],
+      "xp": 120
+    },
+    {
+      "id": "q02_market_escort",
+      "name": "Edavattam Market (Unniyarcha)",
+      "giver": "Unniyarcha",
+      "zone": "village_chirakkal",
+      "desc": "'Pennaaya njanum virakkunnilla, aanaya ningal virakkunenthe?' Escort Kunjiraman, no hidden knife (olivaal), win openly.",
+      "objectives": ["Reach market", "Defeat 1 bandit openly", "No stealth kill"],
+      "xp": 150
+    },
+    {
+      "id": "q03_aromal_debt",
+      "name": "Tulunadu Debt (Aromal Chekavar hook)",
+      "giver": "Aromal",
+      "zone": "village_chirakkal",
+      "desc": "Earn blade by clearing debt. Duel betrayer in 42ft ankam is endgame - this slice only earns kettukari.",
+      "objectives": ["Defeat 2 bandits", "Return to Guru", "Unlock kettukari"],
+      "xp": 200
+    }
+  ]
+}

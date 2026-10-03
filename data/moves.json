@@ -1,0 +1,74 @@
+{
+  "source": "Chirakkal T. Sreedharan Nair, Kalaripayattu 1937/1963, Arappukkai Northern school",
+  "notes": "Slice v0.1: 5 moves playable. Full 14 Mey + Kolthari/Angathari mapped for later.",
+  "vadivu_map": {
+    "simha": { "side": "eda", "role": "block_turtle", "desc": "Vattakkal crouch, chest covered - most effective defense" },
+    "gaja": { "side": "vala", "role": "charge", "desc": "Right posture, forward power" },
+    "aswa": { "role": "lunge_strike", "desc": "Edathu vechu valinjamarnnu horse lunge" },
+    "sarpa": { "role": "low_dodge", "desc": "Snake - low slip" },
+    "kukkuda": { "role": "kick_jump", "desc": "Cock - kick/jump" }
+  },
+  "moves": [
+    {
+      "id": "mey_01_chavutti_pongi",
+      "stage": "meythozhil",
+      "name": "Chavutti Pongi (base leg lift)",
+      "vadivu": "aswa",
+      "damage": 6,
+      "stamina_cost": 8,
+      "unlock_rank": 1,
+      "touch": "tap attack",
+      "vayttari": "Edathet eduthu nokki"
+    },
+    {
+      "id": "mey_02_valinjamarnnu",
+      "stage": "meythozhil",
+      "name": "Valinjamarnnu Neekki-Theruthu",
+      "vadivu": "simha",
+      "damage": 8,
+      "stamina_cost": 10,
+      "unlock_rank": 1,
+      "touch": "tap attack",
+      "vayttari": "Valathemmal chadi-ketti-chavutti"
+    },
+    {
+      "id": "mey_03_kukkuda_kick",
+      "stage": "meythozhil",
+      "name": "Kukkuda Kick",
+      "vadivu": "kukkuda",
+      "damage": 12,
+      "stamina_cost": 14,
+      "unlock_rank": 2,
+      "touch": "swipe up + attack"
+    },
+    {
+      "id": "kol_01_kettukari_strike",
+      "stage": "kolthari",
+      "name": "Kettukari Strike (long staff)",
+      "weapon": "kettukari",
+      "damage": 18,
+      "stamina_cost": 16,
+      "unlock_rank": 2,
+      "touch": "hold attack",
+      "vayttari": "Mun-kol vs Pin-kol, 10ft apart"
+    },
+    {
+      "id": "kol_02_cheruvadi_head",
+      "stage": "kolthari",
+      "name": "Cheruvadi Head Strike (3-chaan)",
+      "weapon": "cheruvadi",
+      "damage": 22,
+      "stamina_cost": 20,
+      "unlock_rank": 3,
+      "touch": "swipe arc + attack",
+      "targets": ["head_center", "chenni_temple", "koshtam_abdomen", "ribs_vari"]
+    }
+  ],
+  "locked_full_game": [
+    "otta_9_muras (hardest, eye precision, marakkai when angry)",
+    "pantiran_veeshal_10_solo (12-chaan cane twirl)",
+    "vaalvali_solo_flow", "vaalpayattu_puliyankam_duel",
+    "kuntham_5_maraspear", "churika_1.5muzham", "urumi_waist_ribbon_endgame",
+    "verumkai_ozhichal_mattam_thadav_pidutham_marma"
+  ]
+}

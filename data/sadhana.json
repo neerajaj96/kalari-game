@@ -1,0 +1,9 @@
+{
+  "sessions": {
+    "kalari": { "name": "Kalari Pranayama", "name_ml": "കളരി പ്രാണായാമം", "breaths": 11, "xp": 30, "buff": "stamina regen +25% for 5 min", "where": "school pit" },
+    "temple": { "name": "Bhadrakali Upasana Mala", "name_ml": "ഭദ്രകാളി ഉപാസന", "breaths": 11, "xp": 50, "buff": "marma chance +10% for 5 min", "where": "sanctum door zone" },
+    "forest": { "name": "Forest Dhyana", "name_ml": "വന ധ്യാനം", "breaths": 11, "xp": 80, "buff": "full calm: stamina + marma for 5 min", "where": "hermitage zone", "needs_rank": 2 }
+  },
+  "safety": "Stop if dizzy. Breathe gently, never strain. Game breath is symbolic, not medical guidance.",
+  "rule": "Sessions are silent counting with the Breathe button: each press is one half-breath (in/out). 11 breaths = 22 presses."
+}

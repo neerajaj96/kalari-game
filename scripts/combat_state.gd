@@ -1,0 +1,67 @@
+extends Node
+# Deterministic FSM - no ML (Laya/Jev deliberately NOT used for 60fps combat).
+# States: Idle/Stance/Strike/Block/Dodge/Hit. Marma crit on side/back hits.
+class_name CombatState
+
+enum S { IDLE, STANCE, STRIKE, BLOCK, DODGE, HIT, DOWN }
+
+var state: int = S.IDLE
+var stamina: float = 100.0
+var hp: float = 100.0
+var strike_cd: float = 0.0
+var recover_cd: float = 0.0 # hold time for BLOCK/DODGE/HIT poses
+
+const STAMINA_REGEN := 18.0
+var regen_mult := 1.0
+
+func can_act() -> bool:
+	return state == S.IDLE or state == S.STANCE
+
+func try_strike(cost: float) -> bool:
+	if stamina < cost or strike_cd > 0.0:
+		return false
+	if not can_act():
+		return false
+	stamina -= cost
+	state = S.STRIKE
+	strike_cd = 0.45
+	return true
+
+func try_block(hold: float = 0.6) -> bool:
+	if not can_act():
+		return false
+	state = S.BLOCK
+	recover_cd = hold
+	return true
+
+func try_dodge(cost: float = 12.0, hold: float = 0.5) -> bool:
+	if stamina < cost or not can_act():
+		return false
+	stamina -= cost
+	state = S.DODGE
+	recover_cd = hold
+	return true
+
+func take_hit(dmg: float, is_marma: bool = false) -> void:
+	if state == S.BLOCK:
+		dmg *= 0.25
+	elif state == S.DODGE:
+		dmg = 0.0
+	if is_marma:
+		dmg *= 1.5
+	hp -= dmg
+	if hp <= 0.0:
+		hp = 0.0
+		state = S.DOWN
+	elif dmg > 0.0:
+		state = S.HIT
+		recover_cd = 0.4
+
+func tick(delta: float) -> void:
+	strike_cd = maxf(0.0, strike_cd - delta)
+	recover_cd = maxf(0.0, recover_cd - delta)
+	stamina = minf(100.0, stamina + STAMINA_REGEN * regen_mult * delta)
+	if state == S.STRIKE and strike_cd <= 0.15:
+		state = S.STANCE
+	elif state in [S.HIT, S.BLOCK, S.DODGE] and recover_cd <= 0.0:
+		state = S.STANCE

@@ -1,0 +1,10 @@
+{
+  "slots": [
+    { "id": "usha", "name": "Usha Puja", "name_ml": "ഉഷഃപൂജ", "time": "dawn", "fetch": "flowers", "xp": 40 },
+    { "id": "pantheeradi", "name": "Pantheeradi Puja", "name_ml": "പന്തീരടി", "time": "morning", "fetch": "ghee", "xp": 40 },
+    { "id": "ucha", "name": "Ucha Puja", "name_ml": "ഉച്ചപൂജ", "time": "noon", "fetch": "oil", "xp": 50 },
+    { "id": "deeparadhana", "name": "Deeparadhana", "name_ml": "ദീപാരാധന", "time": "dusk", "fetch": "flowers", "xp": 50 },
+    { "id": "athazha", "name": "Athazha Puja", "name_ml": "അത്താഴപൂജ", "time": "night", "fetch": "ghee", "xp": 60 }
+  ],
+  "rules": "Sevaka assists only: fetch from market stall zone, carry to sanctum zone, ring bell (Attack) within the timing window. Tantri performs inside; player never enters srikovil."
+}

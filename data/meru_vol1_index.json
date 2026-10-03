@@ -1,0 +1,64 @@
+{
+  "work": "Meru Tantra Vol 1 (Prathama Bhaga, Prakasha 1-8)",
+  "edition_note": "Hindi bhashya summarized in own words; 2021 commentary is in-copyright, only brief fair-use quotes. Ancient Sanskrit verses are public domain.",
+  "source_doc": "Google Doc export 1Yn862BIxQbgD94ihlkERurElNj55pAIwGKEoHQCD0k4, lines ~814-16918 of 17106",
+  "whole_work": "35 prakashas planned, ~15000 shlokas; Shiva-Parvati samvada after Jalandhara defeat; 108 tantras, Meru supreme like Sumeru",
+  "prakashas": [
+    {
+      "n": 1,
+      "name": "Vyavastha",
+      "lines": "814-1451",
+      "topics": ["mangala + purpose", "Jalandhara frame", "Mahakala dhyana", "4-fold mukti", "kali kashtha", "vama 5 / dakshina 5 upasanas", "kaulaadi 5 vama bhedas", "vaidikaadi dakshina bhedas", "guru 20 gunahs", "shishya lakshana", "diksha necessity", "varna-wise pancha-vidha mantra + bija", "sattvika/rajasa/tamasa upasana"],
+      "game_hooks": ["guru selection screen (20 gunahs checklist)", "diksha-gate: no devarchana without initiation", "vama/dakshina path choice", "sattva/rajas/tamas difficulty flavor"]
+    },
+    {
+      "n": 2,
+      "name": "Samskara",
+      "lines": "1452-3034",
+      "topics": ["16 samskaras (3 garbha + 10 jata + 3 karma)", "chakra systems: tara/gana/shashi/panchabhautika/siddhadi/akadam/shaddala-matrika/malla/chaura/raja/kamana/senapati/duta-matrika", "annaprashana-chudakarana-upanayana-diksha-prajapatya-agneya-vaishvadeva-godana-samavartana-vivaha-pitrimedha", "yantra-siddhi upayas", "10 mantra-samskaras: janana, jivana, tadana, bodhana, abhisheka, vimalikarana, apyayana, tarpana, dipana, gopana"],
+      "game_hooks": ["mantra crafting: 10 purification steps as upgrade track", "chakra minigames for victory/kamana", "godana/samavartana as rank ceremonies"]
+    },
+    {
+      "n": 3,
+      "name": "Diksha",
+      "lines": "3035-6336",
+      "topics": ["vama/dakshina diksha svarupa", "kunda-mandapa bhedas + nirmana", "vedi nirmana", "kunda mana: chatushkona, vritta, shadasra, ashtasra, ashtadala, panchasra, saptasra", "vastu-pujana + pujya devatas", "grahya-agrahya masa/nakshatra/tithi/vara/yoga/karana/lagna + phala", "svapna pariksha shubha-ashubha", "vaidika + tantrika sarvatobhadra mandala, deva-wise vidhi, mandala-vidhi, varuna mandala", "devata-pujana vidhana", "varnaushadhi, gandhashtaka", "varnamayi/kalavati/ashtatrimshat-kala/jnanavati/vagdiksha-shambhavi", "purnabhisheka"],
+      "game_hooks": ["mandapa/kunda construction quests (temple build phases)", "calendar picker: shubha muhurta for pratishta", "dream-omen reading after diksha night", "diksha type per path (vag/shambhavi for advanced)"]
+    },
+    {
+      "n": 4,
+      "name": "Homa-vidhi",
+      "lines": "6338-7224",
+      "topics": ["sattvikaadi 3 mantra bhedas", "18 kunda-samskaras", "agni-sthapana", "ashtadala pujanapitha in kunda madhya", "tantrika homa vidhi"],
+      "game_hooks": ["homa minigame: 18 prep steps checklist", "sattvika/rajasa/tamasa fire flavor", "agni-sthapana ceremony opens homa feature"]
+    },
+    {
+      "n": 5,
+      "name": "Ahnika",
+      "lines": "7225-12107",
+      "topics": ["ahnika vichara", "snana, tilaka, tantriki sandhya, shiva-gayatri", "pujadravya sthapana krama", "bhutashuddhi, pranapratishtha, antarmatrika + bahirmatrika nyasa", "vama-dakshina dhyana", "kala/keshavadi/shrikanthadi/bhuvaneshvari-bija/lakshmi-bija/kama-bija/shakti-shri-kama/ganesha-matrika nyasas", "prapancha-yaga nyasa", "ganesha-malamantra, yogapitha nyasa", "shalagrama shilas (vaishnava/shaiva/shakta/surya/ganesha/dikpala/graha)", "murti avahana + puja, dipadana, naivedya, bhutabali", "trividha pujana samanya"],
+      "game_hooks": ["daily routine loop: snana->sandhya->nyasa->dhyana->puja->naivedya->bali", "nyasa tap-sequence minigames per matrika set", "shalagrama collection per deity", "dipadana lamp quest (links Kartavirya-deepadan)"]
+    },
+    {
+      "n": 6,
+      "name": "Purashcharya",
+      "lines": "12108-14875",
+      "topics": ["purashcharana tatparya + purva-kritya", "japa-yogya sthana", "mala vichara, rudraksha phala/mahima, mala-samskara/bheda, shudra-stri prayojya mala, karamala", "japa-time tyajya karmas", "japa svarupa/bheda", "asana vivechana + nishiddha asanas", "purashcharana bhojana, japa samaya, mantra-siddhi upaya", "shabara-mantra purashcharana", "tantrika-mantra diksha vidhi", "japa eva moksha sadhana"],
+      "game_hooks": ["japa counter (mala beads) with sthana/asana/bhojana buffs", "rudraksha unlock track", "shabara fast-track for kali-age players"]
+    },
+    {
+      "n": 7,
+      "name": "Siddhi-sthirikarana",
+      "lines": "14876-15858",
+      "topics": ["nishiddha acharas + avashya kartavya", "damanotsava puja, pavitraropana", "shanti-adi kamya karmas", "vashikarana/stambhana/vidveshana/uchchatana/marana vidhana", "kamya-adi pujya devatas", "siddhi sthira upayas"],
+      "game_hooks": ["DEFENSE-ONLY framing: stambhana (shield), shanti (heal), uchchatana (repel saboteurs); marana/vashikarana shown in philosophy tab only, never playable", "damanotsava + pavitraropana festival quests", "siddhi decay meter stabilized by nitya duties"]
+    },
+    {
+      "n": 8,
+      "name": "Mudra-lakshana",
+      "lines": "15859-16918",
+      "topics": ["~100 mudras: ankusha, kantha, vahni-prakara, anguli-nyasa, hridaya/shira/shikha/kavacha, trinetra/dvinetra, lalita-namaskara, kshobhini/dravini/akarshini, galini, dhanuh, shankha, yoni, matsya, avahani/sthapani/sammukhikarani/sakalikarani/avagunthana/sannidhapana/sannirodhana, ... gayatri 24, sumukha/samputa/vitata/vistrita/dvi-tri-chatur-pancha-shan-mukha/adhomukha/vyapak-anjali, ...", "swagata/arghya/padya/achamana/madhuparka/snana/vastra/abharana/upavita/gandha/pushpa/dhupa/dipa/naivedya sequences"],
+      "game_hooks": ["mudra gesture minigame (trace/shape match) per puja step", "upachara 16-step offering sequence as core temple loop"]
+    }
+  ]
+}
