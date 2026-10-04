@@ -154,6 +154,11 @@ func _apply(world_env: WorldEnvironment, renderer: String) -> void:
 		_put(env, "ssr_enabled", false)
 		_put(env, "sdfgi_enabled", false)
 		_put(env, "volumetric_fog_enabled", false)
+		# Render-scale for weak GPUs; desktop keeps native resolution.
+		var vp: Viewport = get_tree().root
+		if vp:
+			vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
+			vp.scaling_3d_scale = 0.8
 
 func _ensure_sky(env: Environment) -> void:
 	if env.sky != null:

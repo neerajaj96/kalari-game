@@ -482,6 +482,19 @@ for bad in ["s.data.resize", "s.data.encode_s16"]:
     if bad in amb2:
         errs.append(f"ambience: '{bad}' writes vanish (build local bytes instead)")
 
+# --- 8w. P9 mobile perf: tighter shadows, capped rain, render-scale; desktop kept ---
+_lps = open(BASE + "/scripts/lighting_preset.gd").read()
+for token in ["25.0 if mobile else 55.0", "lerpf(80.0, 150.0, storm)", '== "mobile"']:
+    if token not in _lps:
+        errs.append(f"lighting: P9 '{token}' missing")
+for token in ["lerpf(150.0, 300.0, storm)", "directional_shadow_max_distance = 55.0"]:
+    if token not in _lps and "25.0 if mobile else 55.0" not in _lps:
+        errs.append("lighting: P9 desktop values regressed")
+_gd4 = open(BASE + "/scripts/graphics_director.gd").read()
+for token in ["SCALING_3D_MODE_BILINEAR", "scaling_3d_scale = 0.8"]:
+    if token not in _gd4:
+        errs.append(f"director: P9 '{token}' missing")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)

@@ -10,6 +10,7 @@ extends Node3D
 
 var day_t := 0.35
 var storm := 0.0
+var mobile := false
 var _storm_goal := 0.0
 var _frame_t := 0.0
 var _last_rain := -1
@@ -28,16 +29,19 @@ const KEYS := [
 
 func _ready() -> void:
 	day_t = [0.1, 0.35, 0.6][clampi(preset, 0, 2)]
+	if RenderingServer.has_method("get_current_rendering_method"):
+		mobile = RenderingServer.get_current_rendering_method() == "mobile"
 	_configure_sun()
 	_apply_frame()
 
 func _configure_sun() -> void:
-	# High-quality cascaded shadows; per-frame values still owned by _apply_frame.
+	# Cascaded shadows (Mobile gets a tighter frustum); per-frame values
+	# still owned by _apply_frame.
 	var sun := get_node_or_null("Sun") as DirectionalLight3D
 	if sun == null:
 		return
 	sun.shadow_enabled = true
-	sun.directional_shadow_max_distance = 55.0
+	sun.directional_shadow_max_distance = 25.0 if mobile else 55.0
 	sun.directional_shadow_split_1 = 0.08
 	sun.directional_shadow_split_2 = 0.28
 	sun.directional_shadow_split_3 = 0.62
@@ -158,9 +162,10 @@ func _apply_wetness(w: float) -> void:
 		m.roughness = lerpf(float(base[1]), 0.18, w)
 		m.metallic_specular = lerpf(float(base[2]), 0.85, w)
 	# Rain heaviness follows storm (amount reallocates — write only on change).
+	# Mobile caps the deluge for fill-rate.
 	var rain = get_node_or_null("Rain") as CPUParticles3D
 	if rain:
-		var want_rain := int(lerpf(150.0, 300.0, storm))
+		var want_rain := int(lerpf(80.0, 150.0, storm)) if mobile else int(lerpf(150.0, 300.0, storm))
 		if want_rain != _last_rain:
 			_last_rain = want_rain
 			rain.amount = want_rain
