@@ -364,6 +364,13 @@ for token in ["MultiMeshInstance3D", "instance_count", "GRASS_N", "REED_N"]:
         errs.append(f"foliage: '{token}' missing")
 if "FoliageManager" not in open(BASE + "/scripts/world_loader.gd").read():
     errs.append("foliage: not hooked in world_loader")
+for token in ["BUSH_N", "PALM_N", "PalmTrunks", "PalmCrowns", "BushFieldA", "BushFieldB"]:
+    if token not in fg:
+        errs.append(f"foliage: P6 '{token}' missing")
+for _const, _cap in [("GRASS_N :=", 300), ("REED_N :=", 50), ("BUSH_N :=", 30), ("PALM_N :=", 15)]:
+    _m = re.search(re.escape(_const) + r"\s*(\d+)", fg)
+    if _m and int(_m.group(1)) > _cap:
+        errs.append(f"foliage: '{_const.strip()}' over budget ({_cap})")
 
 # --- 8q. probes + hero lamps present ---
 _vts = open(BASE + "/scenes/village.tscn").read()

@@ -1,16 +1,20 @@
 extends RefCounted
-# Foliage manager: many instances, very few draw calls. Two MultiMeshes
-# (grass 150, reeds 30) replace the individual CSG tufts; originals are
-# hidden (their collision was deco-exempt anyway). Second sway phase via
-# a duplicated material so the field doesn't breathe in perfect sync.
+# Foliage manager: many instances, very few draw calls. Grass 150 + reeds 30
+# + bushes 20 + palms 10 (trunk/crown twin MultiMeshes sharing one transform
+# set); the 2 CSG palms stay as collision anchors. Second sway phase via
+# duplicated materials so the field doesn't breathe in perfect sync.
 class_name FoliageManager
 
 const GRASS_N := 150
 const REED_N := 30
+const BUSH_N := 20
+const PALM_N := 10
 
 static func setup(world: Node) -> void:
 	_setup_grass(world)
 	setup_reeds(world)
+	_setup_bushes(world)
+	setup_palms(world)
 
 static func _setup_grass(world: Node) -> void:
 	var mesh := BoxMesh.new()
@@ -33,7 +37,30 @@ static func setup_reeds(world: Node) -> void:
 		if old:
 			old.visible = false
 
-static func _make(world: Node, mm_name: String, mesh: Mesh, mat: Material, count: int, seed_off: int, base_y: float, reeds: bool = false) -> void:
+static func _setup_bushes(world: Node) -> void:
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(0.9, 0.55, 0.9)
+	var mat: ShaderMaterial = load("res://shaders/sway_leaf.tres")
+	var mat2: ShaderMaterial = null
+	if mat:
+		mat2 = mat.duplicate()
+		mat2.set_shader_parameter("speed", 1.2)
+	_make(world, "BushFieldA", mesh, mat, BUSH_N / 2, 31, 0.28)
+	_make(world, "BushFieldB", mesh, mat2, BUSH_N - BUSH_N / 2, 43, 0.28)
+
+static func setup_palms(world: Node) -> void:
+	# Twin MultiMeshes, one transform set: same seed + same exclusions give
+	# trunks and crowns identical footprints (trunk center 2.5, crown 5.0).
+	var trunk := BoxMesh.new()
+	trunk.size = Vector3(0.35, 5.0, 0.35)
+	var crown := BoxMesh.new()
+	crown.size = Vector3(2.2, 0.4, 2.2)
+	var bark: StandardMaterial3D = load("res://materials/wood.tres")
+	var leaf: ShaderMaterial = load("res://shaders/sway_leaf.tres")
+	_make(world, "PalmTrunks", trunk, bark, PALM_N, 21, 2.5, false, true)
+	_make(world, "PalmCrowns", crown, leaf, PALM_N, 21, 5.0, false, true)
+
+static func _make(world: Node, mm_name: String, mesh: Mesh, mat: Material, count: int, seed_off: int, base_y: float, reeds: bool = false, bank: bool = false) -> void:
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.mesh = mesh
@@ -46,7 +73,9 @@ static func _make(world: Node, mm_name: String, mesh: Mesh, mat: Material, count
 		guard += 1
 		var x := rng.randf_range(-14.0, 14.0)
 		var z := rng.randf_range(-14.0, 8.0) if not reeds else rng.randf_range(8.3, 9.3)
-		if _blocked(x, z):
+		if bank:
+			z = rng.randf_range(9.0, 13.0)
+		if _blocked(x, z) or (bank and _palm_blocked(x, z)):
 			continue
 		var s := rng.randf_range(0.7, 1.3)
 		var t := Transform3D(Basis(Vector3.UP, rng.randf_range(0.0, TAU)).scaled(Vector3(s, s, s)), Vector3(x, base_y * s, z))
@@ -75,5 +104,15 @@ static func _blocked(x: float, z: float) -> bool:
 	if x > -5.0 and x < 5.0 and z > -1.0 and z < 5.0:
 		return true
 	if absf(x - 4.0) < 1.5 and z > -6.0 and z < 6.0:
+		return true
+	return false
+
+static func _palm_blocked(x: float, z: float) -> bool:
+	# Boat lane stays navigable; the 2 CSG palms keep their footprints.
+	if absf(x + 12.0) < 2.5:
+		return true
+	if Vector2(x, z).distance_to(Vector2(-4.0, 6.0)) < 2.0:
+		return true
+	if Vector2(x, z).distance_to(Vector2(6.0, 7.0)) < 2.0:
 		return true
 	return false

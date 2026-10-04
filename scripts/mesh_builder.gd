@@ -54,7 +54,8 @@ static func lathed_kalasham(rings: int = 8, radius: float = 0.22, height: float 
 		r = maxf(r, 0.0)
 		pts.append(Vector2(r, t * height))
 	var segs := 12
-	for i in range(rings + 1):
+	# pts holds base-center + rings profile points: rings bands total.
+	for i in range(rings):
 		for s in range(segs):
 			var a0 := 2.0 * PI * float(s) / segs
 			var a1 := 2.0 * PI * float(s + 1) / segs
