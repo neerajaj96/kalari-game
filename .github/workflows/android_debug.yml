@@ -67,7 +67,7 @@ jobs:
           mkdir -p build/android
           godot --headless --export-debug "Android-Debug" build/android/kalari-debug.apk 2>&1 | tee export.log
           ls -lh build/android/
-          if grep -Ei "SCRIPT ERROR|Parse Error|No loader|Failed loading|ERROR: " export.log; then
+          if grep -Ei "SCRIPT ERROR|SHADER ERROR|Parse Error|No loader|Failed loading|ERROR: " export.log; then
             echo "Export log contains errors — failing so broken code never ships."
             exit 1
           fi

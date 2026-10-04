@@ -1,6 +1,6 @@
 // Animated backwater: vertex ripple + travelling sparkle. Alpha blended.
 shader_type spatial;
-render_mode blend_mix, depth_draw_alpha_prepass, cull_disabled;
+render_mode blend_mix, depth_prepass_alpha, cull_disabled;
 
 uniform vec4 shallow : source_color = vec4(0.16, 0.42, 0.5, 0.88);
 uniform vec4 deep : source_color = vec4(0.05, 0.2, 0.3, 0.9);
