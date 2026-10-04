@@ -3,7 +3,7 @@ extends OmniLight3D
 # Glow sync: shared shrine_yellow emission breathes with the flame.
 
 var t := 0.0
-var base := 1.3
+@export var base := 1.3
 var _glow_mat: StandardMaterial3D = null
 
 func _ready() -> void:

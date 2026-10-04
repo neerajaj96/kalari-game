@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/enemy.tscn" id="1"]
 [ext_resource type="Material" path="res://materials/ground_green.tres" id="2"]
@@ -21,6 +21,7 @@
 [ext_resource type="Material" path="res://shaders/water_fx.tres" id="19"]
 [ext_resource type="PackedScene" path="res://scenes/cart.tscn" id="20"]
 [ext_resource type="PackedScene" path="res://scenes/boat.tscn" id="21"]
+[ext_resource type="Script" path="res://scripts/lamp_flicker.gd" id="22"]
 
 [sub_resource type="Environment" id="env"]
 background_mode = 1
@@ -791,6 +792,50 @@ position = Vector3(12.5, 3.6, -8.5)
 light_color = Color(1, 0.75, 0.4, 1)
 light_energy = 0.8
 omni_range = 6.0
+
+[node name="SanctumLamp" type="OmniLight3D" parent="."]
+script = ExtResource("22")
+position = Vector3(0.9, 2.3, -10.0)
+light_color = Color(1, 0.72, 0.38, 1)
+light_energy = 0.9
+omni_range = 4.0
+base = 0.9
+
+[node name="MandapaLamp" type="OmniLight3D" parent="."]
+script = ExtResource("22")
+position = Vector3(5.2, 2.2, -10.0)
+light_color = Color(1, 0.72, 0.38, 1)
+light_energy = 0.7
+omni_range = 5.0
+base = 0.7
+
+[node name="MarketLamp1" type="OmniLight3D" parent="."]
+script = ExtResource("22")
+position = Vector3(-3.0, 2.4, 1.0)
+light_color = Color(1, 0.72, 0.38, 1)
+light_energy = 0.6
+omni_range = 4.0
+base = 0.6
+
+[node name="MarketLamp2" type="OmniLight3D" parent="."]
+script = ExtResource("22")
+position = Vector3(3.0, 2.4, 3.0)
+light_color = Color(1, 0.72, 0.38, 1)
+light_energy = 0.6
+omni_range = 4.0
+base = 0.6
+
+[node name="HermitageLamp" type="OmniLight3D" parent="."]
+position = Vector3(-8.0, 1.8, 8.5)
+light_color = Color(1, 0.72, 0.38, 1)
+light_energy = 0.6
+omni_range = 4.0
+
+[node name="BoatLamp" type="OmniLight3D" parent="."]
+position = Vector3(-12.0, 1.6, 12.0)
+light_color = Color(1, 0.72, 0.38, 1)
+light_energy = 0.5
+omni_range = 3.0
 
 [node name="Rain" type="CPUParticles3D" parent="."]
 emitting = false

@@ -442,6 +442,18 @@ if "LOOP_FORWARD" not in amb:
 if ".loop = " in amb:
     errs.append("ambience: Godot-3 '.loop =' assignment (use loop_mode)")
 
+# --- 8u. P3 hero lamps: 6 flames, flicker where hot, omni budget held ---
+for rn in ["SanctumLamp", "MandapaLamp", "MarketLamp1", "MarketLamp2", "HermitageLamp", "BoatLamp"]:
+    if rn not in _vts:
+        errs.append(f"village: P3 '{rn}' missing")
+if _vts.count('type="OmniLight3D"') > 8:
+    errs.append("village: omni budget blown (>8 hero lights)")
+for token in ['script = ExtResource("22")', "lamp_flicker.gd", "base = 0.9", "base = 0.7", "base = 0.6"]:
+    if token not in _vts:
+        errs.append(f"village: P3 flicker '{token}' missing")
+if "@export var base" not in open(BASE + "/scripts/lamp_flicker.gd").read():
+    errs.append("flicker: 'base' must be @export (tscn assigns it per lamp)")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)
