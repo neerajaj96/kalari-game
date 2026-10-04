@@ -228,6 +228,13 @@ if "textures/vram_compression/import_etc2_astc=true" not in proj or "graphics/te
 if "window/handheld/orientation=0" not in proj:
     errs.append("project.godot: orientation is not 0 (forced landscape)")
 
+# --- 11b. detail-swap convention: hidden CSG keeps collision, MeshBuilder preloaded ---
+wl_src = open(BASE + "/scripts/world_loader.gd").read()
+if "_detail_swap" not in wl_src or "MeshBuilder" not in wl_src:
+    errs.append("world_loader: detail-swap hook missing")
+if "mesh_builder.gd" not in wl_src:
+    warns.append("world_loader: MeshBuilder not preloaded (class-cache roulette)")
+
 # --- 12. hygiene: secrets, endings, apk ---
 for f in sorted(glob.glob(BASE + "/**/*.gd", recursive=True) + [BASE + "/.env", BASE + "/export_presets.cfg"]):
     src = open(f, "rb").read()

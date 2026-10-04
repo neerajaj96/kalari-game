@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://shaders/sway.godotshader" id="1"]
+
+[resource]
+shader = ExtResource("1")
+shader_parameter/tint = Color(0.13, 0.42, 0.16, 1)
+shader_parameter/strength = 0.06
+shader_parameter/speed = 1.8

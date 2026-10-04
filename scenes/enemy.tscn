@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemy_ai.gd" id="1"]
 [ext_resource type="Material" path="res://materials/skin.tres" id="2"]
 [ext_resource type="Material" path="res://materials/sash_red.tres" id="3"]
 [ext_resource type="Script" path="res://scripts/vadivu_pose.gd" id="4"]
+[ext_resource type="Material" path="res://shaders/toon_skin.tres" id="5"]
 
 [sub_resource type="CapsuleShape3D" id="cap"]
 radius = 0.45
@@ -33,7 +34,7 @@ shape = SubResource("cap")
 position = Vector3(0, 0.9, 0)
 
 [node name="Body" type="MeshInstance3D" parent="."]
-material_override = ExtResource("2")
+material_override = ExtResource("5")
 mesh = SubResource("mesh")
 position = Vector3(0, 1.05, 0)
 
@@ -44,7 +45,7 @@ position = Vector3(0, 1.05, 0)
 scale = Vector3(1.05, 0.25, 1.05)
 
 [node name="Head" type="MeshInstance3D" parent="."]
-material_override = ExtResource("2")
+material_override = ExtResource("5")
 mesh = SubResource("headmesh")
 position = Vector3(0, 1.85, 0)
 
@@ -55,24 +56,24 @@ position = Vector3(0, 1.92, 0)
 scale = Vector3(1.05, 0.3, 1.05)
 
 [node name="ArmL" type="MeshInstance3D" parent="."]
-material_override = ExtResource("2")
+material_override = ExtResource("5")
 mesh = SubResource("limb_arm")
 position = Vector3(-0.55, 1.25, 0)
 rotation = Vector3(0, 0, 0.35)
 
 [node name="ArmR" type="MeshInstance3D" parent="."]
-material_override = ExtResource("2")
+material_override = ExtResource("5")
 mesh = SubResource("limb_arm")
 position = Vector3(0.55, 1.25, 0)
 rotation = Vector3(0, 0, -0.35)
 
 [node name="LegL" type="MeshInstance3D" parent="."]
-material_override = ExtResource("2")
+material_override = ExtResource("5")
 mesh = SubResource("limb_leg")
 position = Vector3(-0.18, 0.4, 0)
 
 [node name="LegR" type="MeshInstance3D" parent="."]
-material_override = ExtResource("2")
+material_override = ExtResource("5")
 mesh = SubResource("limb_leg")
 position = Vector3(0.18, 0.4, 0)
 

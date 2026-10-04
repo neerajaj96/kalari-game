@@ -11,6 +11,7 @@ const CombatState = preload("res://scripts/combat_state.gd")
 var combat := CombatState.new()
 var target: Node3D = null
 var think_cd := 0.0
+var _pending_hit := false
 
 func _ready() -> void:
 	add_to_group("bandit")
@@ -98,9 +99,27 @@ func _physics_process(delta: float) -> void:
 		velocity.z = 0.0
 		if think_cd <= 0.0:
 			think_cd = 1.1
-			if combat.try_strike(10.0) and target.has_method("apply_hit"):
-				# Counter marma: exposed mid-swing target takes 1.5x.
-				var exposed: bool = target.get("combat") != null and target.combat.state == CombatState.S.STRIKE
-				target.apply_hit(damage, exposed)
-	velocity.y = -0.5
-	move_and_slide()
+			if combat.try_strike(10.0):
+				_deal_delayed()
+		if _pending_hit:
+			_pending_hit = false
+			_land_hit()
+
+func _deal_delayed() -> void:
+	# 0.15s windup reads fairly, then the hit lands. Undilated timer so
+	# hitstop never stretches the telegraph; damage applied in physics.
+	await get_tree().create_timer(0.15, true, false, true).timeout
+	if not is_inside_tree() or _dead:
+		return
+	_pending_hit = true
+
+func _land_hit() -> void:
+	if target == null or not is_instance_valid(target):
+		return
+	var lto: Vector3 = target.global_position - global_position
+	lto.y = 0.0
+	if lto.length() > attack_range + 0.4 or not target.has_method("apply_hit"):
+		return
+	# Counter marma: exposed mid-swing target takes 1.5x.
+	var exposed: bool = target.get("combat") != null and target.combat.state == CombatState.S.STRIKE
+	target.apply_hit(damage, exposed)

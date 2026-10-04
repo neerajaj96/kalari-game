@@ -1,5 +1,6 @@
 extends Node
-# Procedural vadivu poses: maps CombatState -> Body scale/offset, lerped.
+# Procedural vadivu poses + limb animation. Maps CombatState -> Body scale/offset,
+# plus walk cycle, attack arcs, guard, idle breath on sibling limbs.
 # Simha(block)=turtle crouch, Sarpa(dodge)=low slip, Aswa(strike)=lunge tall,
 # Gaja(stance)=neutral, Hit=flinch, Down=fallen. No rig/textures needed.
 class_name VadivuPose
@@ -8,12 +9,33 @@ class_name VadivuPose
 @export var speed := 12.0
 
 var _body: MeshInstance3D
+var _arm_l: MeshInstance3D
+var _arm_r: MeshInstance3D
+var _leg_l: MeshInstance3D
+var _leg_r: MeshInstance3D
 var _base_y := 0.9
+var _phase := 0.0
+var _breath := 0.0
+var _strike_t := 1.0
+var _was_strike := false
+
+# Rest rotations so walk/attack always ease home.
+var _arm_rest_l := Vector3.ZERO
+var _arm_rest_r := Vector3.ZERO
 
 func _ready() -> void:
-	_body = get_parent().get_node_or_null(body_path) as MeshInstance3D
+	var p := get_parent()
+	_body = p.get_node_or_null(body_path) as MeshInstance3D
+	_arm_l = p.get_node_or_null("ArmL") as MeshInstance3D
+	_arm_r = p.get_node_or_null("ArmR") as MeshInstance3D
+	_leg_l = p.get_node_or_null("LegL") as MeshInstance3D
+	_leg_r = p.get_node_or_null("LegR") as MeshInstance3D
 	if _body:
 		_base_y = _body.position.y
+	if _arm_l:
+		_arm_rest_l = _arm_l.rotation
+	if _arm_r:
+		_arm_rest_r = _arm_r.rotation
 
 func _process(delta: float) -> void:
 	if _body == null:
@@ -22,6 +44,14 @@ func _process(delta: float) -> void:
 	var st: int = 1 # STANCE default
 	if "combat" in p and p.combat != null:
 		st = p.combat.state
+	var planar := 0.0
+	if p.get("velocity") != null:
+		var v: Vector3 = p.velocity
+		planar = Vector2(v.x, v.z).length()
+	_pose_body(delta, st)
+	_limbs(delta, st, planar)
+
+func _pose_body(delta: float, st: int) -> void:
 	var goal_scale := Vector3.ONE
 	var goal_dy := 0.0
 	match st:
@@ -40,10 +70,66 @@ func _process(delta: float) -> void:
 		6: # DOWN fallen
 			goal_scale = Vector3(1.2, 0.5, 1.2)
 			goal_dy = -0.4
-		_: # IDLE/STANCE = Gaja neutral
-			goal_scale = Vector3.ONE
+		_: # IDLE/STANCE = Gaja neutral + idle breath (game-time, freezes in hitstop)
+			_breath += delta
+			var b := 1.0 + sin(_breath * 1.6) * 0.015
+			goal_scale = Vector3(1.0, b, 1.0)
 			goal_dy = 0.0
 	var k: float = minf(1.0, speed * delta)
 	_body.scale = _body.scale.lerp(goal_scale, k)
-	var py: float = lerpf(_body.position.y, _base_y + goal_dy, k)
-	_body.position.y = py
+	_body.position.y = lerpf(_body.position.y, _base_y + goal_dy, k)
+	# Head rides the crouch so Simha/Sarpa never detach it (bob owns x only).
+	var head := get_parent().get_node_or_null("Head") as MeshInstance3D
+	if head:
+		head.position.y = lerpf(head.position.y, 1.8 + goal_dy, k)
+
+func _limbs(delta: float, st: int, planar: float) -> void:
+	if _arm_l == null or _arm_r == null:
+		return
+	var k: float = minf(1.0, 10.0 * delta)
+	var striking := st == 2
+	if striking and not _was_strike:
+		_strike_t = 0.0
+	_was_strike = striking
+	_strike_t = minf(1.0, _strike_t + delta / 0.35)
+	if _strike_t < 1.0:
+		var e: float
+		if _strike_t < 0.34:
+			e = 1.0 - pow(1.0 - _strike_t / 0.34, 3.0)
+			_arm_r.rotation.x = lerpf(_arm_rest_r.x, -1.8, e)
+			_arm_l.rotation.x = lerpf(_arm_rest_l.x, 0.5, e)
+		else:
+			var r: float = (_strike_t - 0.34) / 0.66
+			_arm_r.rotation.x = lerpf(-1.8, _arm_rest_r.x, r * r)
+			_arm_l.rotation.x = lerpf(0.5, _arm_rest_l.x, r * r)
+		_set_legs(k)
+		return
+	if st == 3: # BLOCK: both arms forward guard
+		_arm_l.rotation.x = lerpf(_arm_l.rotation.x, -1.2, k)
+		_arm_r.rotation.x = lerpf(_arm_r.rotation.x, -1.2, k)
+		_set_legs(k)
+		return
+	if st == 4 or st == 6: # DODGE/DOWN: arms trail
+		_arm_l.rotation.x = lerpf(_arm_l.rotation.x, 0.6, k)
+		_arm_r.rotation.x = lerpf(_arm_r.rotation.x, 0.6, k)
+		_set_legs(k)
+		return
+	if planar > 0.5: # walk cycle, phase tracks speed
+		_phase += delta * planar * 2.4
+		var s := sin(_phase) * 0.5
+		_arm_l.rotation.x = lerpf(_arm_l.rotation.x, s, k)
+		_arm_r.rotation.x = lerpf(_arm_r.rotation.x, -s, k)
+		if _leg_l:
+			_leg_l.rotation.x = lerpf(_leg_l.rotation.x, -s * 0.8, k)
+		if _leg_r:
+			_leg_r.rotation.x = lerpf(_leg_r.rotation.x, s * 0.8, k)
+	else: # ease home
+		_arm_l.rotation = _arm_l.rotation.lerp(_arm_rest_l, k)
+		_arm_r.rotation = _arm_r.rotation.lerp(_arm_rest_r, k)
+		_set_legs(k)
+
+func _set_legs(k: float) -> void:
+	if _leg_l:
+		_leg_l.rotation.x = lerpf(_leg_l.rotation.x, 0.0, k)
+	if _leg_r:
+		_leg_r.rotation.x = lerpf(_leg_r.rotation.x, 0.0, k)

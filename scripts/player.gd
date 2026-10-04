@@ -244,12 +244,11 @@ func _physics_process(delta: float) -> void:
 	_check_death()
 
 func _apply_bob() -> void:
-	# Head-only bob: Vadivu owns Body scale/position, so they never fight.
+	# X-only sway: Vadivu owns all Y (crouch + base) so they never fight.
 	var head := get_node_or_null("Head") as MeshInstance3D
 	if head == null:
 		return
 	head.position.x = sin(_bob_t) * 0.02
-	head.position.y = 1.8 + absf(cos(_bob_t)) * 0.04
 
 func _deal_melee_delayed() -> void:
 	await get_tree().create_timer(0.12).timeout

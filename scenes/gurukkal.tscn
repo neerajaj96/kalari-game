@@ -1,9 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Material" path="res://materials/cloth_white.tres" id="1"]
 [ext_resource type="Material" path="res://materials/skin.tres" id="2"]
 [ext_resource type="Material" path="res://materials/beard_grey.tres" id="3"]
 [ext_resource type="Material" path="res://materials/shrine_yellow.tres" id="4"]
+[ext_resource type="Material" path="res://shaders/toon_cloth.tres" id="5"]
+[ext_resource type="Material" path="res://shaders/toon_skin.tres" id="6"]
 
 [sub_resource type="CapsuleMesh" id="body"]
 radius = 0.4
@@ -16,12 +18,12 @@ height = 0.5
 [node name="Gurukkal" type="StaticBody3D"]
 
 [node name="Body" type="MeshInstance3D" parent="."]
-material_override = ExtResource("1")
+material_override = ExtResource("5")
 mesh = SubResource("body")
 position = Vector3(0, 0.8, 0)
 
 [node name="Head" type="MeshInstance3D" parent="."]
-material_override = ExtResource("2")
+material_override = ExtResource("6")
 mesh = SubResource("head")
 position = Vector3(0, 1.85, 0)
 

@@ -140,9 +140,13 @@ func _on_rain() -> void:
 		_monsoon = false
 		if cur.has_method("apply"):
 			cur.apply(1)
+		if cur.has_method("set_storm"):
+			cur.set_storm(0.0)
 		return
 	if cur.has_method("apply"):
 		cur.apply(2 if _monsoon else 1)
+	if cur.has_method("set_storm"):
+		cur.set_storm(1.0 if _monsoon else 0.0)
 	say("Monsoon ON — slippery Kalari" if _monsoon else "Noon sun")
 
 func _on_ritual() -> void:
