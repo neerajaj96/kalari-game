@@ -88,7 +88,7 @@ func _physics_process(delta: float) -> void:
 		return
 	var to: Vector3 = target.global_position - global_position
 	to.y = 0.0
-	var dist := to.magnitude()
+	var dist := to.length()
 	if dist > attack_range:
 		var dir: Vector3 = to.normalized()
 		velocity.x = dir.x * speed

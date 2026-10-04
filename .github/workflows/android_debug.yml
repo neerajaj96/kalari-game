@@ -65,8 +65,12 @@ jobs:
           GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
         run: |
           mkdir -p build/android
-          godot --headless --export-debug "Android-Debug" build/android/kalari-debug.apk
+          godot --headless --export-debug "Android-Debug" build/android/kalari-debug.apk 2>&1 | tee export.log
           ls -lh build/android/
+          if grep -Ei "SCRIPT ERROR|Parse Error|No loader|Failed loading|ERROR: " export.log; then
+            echo "Export log contains errors — failing so broken code never ships."
+            exit 1
+          fi
 
       - name: Release APK
         uses: softprops/action-gh-release@v2
