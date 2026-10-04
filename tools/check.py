@@ -31,6 +31,23 @@ for f, src in TSCN.items():
         if not os.path.exists(BASE + "/" + p[6:]):
             errs.append(f"{f}: missing {p}")
 
+# --- 1b. every CSG must collide (infinite-fall guard) + floor snap ---
+for f, src in TSCN.items():
+    if "player.tscn" in f or "enemy.tscn" in f or "hud.tscn" in f or "gurukkal" in f or "main.tscn" in f:
+        continue
+    for b in re.findall(r'(\[node name="[^"]+" type="CSG(?:Box|Sphere)3D"[^]]*\](?:\n(?!\[node ).*)*)', src):
+        nm = re.search(r'name="([^"]+)"', b).group(1)
+        if "use_collision = true" in b:
+            continue
+        # visual-only deco (all dims < 0.5) may stay ghost; solid stuff must collide
+        dims = [tuple(float(x) for x in m.group(1).split(",")) for m in re.finditer(r"size = Vector3\(([^)]+)\)", b)]
+        if dims and max(max(d) for d in dims) < 0.5:
+            continue
+        errs.append(f"{f}: CSG '{nm}' lacks use_collision (fall-through)")
+for f in [BASE + "/scenes/player.tscn", BASE + "/scenes/enemy.tscn"]:
+    if "floor_snap_length" not in open(f).read():
+        errs.append(f"{f}: floor_snap_length missing (steps catch)")
+
 # --- 1. groups produced vs consumed ---
 produced = set()
 consumed = set()

@@ -249,7 +249,7 @@ func _apply_bob() -> void:
 	if head == null:
 		return
 	head.position.x = sin(_bob_t) * 0.02
-	head.position.y = 1.95 + absf(cos(_bob_t)) * 0.04
+	head.position.y = 1.8 + absf(cos(_bob_t)) * 0.04
 
 func _deal_melee_delayed() -> void:
 	await get_tree().create_timer(0.12).timeout
