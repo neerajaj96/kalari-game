@@ -283,6 +283,29 @@ if "ambience.gd" not in open(BASE + "/scripts/main.gd").read():
 if "MuteButton" not in open(BASE + "/scenes/ui/hud.tscn").read():
     errs.append("ambience: MuteButton missing")
 
+# --- 8l. dialogue: panel nodes + giver briefings + queue wiring ---
+hts2 = open(BASE + "/scenes/ui/hud.tscn").read()
+for rn in ["DlgPanel", "DlgName", "DlgText"]:
+    if rn not in hts2:
+        errs.append(f"hud: dialogue '{rn}' missing")
+if "dialogue.gd" not in open(BASE + "/scripts/main.gd").read():
+    errs.append("dialogue: not attached in main")
+qjd = DATA.get(BASE + "/data/quests.json", {}).get("quests", [])
+for q in qjd:
+    if "briefing" not in q or len(q["briefing"]) != 3:
+        errs.append(f"quests.json: '{q.get('id', '?')}' needs 3-line briefing")
+
+# --- 8m. voice texture: blips + drum wired, mute respected ---
+ag2 = open(BASE + "/scripts/ambience.gd").read()
+for token in ["func blip", "func drum", "BLIP_PITCH"]:
+    if token not in ag2:
+        errs.append(f"ambience: '{token}' missing")
+dg = open(BASE + "/scripts/dialogue.gd").read()
+if "blip(" not in dg:
+    errs.append("dialogue: blip hook missing")
+if "drum()" not in open(BASE + "/scripts/heat.gd").read():
+    errs.append("heat: drum hook missing")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)

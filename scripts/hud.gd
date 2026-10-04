@@ -108,6 +108,10 @@ func bind(p, x) -> void:
 	xp = x
 
 func _on_attack() -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if game and game.get("dialogue") != null and game.dialogue.has_method("advance"):
+		if game.dialogue.advance():
+			return
 	if player:
 		var s := _strike_for_rank()
 		player.request_strike(s.x, s.y)
@@ -385,3 +389,17 @@ func _process(_delta: float) -> void:
 
 func say(msg: String) -> void:
 	msg_label.text = msg
+
+func show_dialogue(speaker: String, text: String, show: bool, color: Color = Color(0.7, 0.7, 0.7)) -> void:
+	var panel := get_node_or_null("Root/DlgPanel") as Panel
+	var nm := get_node_or_null("Root/DlgPanel/DlgName") as Label
+	var tx := get_node_or_null("Root/DlgPanel/DlgText") as Label
+	if panel == null or nm == null or tx == null:
+		if show:
+			msg_label.text = (speaker + ": " if speaker != "" else "") + text
+		return
+	panel.visible = show
+	if show:
+		nm.text = speaker
+		nm.add_theme_color_override("font_color", color)
+		tx.text = text + "  (Attack ▸)"

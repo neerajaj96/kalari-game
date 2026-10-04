@@ -12,6 +12,7 @@ var vama := Node.new()
 var heat := Node.new()
 var save := Node.new()
 var audio := Node.new()
+var dialogue := Node.new()
 var player: CharacterBody3D
 var hud: CanvasLayer
 
@@ -25,6 +26,7 @@ func _ready() -> void:
 	_attach(vama, "res://scripts/vama.gd")
 	_attach(heat, "res://scripts/heat.gd")
 	_attach(audio, "res://scripts/ambience.gd")
+	_attach(dialogue, "res://scripts/dialogue.gd")
 	_attach(save, "res://scripts/save_game.gd")
 	# HUD first so load failures always have a voice.
 	var hs: PackedScene = load("res://scenes/ui/hud.tscn")
@@ -62,9 +64,41 @@ func _ready() -> void:
 					world._place_player()
 			hud.say("Welcome back. Progress restored.")
 		else:
-			hud.say("Vanakkam. Touch earth: do 5 reps (Attack) then go Village.")
+			_overture()
 	else:
 		hud.say("Vanakkam. Touch earth: do 5 reps (Attack) then go Village.")
+
+var _ov_lines := [
+	"Gurukkal: This is Chirakkal. The pit made warriors; the temple will make them endure.",
+	"Gurukkal: Train your breath, your hands, your eyes. The bandits test all three.",
+	"Gurukkal: The temple rises — if you help raise it. Touch earth: 5 reps (Attack).",
+]
+var _ov_i := -1
+
+func _overture() -> void:
+	if audio != null and audio.has_method("overture"):
+		audio.overture()
+	_ov_i = 0
+	hud.say(_ov_lines[0])
+
+func _input(event: InputEvent) -> void:
+	# Attack (tap/click) advances the intro; gameplay input passes through.
+	if _ov_i < 0 or _ov_i >= _ov_lines.size():
+		return
+	var adv := false
+	if event is InputEventScreenTouch and event.pressed:
+		adv = true
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		adv = true
+	if adv:
+		_ov_i += 1
+		if _ov_i < _ov_lines.size():
+			hud.say(_ov_lines[_ov_i])
+			if audio != null and audio.has_method("bell") and _ov_i == 2:
+				audio.bell()
+		else:
+			_ov_i = -1
+			hud.say("Vanakkam. Touch earth: do 5 reps (Attack) then go Village.")
 
 func _attach(n: Node, path: String) -> bool:
 	var s: Script = load(path)

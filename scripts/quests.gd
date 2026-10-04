@@ -10,6 +10,7 @@ var q03_done := false
 var _shamed := false
 var stage := {"q01": "offered", "q02": "offered", "q03": "offered"}
 var _pendant = null
+var _briefed := {"q01": false, "q02": false, "q03": false}
 
 const GIVER := {
 	"q01": "Gurukkal",
@@ -27,6 +28,8 @@ func _ready() -> void:
 
 func add_kill(marma: bool = false) -> int:
 	kills += 1
+	if kills == 1:
+		brief("q03_aromal_debt")
 	var game = get_tree().get_first_node_in_group("game")
 	if game == null or game.get("xp_rank") == null or not game.xp_rank.has_method("add_xp"):
 		return kills
@@ -54,6 +57,20 @@ func add_kill(marma: bool = false) -> int:
 func add_reps(n: int = 1) -> int:
 	reps += n
 	return reps
+
+func brief(qid: String) -> void:
+	# Speak the giver's 3-line briefing once, via the dialogue queue.
+	if _briefed.get(qid, true):
+		return
+	_briefed[qid] = true
+	var game = get_tree().get_first_node_in_group("game")
+	if game == null or game.get("dialogue") == null or not game.dialogue.has_method("say"):
+		return
+	for q in quests:
+		if q.get("id", "") == qid and q.get("briefing") != null:
+			var short: String = str(qid).split("_")[0]
+			game.dialogue.say(str(GIVER.get(short, "System")), q["briefing"], true)
+			return
 
 func escort_tick() -> void:
 	# Called from _process: keep Kunjiraman pendant near the player in village.
@@ -84,6 +101,7 @@ func escort_tick() -> void:
 	_pendant.follow = player
 	_pendant.chatter = ["Stay close...", "Is that a bandit?!", "Unniyarcha sent you? Good."]
 	stage["q02"] = "active"
+	brief("q02_market_escort")
 	_say("Unniyarcha: Walk with Kunjiraman. One open kill — no hidden knife.")
 
 func _dismiss_pendant() -> void:

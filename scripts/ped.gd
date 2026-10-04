@@ -26,6 +26,25 @@ var GREETS := [
 ]
 var chatter: Array = [] # pendant override (e.g. Kunjiraman)
 
+var EXCHANGES := [
+	["Fish prices today?", "The Kolathiri taxed the catch again."],
+	["Did you see the flag?", "The Dwaja climbs higher each week."],
+	["Monsoon took the road.", "Walk the high bund, friend."],
+	["Gurukkal has a new student.", "Then the pit dust rises again."],
+	["Bandits past the market?", "Keep your staff ready, walk in pairs."],
+	["Festival soon, they say.", "Bhadrakali willing, we will dance."],
+]
+var _talk_t := 0.0
+var _talk_cd := 0.0
+var _reply := ""
+var _reply_t := 0.0
+var _storm_told := false
+
+func start_reply(line: String) -> void:
+	_reply = line
+	_reply_t = 1.5
+	wait_t = maxf(wait_t, 2.0)
+
 func _ready() -> void:
 	add_to_group("bandit")
 	add_child(combat)
@@ -33,12 +52,14 @@ func _ready() -> void:
 	wait_t = randf_range(0.0, 2.0)
 
 func apply_hit(_dmg: float, _marma: bool = false) -> void:
-	# Struck: flee, never fight back. (Heat consequences arrive in OW3.)
+	# Struck: scream, flee, never fight back. (Heat consequences in OW3.)
 	flee_t = 3.0
+	_say("Ayyo! Guard! Guard!" if randf() < 0.5 else "Ayyo! My cart!")
 
 func _physics_process(delta: float) -> void:
 	combat.tick(delta)
 	greet_cd = maxf(0.0, greet_cd - delta)
+	_talk(delta)
 	var player = get_tree().get_first_node_in_group("player")
 	if flee_t > 0.0 and is_instance_valid(player):
 		flee_t -= delta
@@ -104,7 +125,66 @@ func _greet(player: Node) -> void:
 	if to.length() > 2.0:
 		return
 	greet_cd = 8.0
+	var pool: Array = chatter if not chatter.is_empty() else _gossip_pool()
+	_say(("Kunjiraman: " if not chatter.is_empty() else "Villager: ") + pool[randi() % pool.size()])
+
+func _gossip_pool() -> Array:
+	# Quest-aware talk: streets discuss live plot + heat state.
+	var game = get_tree().get_first_node_in_group("game")
+	var pool: Array = GREETS.duplicate()
+	if game:
+		if game.get("plot") != null and game.plot.get("phase") != null and game.plot.phase >= 4:
+			pool.append("They raised the Dwaja yesterday!")
+		if game.get("heat") != null and game.heat.get("heat") != null and game.heat.heat > 0:
+			pool.append("Keep your blade sheathed, friend.")
+	return pool
+
+func _talk(delta: float) -> void:
+	# Ped-to-ped exchanges with a nearby idler; storm remark once per storm.
+	if _reply != "":
+		_reply_t -= delta
+		if _reply_t <= 0.0:
+			_say("Villager: " + _reply)
+			_reply = ""
+	_talk_t += delta
+	_talk_cd = maxf(0.0, _talk_cd - delta)
+	if _storm_watch(delta):
+		return
+	if _talk_t < 4.0 or _talk_cd > 0.0:
+		return
+	_talk_t = 0.0
+	if not chatter.is_empty():
+		return # pendant stays in role
+	for b in get_tree().get_nodes_in_group("ped"):
+		if b == self or not is_instance_valid(b):
+			continue
+		if b.global_position.distance_to(global_position) > 3.0:
+			continue
+		if not b.has_method("start_reply"):
+			continue
+		_talk_cd = 25.0
+		wait_t = maxf(wait_t, 2.0)
+		var pair: Array = EXCHANGES[randi() % EXCHANGES.size()]
+		_say("Villager: " + pair[0])
+		b.start_reply(pair[1])
+		return
+
+func _storm_watch(_delta: float) -> bool:
+	var game = get_tree().get_first_node_in_group("game")
+	var storm := 0.0
+	if game:
+		var w = get_tree().get_first_node_in_group("world")
+		if w != null and w.get("current") != null and w.current.get("storm") != null:
+			storm = float(w.current.storm)
+	if storm >= 0.5 and not _storm_told:
+		_storm_told = true
+		_say("Rain takes the road — walk high ground.")
+		return true
+	if storm < 0.5:
+		_storm_told = false
+	return false
+
+func _say(msg: String) -> void:
 	var hud = get_tree().get_first_node_in_group("hud")
 	if hud and hud.has_method("say"):
-		var pool: Array = chatter if not chatter.is_empty() else GREETS
-		hud.say("Kunjiraman: " + pool[randi() % pool.size()] if not chatter.is_empty() else "Villager: " + pool[randi() % pool.size()])
+		hud.say(msg)

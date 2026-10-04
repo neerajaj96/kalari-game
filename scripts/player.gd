@@ -99,6 +99,8 @@ func _count_rep() -> void:
 	if not in_school:
 		return
 	var n: int = game.quest_log.add_reps(1)
+	if n == 1 and game.quest_log.has_method("brief"):
+		game.quest_log.brief("q01_first_earth")
 	if game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
 		if n == 5:
 			game.xp_rank.add_xp(120)

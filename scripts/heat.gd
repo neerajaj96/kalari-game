@@ -16,6 +16,9 @@ func add(n: int) -> void:
 	if heat > before:
 		_spawn_guards()
 		_say("Kolathiri guards move in! Heat %d/3." % heat)
+		var game = get_tree().get_first_node_in_group("game")
+		if game and game.get("audio") != null and game.audio.has_method("drum"):
+			game.audio.drum()
 
 func clear_why(msg: String) -> void:
 	if heat <= 0:

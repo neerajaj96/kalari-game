@@ -7,6 +7,7 @@
       "zone": "school_kuzhi",
       "steps": ["Enter right-foot", "Touch earth", "Bow Poothara+Guruthara", "Bow Guru feet", "Do 5 mey reps"],
       "stages": ["offered", "active", "done"],
+      "briefing": ["I am your Gurukkal. This pit has made warriors for generations.", "Touch the earth. Five mey reps — show me your breath leads your body.", "Then go to the Village. Chirakkal needs hands, not just fists."],
       "xp": 120
     },
     {
@@ -18,6 +19,7 @@
       "objectives": ["Defeat 1 bandit openly (no back-stab)", "Bonus auto-paid (+150 XP)"],
       "stages": ["offered", "active", "done", "failed"],
       "fail": "marma kill breaks honour; escort re-offers free, no XP lost",
+      "briefing": ["I am Unniyarcha. A woman need not tremble — will you walk beside Kunjiraman?", "One bandit bars the market road. Face him openly, steel to steel.", "No hidden knife. The olivaal shames us both."],
       "xp": 150
     },
     {
@@ -28,6 +30,7 @@
       "desc": "Debt of the blade: put down 2 bandits. Kettukari comes with Rank 2, earned in the pit. Bonus auto-paid (+200 XP).",
       "objectives": ["Defeat 2 bandits (any way)", "Bonus auto-paid (+200 XP)"],
       "stages": ["offered", "active", "done"],
+      "briefing": ["My uncle Aromal fell to a cousin's treachery. The debt is mine to carry.", "Two bandits wear the betrayer's colors. Put them down — any way you can.", "Then the kettukari is yours, and Tulunadu hears our name again."],
       "xp": 200
     }
   ]

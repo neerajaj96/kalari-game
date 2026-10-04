@@ -36,14 +36,62 @@ func toggle_mute() -> String:
 	AudioServer.set_bus_mute(0, muted)
 	return "Sound off." if muted else "Sound on."
 
-func bell() -> void:
-	_sting(_bell_buf(), -12.0)
+func bell(db: float = -12.0) -> void:
+	_sting(_bell_buf(), db)
 
 func thock() -> void:
 	_sting(_thock_buf(), -18.0)
 
 func marma_sting() -> void:
 	_sting(_marma_buf(), -14.0)
+
+const BLIP_PITCH := {
+	"Gurukkal": 180.0, "Unniyarcha": 260.0, "Aromal": 220.0,
+	"Villager": 300.0, "Kunjiraman": 300.0, "Crier": 340.0,
+	"Watchman": 150.0, "System": 120.0,
+}
+
+func blip(speaker: String) -> void:
+	# Syllable chirp per dialogue line. Mute-aware via bus.
+	_sting(_blip_buf(float(BLIP_PITCH.get(speaker, 240.0))), -20.0)
+
+func drum() -> void:
+	_sting(_drum_buf(), -12.0)
+
+func _blip_buf(freq: float) -> AudioStreamWAV:
+	var s := _mk(0.09)
+	var n := int(0.09 * RATE)
+	for i in range(n):
+		var t := float(i) / RATE
+		var env := minf(1.0, t / 0.01) * exp(-t * 25.0)
+		_put(s, i, (sin(TAU * freq * t) * 0.5 + sin(TAU * freq * 2.0 * t) * 0.2) * env)
+	return s
+
+func _drum_buf() -> AudioStreamWAV:
+	var s := _mk(0.4)
+	var n := int(0.4 * RATE)
+	var last := 0.0
+	for i in range(n):
+		var t := float(i) / RATE
+		last = last * 0.9 + (randf() * 2.0 - 1.0) * 0.1
+		_put(s, i, (sin(TAU * 90.0 * t) * 0.7 + last * 0.5) * exp(-t * 8.0))
+	return s
+
+func overture() -> void:
+	# Boot cinematic: conch swell over 3s, then drone takes over.
+	_sting(_conch_buf(), -10.0)
+
+func _conch_buf() -> AudioStreamWAV:
+	# Shankh-like rise: stacked fifths swelling in, breath noise under.
+	var s := _mk(3.0)
+	var n := int(3.0 * RATE)
+	for i in range(n):
+		var t := float(i) / RATE
+		var swell: float = minf(1.0, t / 2.2) * minf(1.0, (3.0 - t) / 0.8)
+		var v := sin(TAU * 174.0 * t) * 0.4 + sin(TAU * 261.0 * t) * 0.3 + sin(TAU * 348.0 * t) * 0.15
+		v += (randf() * 2.0 - 1.0) * 0.05 * swell
+		_put(s, i, v * swell * 0.8)
+	return s
 
 func _sting(stream: AudioStreamWAV, db: float) -> void:
 	if muted:
@@ -141,6 +189,55 @@ func _marma_buf() -> AudioStreamWAV:
 		_put(s, i, (sin(TAU * 523.0 * t) * 0.4 + sin(TAU * 784.0 * t) * 0.3) * env)
 	return s
 
+func _thunder_buf() -> AudioStreamWAV:
+	# Monsoon crack: sharp attack, rolling brown decay.
+	var s := _mk(1.2)
+	var n := int(1.2 * RATE)
+	var last := 0.0
+	for i in range(n):
+		var t := float(i) / RATE
+		last = last * 0.97 + (randf() * 2.0 - 1.0) * 0.03
+		_put(s, i, last * 10.0 * exp(-t * 2.5))
+	return s
+
+func _events(delta: float, wmarket: float, wtemple: float, storm: float, night: float) -> void:
+	_bell_t += delta
+	_crier_t += delta
+	_watch_t += delta
+	if wtemple > 0.5 and _bell_t >= 120.0:
+		_bell_t = 0.0
+		bell()
+	if wmarket > 0.5 and _crier_t >= 75.0:
+		_crier_t = 0.0
+		_crier()
+	if storm >= 0.5 and not _storm_was:
+		_storm_was = true
+		_sting(_thunder_buf(), -10.0)
+	elif storm < 0.5:
+		_storm_was = false
+	if night >= 0.8 and _watch_t >= 120.0:
+		_watch_t = 0.0
+		_say("Watchman: All is well. Sleep, Chirakkal.")
+
+var _bell_t := 90.0
+var _crier_t := 50.0
+var _watch_t := 100.0
+var _storm_was := false
+
+const CRIES := [
+	"Crier: Fresh karimeen! Morning catch!",
+	"Crier: Oil, ghee, lamp oil — best price!",
+	"Crier: Turmeric, straight from Wayanad!",
+]
+
+func _crier() -> void:
+	_say(CRIES[randi() % CRIES.size()])
+
+func _say(msg: String) -> void:
+	var hud = get_tree().get_first_node_in_group("hud")
+	if hud and hud.has_method("say"):
+		hud.say(msg)
+
 func _process(delta: float) -> void:
 	_t += delta
 	if _t < 0.5:
@@ -168,6 +265,7 @@ func _process(delta: float) -> void:
 	_set("lap", -60.0 + wwater * 44.0)
 	_set("wash", -60.0 + storm * 44.0)
 	_set("insects", -60.0 + night * 40.0)
+	_events(delta, wmarket, wtemple, storm, night)
 
 func _w(pp: Vector3, c: Vector3, r: float) -> float:
 	var d: Vector3 = pp - c
