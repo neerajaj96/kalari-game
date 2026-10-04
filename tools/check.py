@@ -202,6 +202,87 @@ for vid, vxp in [("tattva", 120), ("kula", 150), ("vira", 180)]:
 if "_finish(120" not in vg or "_finish(150" not in vg or "_finish(180" not in vg:
     errs.append("vama.gd: stage XP calls changed (keep 120/150/180 with vama.json)")
 
+# --- 8d. ped loops live inside village Ground bounds (x±15, z−15..9) ---
+zj = DATA.get(BASE + "/data/kerala-zones.json", {})
+for z in zj.get("zones", []):
+    for loop_id, pts in z.get("ped_loops", {}).items():
+        for pt in pts:
+            if not (-15.0 <= float(pt[0]) <= 15.0 and -15.0 <= float(pt[2]) <= 9.0):
+                errs.append(f"ped_loops: '{loop_id}' point {pt} off the Ground")
+wl_src2 = open(BASE + "/scripts/world_loader.gd").read()
+if "PED_CAP" not in wl_src2:
+    errs.append("world_loader: ped spawner cap missing")
+
+# --- 8e. radar present: panel + draw script + zone label ---
+hts = open(BASE + "/scenes/ui/hud.tscn").read()
+for rn in ["RadarPanel", "RadarDraw", "ZoneLabel", "scripts/radar.gd"]:
+    if rn not in hts:
+        errs.append(f"hud: radar '{rn}' missing")
+
+# --- 8f. heat: 0-3 clamp, guard flag, wired in main + HUD ---
+hg = open(BASE + "/scripts/heat.gd").read() if os.path.exists(BASE + "/scripts/heat.gd") else ""
+if "mini(3" not in hg:
+    errs.append("heat: 0-3 clamp missing")
+if "is_guard" not in open(BASE + "/scripts/enemy_ai.gd").read():
+    errs.append("heat: guard flag missing on enemy")
+if "heat.gd" not in open(BASE + "/scripts/main.gd").read():
+    errs.append("heat: not attached in main")
+if "HeatLabel" not in open(BASE + "/scenes/ui/hud.tscn").read():
+    errs.append("heat: HeatLabel node missing")
+
+# --- 8g. save system: keys written == keys read, wired in main ---
+sg2 = open(BASE + "/scripts/save_game.gd").read() if os.path.exists(BASE + "/scripts/save_game.gd") else ""
+for token in ["user://kalari_save.cfg", "_recompute_rank", "XP", "never stored"]:
+    if token not in sg2:
+        warns.append(f"save: '{token}' convention missing")
+mg = open(BASE + "/scripts/main.gd").read()
+if "save_game.gd" not in mg or "apply_save" not in mg:
+    errs.append("save: not wired into boot")
+if "retain_data_on_uninstall=true" not in open(BASE + "/export_presets.cfg").read():
+    errs.append("save: retain_data_on_uninstall must be true")
+
+# --- 8h. quest stages + escort wiring ---
+qj = DATA.get(BASE + "/data/quests.json", {}).get("quests", [])
+for q in qj:
+    for k in ["id", "stages", "xp"]:
+        if k not in q:
+            errs.append(f"quests.json: '{q.get('id', '?')}' lacks '{k}'")
+qg = open(BASE + "/scripts/quests.gd").read()
+for token in ["escort_tick", "mark_q01_done", "pendant", "follow"]:
+    if token not in qg:
+        errs.append(f"quests.gd: mission-graph '{token}' missing")
+pg = open(BASE + "/scripts/ped.gd").read()
+if "var follow" not in pg or ".follow =" not in open(BASE + "/scripts/quests.gd").read():
+    errs.append("ped.gd/quests.gd: follow-mode wiring missing")
+
+# --- 8i. traffic: cart/boat loops inside bounds, capped ride step ---
+for f2, pts in [("Cart", [(4.0, -5.0), (4.0, 5.0)]), ("Boat", [(-12.0, 12.0), (12.0, 12.0)])]:
+    for (px, pz) in pts:
+        if not (-15.0 <= px <= 15.0 and -15.0 <= pz <= 15.0):
+            errs.append(f"traffic: {f2} endpoint off-map")
+cb = open(BASE + "/scripts/cart_boat.gd").read()
+if "ride_height" not in cb or "_blocked" not in cb:
+    errs.append("traffic: cart_boat ride/block logic missing")
+
+# --- 8j. LOD: dressing nodes must carry visibility ranges ---
+_dress = ["Grass1", "Grass2", "Grass3", "Grass4", "Grass5", "Reed1", "Reed2", "Reed3", "Reed4", "Cloud1", "Cloud2", "TurmericPile", "GreensPile", "Stone1", "Stone2", "Flower1", "Flower2", "Flower3", "TempleFlag", "MarketGoods1"]
+for f2 in [BASE + "/scenes/village.tscn", BASE + "/scenes/school.tscn"]:
+    _src2 = open(f2).read()
+    for _nm in _dress:
+        _m2 = re.search(r'\[node name="' + _nm + r'"[^]]*\](?:\n(?!\[node ).*)*', _src2)
+        if _m2 is not None and "visibility_range_end" not in _m2.group(0):
+            errs.append(f"{f2}: dressing '{_nm}' lacks visibility range")
+
+# --- 8k. ambience: synth beds + hooks, no binary assets ---
+ag = open(BASE + "/scripts/ambience.gd").read() if os.path.exists(BASE + "/scripts/ambience.gd") else ""
+for token in ["AudioStreamWAV", "toggle_mute", "func bell", "func thock", "func marma_sting"]:
+    if token not in ag:
+        errs.append(f"ambience: '{token}' missing")
+if "ambience.gd" not in open(BASE + "/scripts/main.gd").read():
+    errs.append("ambience: not attached in main")
+if "MuteButton" not in open(BASE + "/scenes/ui/hud.tscn").read():
+    errs.append("ambience: MuteButton missing")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)

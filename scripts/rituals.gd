@@ -66,6 +66,11 @@ func _complete() -> String:
 			game.hud.say("Rank up! %s" % game.xp_rank.title())
 	phase = "IDLE"
 	idx += 1
+	var game2 = get_tree().get_first_node_in_group("game")
+	if game2 and game2.get("heat") != null and game2.heat.has_method("clear_why"):
+		game2.heat.clear_why("Seva done.")
+	if game2 and game2.get("audio") != null and game2.audio.has_method("bell"):
+		game2.audio.bell()
 	var nxt := "..."
 	if not slots.is_empty():
 		nxt = str(slots[idx % slots.size()].get("name", "?"))

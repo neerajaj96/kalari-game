@@ -1,0 +1,61 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/cart_boat.gd" id="1"]
+[ext_resource type="Material" path="res://materials/wood.tres" id="2"]
+[ext_resource type="Material" path="res://materials/thatch.tres" id="3"]
+
+[sub_resource type="BoxMesh" id="hull"]
+size = Vector3(1.8, 0.5, 4.0)
+
+[sub_resource type="BoxMesh" id="canopy"]
+size = Vector3(2.0, 0.15, 2.4)
+
+[sub_resource type="BoxMesh" id="bench"]
+size = Vector3(1.4, 0.15, 0.5)
+
+[node name="Boat" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Hull" type="MeshInstance3D" parent="."]
+material_override = ExtResource("2")
+mesh = SubResource("hull")
+position = Vector3(0, 0.25, 0)
+
+[node name="BenchF" type="MeshInstance3D" parent="."]
+material_override = ExtResource("2")
+mesh = SubResource("bench")
+position = Vector3(0, 0.55, -1.0)
+
+[node name="BenchB" type="MeshInstance3D" parent="."]
+material_override = ExtResource("2")
+mesh = SubResource("bench")
+position = Vector3(0, 0.55, 1.0)
+
+[node name="Canopy" type="MeshInstance3D" parent="."]
+material_override = ExtResource("3")
+mesh = SubResource("canopy")
+position = Vector3(0, 2.0, 0)
+
+[node name="PostFL" type="MeshInstance3D" parent="."]
+material_override = ExtResource("2")
+mesh = SubResource("bench")
+scale = Vector3(0.12, 2.0, 0.12)
+position = Vector3(-0.85, 1.2, -1.0)
+
+[node name="PostFR" type="MeshInstance3D" parent="."]
+material_override = ExtResource("2")
+mesh = SubResource("bench")
+scale = Vector3(0.12, 2.0, 0.12)
+position = Vector3(0.85, 1.2, -1.0)
+
+[node name="PostBL" type="MeshInstance3D" parent="."]
+material_override = ExtResource("2")
+mesh = SubResource("bench")
+scale = Vector3(0.12, 2.0, 0.12)
+position = Vector3(-0.85, 1.2, 1.0)
+
+[node name="PostBR" type="MeshInstance3D" parent="."]
+material_override = ExtResource("2")
+mesh = SubResource("bench")
+scale = Vector3(0.12, 2.0, 0.12)
+position = Vector3(0.85, 1.2, 1.0)

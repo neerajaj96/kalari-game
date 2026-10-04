@@ -6,6 +6,7 @@
       "giver": "Gurukkal",
       "zone": "school_kuzhi",
       "steps": ["Enter right-foot", "Touch earth", "Bow Poothara+Guruthara", "Bow Guru feet", "Do 5 mey reps"],
+      "stages": ["offered", "active", "done"],
       "xp": 120
     },
     {
@@ -15,6 +16,8 @@
       "zone": "village_chirakkal",
       "desc": "'Pennaaya njanum virakkunnilla, aanaya ningal virakkunenthe?' Defeat 1 bandit face-to-face. A back-stab pays marma XP but shames the escort — no quest bonus.",
       "objectives": ["Defeat 1 bandit openly (no back-stab)", "Bonus auto-paid (+150 XP)"],
+      "stages": ["offered", "active", "done", "failed"],
+      "fail": "marma kill breaks honour; escort re-offers free, no XP lost",
       "xp": 150
     },
     {
@@ -24,6 +27,7 @@
       "zone": "village_chirakkal",
       "desc": "Debt of the blade: put down 2 bandits. Kettukari comes with Rank 2, earned in the pit. Bonus auto-paid (+200 XP).",
       "objectives": ["Defeat 2 bandits (any way)", "Bonus auto-paid (+200 XP)"],
+      "stages": ["offered", "active", "done"],
       "xp": 200
     }
   ]

@@ -43,6 +43,10 @@ func load_world(path: String) -> void:
 	current = ps.instantiate()
 	add_child(current)
 	_detail_swap(current)
+	var game0 = get_tree().get_first_node_in_group("game")
+	if game0 and game0.get("save") != null and game0.save.has_method("save_game"):
+		game0.save.save_game()
+	_spawn_peds(path)
 	# Fresh world, fresh flags: stale zone state never crosses worlds.
 	# An active breath session ends at the border (place changed its meaning).
 	var game = get_tree().get_first_node_in_group("game")
@@ -55,6 +59,90 @@ func load_world(path: String) -> void:
 				if game.get("hud") != null:
 					game.hud.say("Session released at the border.")
 	_place_player()
+
+const PED_SCENE := "res://scenes/ped.tscn"
+const PED_CAP := 6
+const PED_DESPAWN := 25.0
+var _topup_t := 0.0
+
+func _spawn_peds(path: String) -> void:
+	# Ambient villagers for the village only; the pit stays sacred-empty.
+	if path != village_path:
+		return
+	var loops := _ped_loops()
+	if loops.is_empty():
+		return
+	var ps: PackedScene = load(PED_SCENE)
+	if ps == null:
+		push_warning("ped.tscn missing, streets stay empty")
+		return
+	var names := loops.keys()
+	for i in range(mini(PED_CAP, 6)):
+		var ped := ps.instantiate()
+		ped.add_to_group("ped")
+		current.add_child(ped)
+		var pts: Array = loops[names[i % names.size()]]
+		var verts: Array = []
+		for pt in pts:
+			verts.append(Vector3(float(pt[0]), float(pt[1]), float(pt[2])))
+		ped.loop = verts
+		ped.position = verts[0] + Vector3(0, 1.0, 0)
+		ped.wp = i % verts.size()
+
+func _ped_loops() -> Dictionary:
+	var f := FileAccess.open("res://data/kerala-zones.json", FileAccess.READ)
+	if f == null:
+		return {}
+	var j = JSON.parse_string(f.get_as_text())
+	if not (j is Dictionary):
+		return {}
+	for z in j.get("zones", []):
+		if z.get("id") == "village_chirakkal":
+			return z.get("ped_loops", {})
+	return {}
+
+func _top_up_peds() -> void:
+	# Refill to cap at loop starts (OW7 streaming will take over later).
+	var alive := 0
+	for ped in get_tree().get_nodes_in_group("ped"):
+		if is_instance_valid(ped):
+			alive += 1
+	if alive >= PED_CAP or current == null:
+		return
+	var loops := _ped_loops()
+	if loops.is_empty():
+		return
+	var ps: PackedScene = load(PED_SCENE)
+	if ps == null:
+		return
+	var names := loops.keys()
+	var start := randi() % names.size()
+	for i in range(PED_CAP - alive):
+		var ped := ps.instantiate()
+		ped.add_to_group("ped")
+		current.add_child(ped)
+		var pts: Array = loops[names[(start + i) % names.size()]]
+		var verts: Array = []
+		for pt in pts:
+			verts.append(Vector3(float(pt[0]), float(pt[1]), float(pt[2])))
+		ped.loop = verts
+		ped.position = verts[0] + Vector3(0, 1.0, 0)
+		ped.wp = 0
+
+func _process(_delta: float) -> void:
+	# Despawn peds far from camera; top up back to cap at loop starts.
+	if current == null:
+		return
+	var cam = get_tree().get_first_node_in_group("main_camera")
+	if cam == null:
+		return
+	for ped in get_tree().get_nodes_in_group("ped"):
+		if is_instance_valid(ped) and ped.global_position.distance_to(cam.global_position) > PED_DESPAWN:
+			ped.queue_free()
+	_topup_t += _delta
+	if _topup_t >= 20.0:
+		_topup_t = 0.0
+		_top_up_peds()
 
 func _place_player() -> void:	# Player persists across worlds; seat it on this world's spawn.
 	var p = get_tree().get_first_node_in_group("player")
@@ -104,5 +192,10 @@ func _detail_swap(world: Node) -> void:
 		mi.material_override = orig.material
 		mi.position = orig.position + Vector3(0, j[3], 0)
 		mi.rotation = orig.rotation
+		# LOD follows the hidden original so dressing culls as one.
+		if "visibility_range_end" in orig:
+			mi.visibility_range_begin = orig.visibility_range_begin
+			mi.visibility_range_end = orig.visibility_range_end
+			mi.visibility_range_fade_mode = orig.visibility_range_fade_mode
 		orig.visible = false
 		orig.get_parent().add_child(mi)

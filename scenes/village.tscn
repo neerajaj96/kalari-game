@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/enemy.tscn" id="1"]
 [ext_resource type="Material" path="res://materials/ground_green.tres" id="2"]
@@ -19,6 +19,8 @@
 [ext_resource type="Material" path="res://shaders/flag_red.tres" id="17"]
 [ext_resource type="Material" path="res://shaders/sway_leaf.tres" id="18"]
 [ext_resource type="Material" path="res://shaders/water_fx.tres" id="19"]
+[ext_resource type="PackedScene" path="res://scenes/cart.tscn" id="20"]
+[ext_resource type="PackedScene" path="res://scenes/boat.tscn" id="21"]
 
 [sub_resource type="Environment" id="env"]
 background_mode = 1
@@ -416,6 +418,9 @@ size = Vector3(2.8, 0.15, 1.6)
 position = Vector3(-3.0, 1.6, 1.0)
 
 [node name="MarketGoods1" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 20.0
+visibility_range_fade_mode = 1
 material = ExtResource("6")
 use_collision = true
 size = Vector3(1.8, 0.4, 0.8)
@@ -508,6 +513,24 @@ position = Vector3(-8.0, 1.0, 8.5)
 [node name="ZoneShape" type="CollisionShape3D" parent="HermitageZone"]
 shape = SubResource("triggershape")
 
+[node name="Cart" parent="." instance=ExtResource("20")]
+position = Vector3(4, 0, -5)
+speed = 2.5
+pa_x = 4.0
+pa_z = -5.0
+pb_x = 4.0
+pb_z = 5.0
+ride_height = 0.8
+
+[node name="Boat" parent="." instance=ExtResource("21")]
+position = Vector3(-12, 0, 12)
+speed = 2.0
+pa_x = -12.0
+pa_z = 12.0
+pb_x = 12.0
+pb_z = 12.0
+ride_height = 0.6
+
 [node name="Bandit1" parent="." instance=ExtResource("1")]
 position = Vector3(5, 0, 2)
 
@@ -581,93 +604,141 @@ size = Vector3(0.8, 0.8, 0.15)
 position = Vector3(9.5, 1.8, -3.9)
 
 [node name="TurmericPile" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 20.0
+visibility_range_fade_mode = 1
 material = ExtResource("5")
 use_collision = true
 size = Vector3(0.6, 0.25, 0.6)
 position = Vector3(-3.4, 1.5, 1.0)
 
 [node name="GreensPile" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 20.0
+visibility_range_fade_mode = 1
 material = ExtResource("6")
 use_collision = true
 size = Vector3(0.6, 0.25, 0.6)
 position = Vector3(-2.6, 1.5, 1.0)
 
 [node name="TempleFlag" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 30.0
+visibility_range_fade_mode = 1
 material = ExtResource("17")
 use_collision = true
 size = Vector3(0.08, 0.9, 1.4)
 position = Vector3(11.0, 5.6, 0.9)
 
 [node name="Grass1" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 22.0
+visibility_range_fade_mode = 1
 material = ExtResource("18")
 use_collision = true
 size = Vector3(0.3, 0.4, 0.3)
 position = Vector3(-6.0, 0.2, 0.0)
 
 [node name="Grass2" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 22.0
+visibility_range_fade_mode = 1
 material = ExtResource("18")
 size = Vector3(0.3, 0.45, 0.3)
 position = Vector3(-1.0, 0.25, 5.0)
 
 [node name="Grass3" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 22.0
+visibility_range_fade_mode = 1
 material = ExtResource("18")
 use_collision = true
 size = Vector3(0.35, 0.4, 0.35)
 position = Vector3(7.5, 0.2, 5.5)
 
 [node name="Grass4" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 22.0
+visibility_range_fade_mode = 1
 material = ExtResource("18")
 size = Vector3(0.3, 0.45, 0.3)
 position = Vector3(-11.0, 0.22, -2.0)
 
 [node name="Grass5" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 22.0
+visibility_range_fade_mode = 1
 material = ExtResource("18")
 size = Vector3(0.3, 0.4, 0.3)
 position = Vector3(2.0, 0.2, -4.0)
 
 [node name="Stone1" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 20.0
+visibility_range_fade_mode = 1
 use_collision = true
 material = ExtResource("12")
 size = Vector3(0.5, 0.4, 0.5)
 position = Vector3(-5.0, 0.2, -3.0)
 
 [node name="Stone2" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 20.0
+visibility_range_fade_mode = 1
 use_collision = true
 material = ExtResource("12")
 size = Vector3(0.6, 0.35, 0.6)
 position = Vector3(9.5, 0.17, 0.5)
 
 [node name="Reed1" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 22.0
+visibility_range_fade_mode = 1
 material = ExtResource("18")
 use_collision = true
 size = Vector3(0.12, 1.0, 0.12)
 position = Vector3(-6.0, 0.5, 9.0)
 
 [node name="Reed2" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 22.0
+visibility_range_fade_mode = 1
 material = ExtResource("18")
 use_collision = true
 size = Vector3(0.12, 1.2, 0.12)
 position = Vector3(-5.5, 0.6, 9.2)
 
 [node name="Reed3" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 22.0
+visibility_range_fade_mode = 1
 material = ExtResource("18")
 use_collision = true
 size = Vector3(0.12, 0.9, 0.12)
 position = Vector3(4.0, 0.45, 9.1)
 
 [node name="Reed4" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 22.0
+visibility_range_fade_mode = 1
 material = ExtResource("18")
 use_collision = true
 size = Vector3(0.12, 1.1, 0.12)
 position = Vector3(4.6, 0.55, 8.9)
 
 [node name="Cloud1" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 60.0
+visibility_range_fade_mode = 1
 material = ExtResource("3")
 use_collision = true
 size = Vector3(6.0, 1.0, 3.0)
 position = Vector3(-8.0, 14.0, -6.0)
 
 [node name="Cloud2" type="CSGBox3D" parent="."]
+visibility_range_begin = 0.0
+visibility_range_end = 60.0
+visibility_range_fade_mode = 1
 material = ExtResource("3")
 use_collision = true
 size = Vector3(8.0, 1.2, 4.0)

@@ -13,6 +13,7 @@ var combat := CombatState.new()
 var target: Node3D = null
 var think_cd := 0.0
 var _pending_hit := false
+var is_guard := false
 
 func _ready() -> void:
 	add_to_group("bandit")
@@ -59,16 +60,25 @@ func _die(marma: bool) -> void:
 	if cam and cam.has_method("add_shake"):
 		cam.add_shake(0.4)
 	# Pay XP + quest kill. 60 bandit + 30 marma bonus (matches xp_sources).
+	# Guards pay nothing (spiral guard) but raise heat instead.
 	var game = get_tree().get_first_node_in_group("game")
 	if game:
-		if game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
-			var up: bool = game.xp_rank.add_xp(90 if marma else 60)
-			if up and game.get("hud") != null:
-				game.hud.say("Rank up! %s" % game.xp_rank.title())
-		if game.get("quest_log") != null and game.quest_log.has_method("add_kill"):
-			var k: int = game.quest_log.add_kill(marma)
+		if is_guard:
+			if game.get("heat") != null and game.heat.has_method("add"):
+				game.heat.add(1)
 			if game.get("hud") != null:
-				game.hud.say("Bandit down (%d). %s" % [k, "MARMA!" if marma else ""])
+				game.hud.say("Guard down! Heat rises.")
+		else:
+			if game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
+				var up: bool = game.xp_rank.add_xp(90 if marma else 60)
+				if up and game.get("hud") != null:
+					game.hud.say("Rank up! %s" % game.xp_rank.title())
+			if game.get("quest_log") != null and game.quest_log.has_method("add_kill"):
+				var k: int = game.quest_log.add_kill(marma)
+				if game.get("hud") != null:
+					game.hud.say("Bandit down (%d). %s" % [k, "MARMA!" if marma else ""])
+			if game.get("heat") != null and game.heat.has_method("add"):
+				game.heat.add(2 if marma else 1)
 	# Fall + free. Rotation tween keeps it headless-safe (no particles needed).
 	var tw := create_tween()
 	tw.tween_property(self, "rotation:x", -1.4, 0.4)

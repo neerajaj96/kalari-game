@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/hud.gd" id="1"]
 [ext_resource type="Theme" path="res://ui/theme.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/radar.gd" id="3"]
 
 [sub_resource type="StyleBoxFlat" id="barbg"]
 bg_color = Color(0, 0, 0, 0.55)
@@ -76,9 +77,16 @@ text = "Rank 1 XP 0"
 [node name="HPLabel" type="Label" parent="Root"]
 offset_left = 16.0
 offset_top = 38.0
-offset_right = 500.0
+offset_right = 380.0
 offset_bottom = 62.0
 text = "HP 100"
+
+[node name="HeatLabel" type="Label" parent="Root"]
+offset_left = 390.0
+offset_top = 38.0
+offset_right = 500.0
+offset_bottom = 62.0
+text = ""
 
 [node name="MsgLabel" type="Label" parent="Root"]
 offset_left = 16.0
@@ -257,13 +265,57 @@ text = "Plot"
 
 [node name="MargaButton" type="Button" parent="Root"]
 offset_left = 926.0
-offset_top = -68.0
+offset_top = -60.0
 offset_right = 1046.0
-offset_bottom = -28.0
+offset_bottom = -20.0
 anchor_top = 1.0
 anchor_bottom = 1.0
 grow_vertical = 0
 text = "Marga"
+
+[node name="SaveButton" type="Button" parent="Root"]
+offset_left = 1056.0
+offset_top = -60.0
+offset_right = 1176.0
+offset_bottom = -20.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+text = "Save"
+
+[node name="MuteButton" type="Button" parent="Root"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -140.0
+offset_top = -350.0
+offset_right = -20.0
+offset_bottom = -290.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Mute"
+
+[node name="RadarPanel" type="Panel" parent="Root"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -186.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 202.0
+
+[node name="RadarDraw" type="Control" parent="Root/RadarPanel"]
+script = ExtResource("3")
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 160.0
+offset_bottom = 158.0
+
+[node name="ZoneLabel" type="Label" parent="Root/RadarPanel"]
+offset_left = 10.0
+offset_top = 160.0
+offset_right = 160.0
+offset_bottom = 184.0
+text = "Chirakkal"
 
 [node name="TabsPanel" type="Panel" parent="Root"]
 visible = false

@@ -9,6 +9,9 @@ var rituals := Node.new()
 var sadhana := Node.new()
 var plot := Node.new()
 var vama := Node.new()
+var heat := Node.new()
+var save := Node.new()
+var audio := Node.new()
 var player: CharacterBody3D
 var hud: CanvasLayer
 
@@ -20,6 +23,9 @@ func _ready() -> void:
 	_attach(sadhana, "res://scripts/sadhana.gd")
 	_attach(plot, "res://scripts/temple_plot.gd")
 	_attach(vama, "res://scripts/vama.gd")
+	_attach(heat, "res://scripts/heat.gd")
+	_attach(audio, "res://scripts/ambience.gd")
+	_attach(save, "res://scripts/save_game.gd")
 	# HUD first so load failures always have a voice.
 	var hs: PackedScene = load("res://scenes/ui/hud.tscn")
 	if hs == null:
@@ -46,7 +52,19 @@ func _ready() -> void:
 	if world.has_method("_place_player"):
 		world._place_player()
 	hud.bind(player, xp_rank)
-	hud.say("Vanakkam. Touch earth: do 5 reps (Attack) then go Village.")
+	if save.has_method("load_game") and save.has_method("apply_save"):
+		var d: Dictionary = save.load_game()
+		if not d.is_empty():
+			save.apply_save(d, self)
+			if str(d.get("world", "")) == "Village" and world.has_method("go_village"):
+				world.go_village()
+				if world.has_method("_place_player"):
+					world._place_player()
+			hud.say("Welcome back. Progress restored.")
+		else:
+			hud.say("Vanakkam. Touch earth: do 5 reps (Attack) then go Village.")
+	else:
+		hud.say("Vanakkam. Touch earth: do 5 reps (Attack) then go Village.")
 
 func _attach(n: Node, path: String) -> bool:
 	var s: Script = load(path)

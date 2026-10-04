@@ -102,12 +102,22 @@ func _count_rep() -> void:
 	if game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
 		if n == 5:
 			game.xp_rank.add_xp(120)
+			if game.quest_log.has_method("mark_q01_done"):
+				game.quest_log.mark_q01_done()
 			_say("5 reps! Gurukkal nods. First quest done (+120 XP). Go Village.")
 		elif n > 5:
 			game.xp_rank.add_xp(1)
 
-func _ring_bell() -> void:
-	# Attack doubles as temple bell only at the sanctum door (OFFER phase).
+func _hit_sound(marma: bool) -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if game == null or game.get("audio") == null:
+		return
+	if marma and game.audio.has_method("marma_sting"):
+		game.audio.marma_sting()
+	elif game.audio.has_method("thock"):
+		game.audio.thock()
+
+func _ring_bell() -> void:	# Attack doubles as temple bell only at the sanctum door (OFFER phase).
 	var game = get_tree().get_first_node_in_group("game")
 	if game == null or game.get("rituals") == null:
 		return
@@ -277,5 +287,6 @@ func _deal_melee() -> void:
 		var behind: bool = e_fwd.normalized().dot((-to).normalized()) < -0.5
 		if e.has_method("apply_hit"):
 			e.apply_hit(cur_damage * _buff_marma, behind)
+			_hit_sound(behind)
 			if behind:
 				_say("MARMA back-stab!")

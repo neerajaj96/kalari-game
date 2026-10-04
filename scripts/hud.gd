@@ -3,6 +3,7 @@ extends CanvasLayer
 
 @onready var xp_label: Label = $Root/XPLabel
 @onready var hp_label: Label = $Root/HPLabel
+@onready var heat_label: Label = $Root/HeatLabel
 @onready var msg_label: Label = $Root/MsgLabel
 @onready var hp_bar: ProgressBar = $Root/HPBar
 @onready var st_bar: ProgressBar = $Root/STBar
@@ -34,7 +35,8 @@ var joy_id := -1
 func _ready() -> void:
 	for b in ["AttackButton", "BlockButton", "DodgeButton", "VillageButton",
 			"SchoolButton", "RainButton", "RitualButton", "SadhanaButton",
-			"BreatheButton", "TabsButton", "PlotButton", "MargaButton"]:
+			"BreatheButton", "TabsButton", "PlotButton", "MargaButton",
+			"SaveButton", "MuteButton"]:
 		var btn := get_node_or_null("Root/" + b) as Button
 		if btn == null:
 			push_warning("HUD missing " + b)
@@ -98,6 +100,8 @@ func _on_hud_button(b: String) -> void:
 		"TabsButton": _on_tabs()
 		"PlotButton": _on_plot()
 		"MargaButton": _on_marga()
+		"SaveButton": _on_save()
+		"MuteButton": _on_mute()
 
 func bind(p, x) -> void:
 	player = p
@@ -120,11 +124,18 @@ func _on_village() -> void:
 	var w = get_tree().get_first_node_in_group("world")
 	if w:
 		w.go_village()
+	_set_zone("Chirakkal Village")
 
 func _on_school() -> void:
 	var w = get_tree().get_first_node_in_group("world")
 	if w:
 		w.go_school()
+	_set_zone("Kuzhi-Kalari")
+
+func _set_zone(name: String) -> void:
+	var zl := get_node_or_null("Root/RadarPanel/ZoneLabel") as Label
+	if zl:
+		zl.text = name
 
 var _monsoon := false
 
@@ -211,7 +222,10 @@ func _on_plot() -> void:
 	if game == null or game.get("plot") == null or not game.plot.has_method("status"):
 		say("Plot unavailable.")
 		return
-	say(game.plot.status())
+	var msg: String = game.plot.status()
+	if game.get("quest_log") != null and game.quest_log.has_method("status"):
+		msg += "\n" + game.quest_log.status()
+	say(msg)
 
 func _on_marga() -> void:
 	var game = get_tree().get_first_node_in_group("game")
@@ -222,6 +236,21 @@ func _on_marga() -> void:
 	if game.vama.enabled and game.vama.has_method("status"):
 		msg += " " + game.vama.status()
 	say(msg)
+
+func _on_save() -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if game == null or game.get("save") == null or not game.save.has_method("save_game"):
+		say("Save unavailable.")
+		return
+	game.save.save_game()
+	say("Progress saved.")
+
+func _on_mute() -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if game == null or game.get("audio") == null or not game.audio.has_method("toggle_mute"):
+		say("Sound unavailable.")
+		return
+	say(game.audio.toggle_mute())
 
 func _on_tabs_close() -> void:
 	tabs_panel.visible = false
@@ -346,6 +375,10 @@ func _process(_delta: float) -> void:
 		if hp < _last_hp:
 			_flash = 0.55
 		_last_hp = hp
+		var game0 = get_tree().get_first_node_in_group("game")
+		if game0 and game0.get("heat") != null and game0.heat.get("heat") != null:
+			var h: int = game0.heat.heat
+			heat_label.text = "Heat " + "●".repeat(h) + "○".repeat(3 - h) if h > 0 else ""
 	if _flash > 0.0:
 		_flash = maxf(0.0, _flash - _delta * 1.8)
 		vignette.color = Color(0.6, 0, 0, _flash * 0.6)

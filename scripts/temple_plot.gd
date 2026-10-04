@@ -95,6 +95,8 @@ func _finish(p: Dictionary, game: Node) -> void:
 	var need_supply := int(p.get("needs", {}).get("supply", 0))
 	supply = maxi(0, supply - need_supply)
 	phase += 1
+	if game.get("save") != null and game.save.has_method("save_game"):
+		game.save.save_game()
 	var hud = get_tree().get_first_node_in_group("hud")
 	if phase >= phases.size():
 		if hud and hud.has_method("say"):
