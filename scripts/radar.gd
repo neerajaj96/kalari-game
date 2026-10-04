@@ -34,10 +34,11 @@ func _draw() -> void:
 	draw_circle(_w2m(Vector3(-3, 0, 2)), 3.0, Color(0.2, 0.75, 0.3))
 	# plot target pulse
 	var game = get_tree().get_first_node_in_group("game")
-	var tp := _plot_target(game)
+	var tp: Variant = _plot_target(game)
 	if tp != null:
+		var tpp: Vector3 = tp
 		var pr: float = 4.0 + sin(Time.get_ticks_msec() / 300.0) * 1.5
-		draw_circle(_w2m(tp), pr, Color(1.0, 0.85, 0.3))
+		draw_circle(_w2m(tpp), pr, Color(1.0, 0.85, 0.3))
 	# peds faint, bandits red within 15m, player arrow last
 	var player = get_tree().get_first_node_in_group("player")
 	var pp := Vector2(CX, CY)
