@@ -1,6 +1,6 @@
 // Backwater: 3-wave ripple, flow color, fresnel sheen, dual sparkle.
 shader_type spatial;
-render_mode blend_mix, depth_prepass_alpha, cull_disabled;
+render_mode blend_mix, depth_prepass_alpha, cull_disabled, specular_schlick_ggx;
 
 uniform vec4 shallow : source_color = vec4(0.16, 0.48, 0.55, 0.94);
 uniform vec4 deep : source_color = vec4(0.025, 0.16, 0.24, 0.96);

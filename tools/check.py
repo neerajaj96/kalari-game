@@ -418,6 +418,30 @@ for token in ["tonemap_agx_contrast", "ssao_radius", "sdfgi_cascades",
 if "ssr_enabled" not in gd3 or "forward_plus and (ultra or high)" not in gd3:
     errs.append("director: P1 High tier (SSAO+SSR) missing")
 
+# --- 8t. P2 surfaces: water PBR specular, wetness specular curve, hero metals ---
+_wt = open(BASE + "/shaders/water.gdshader").read()
+if "specular_schlick_ggx" not in _wt:
+    errs.append("water: P2 'specular_schlick_ggx' render mode missing")
+_lp = open(BASE + "/scripts/lighting_preset.gd").read()
+for token in ["metallic_specular", "0.18", "0.85", "0.45"]:
+    if token not in _lp:
+        errs.append(f"wetness: P2 '{token}' curve missing")
+_cu = open(BASE + "/materials/copper.tres").read()
+if "metallic = 0.85" not in _cu:
+    errs.append("copper: P2 polished metal 'metallic = 0.85' missing")
+_gr = open(BASE + "/materials/granite.tres").read()
+if "metallic = 0.1" not in _gr or "metallic_specular = 0.6" not in _gr:
+    errs.append("granite: P2 stone specular tuning missing")
+_wo = open(BASE + "/materials/wood.tres").read()
+if "metallic_specular = 0.4" not in _wo:
+    errs.append("wood: P2 timber specular tuning missing")
+# Godot 4 WAV looping is loop_mode (LOOP_FORWARD), not Godot-3 '.loop'.
+amb = open(BASE + "/scripts/ambience.gd").read()
+if "LOOP_FORWARD" not in amb:
+    errs.append("ambience: P2 wav beds must set 'LOOP_FORWARD'")
+if ".loop = " in amb:
+    errs.append("ambience: Godot-3 '.loop =' assignment (use loop_mode)")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)

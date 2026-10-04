@@ -27,7 +27,7 @@ func _ready() -> void:
 		_players[name] = p
 	var beds := {"murmur": _murmur(), "drone": _drone(), "lap": _lap(), "wash": _wash(), "insects": _insects()}
 	for name in beds:
-		beds[name].loop = true
+		beds[name].loop_mode = AudioStreamWAV.LOOP_FORWARD
 		_players[name].stream = beds[name]
 		_players[name].play()
 

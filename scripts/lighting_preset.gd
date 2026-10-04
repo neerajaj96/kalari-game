@@ -151,11 +151,12 @@ func _apply_wetness(w: float) -> void:
 			var m := load(path) as StandardMaterial3D
 			if m == null:
 				continue
-			_wet_mats[path] = [m.albedo_color, m.roughness]
+			_wet_mats[path] = [m.albedo_color, m.roughness, m.metallic_specular]
 		var base: Array = _wet_mats[path]
 		var m: StandardMaterial3D = load(path)
-		m.albedo_color = (base[0] as Color).lerp((base[0] as Color) * 0.55, w)
-		m.roughness = lerpf(float(base[1]), 0.25, w)
+		m.albedo_color = (base[0] as Color).lerp((base[0] as Color) * 0.45, w)
+		m.roughness = lerpf(float(base[1]), 0.18, w)
+		m.metallic_specular = lerpf(float(base[2]), 0.85, w)
 	# Rain heaviness follows storm (amount reallocates — write only on change).
 	var rain = get_node_or_null("Rain") as CPUParticles3D
 	if rain:
