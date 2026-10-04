@@ -81,17 +81,21 @@ func _overture() -> void:
 	_ov_i = 0
 	hud.say(_ov_lines[0])
 
-func _input(event: InputEvent) -> void:
-	# Attack (tap/click) advances the intro; gameplay input passes through.
+func _unhandled_input(event: InputEvent) -> void:
+	# Intro advance only for taps the GUI didn't consume (buttons work first),
+	# and never from the joystick zone (movement isn't dialogue).
 	if _ov_i < 0 or _ov_i >= _ov_lines.size():
 		return
-	var adv := false
+	var pos := Vector2(-1, -1)
 	if event is InputEventScreenTouch and event.pressed:
-		adv = true
+		pos = event.position
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		adv = true
-	if adv:
-		_ov_i += 1
+		pos = event.position
+	else:
+		return
+	if pos.x >= 0.0 and pos.x < get_viewport().get_visible_rect().size.x * 0.4:
+		return
+	_ov_i += 1
 		if _ov_i < _ov_lines.size():
 			hud.say(_ov_lines[_ov_i])
 			if audio != null and audio.has_method("bell") and _ov_i == 2:

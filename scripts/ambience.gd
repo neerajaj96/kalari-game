@@ -25,10 +25,13 @@ func _ready() -> void:
 		p.volume_db = -60.0
 		add_child(p)
 		_players[name] = p
-	var beds := {"murmur": _murmur(), "drone": _drone(), "lap": _lap(), "wash": _wash(), "insects": _insects()}
+	var beds := {"murmur": [_murmur(), 32000], "drone": [_drone(), 32000], "lap": [_lap(), 40000], "wash": [_wash(), 24000], "insects": [_insects(), 24000]}
 	for name in beds:
-		beds[name].loop = true
-		_players[name].stream = beds[name]
+		var stream: AudioStreamWAV = beds[name][0]
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		stream.loop_begin = 0
+		stream.loop_end = beds[name][1]
+		_players[name].stream = stream
 		_players[name].play()
 
 func toggle_mute() -> String:
@@ -161,7 +164,7 @@ func _insects() -> AudioStreamWAV:
 	for i in range(3 * RATE):
 		var t := float(i) / RATE
 		var gate := 1.0 if fmod(t, 0.9) < 0.24 else 0.0
-		var chirp := sin(TAU * 4200.0 * t) * gate
+		var chirp := sin(TAU * 3800.0 * t) * gate
 		_put(s, i, chirp * 0.12)
 	return s
 
@@ -265,7 +268,7 @@ func _process(delta: float) -> void:
 	_set("lap", -60.0 + wwater * 44.0)
 	_set("wash", -60.0 + storm * 44.0)
 	_set("insects", -60.0 + night * 40.0)
-	_events(delta, wmarket, wtemple, storm, night)
+	_events(0.5, wmarket, wtemple, storm, night)
 
 func _w(pp: Vector3, c: Vector3, r: float) -> float:
 	var d: Vector3 = pp - c

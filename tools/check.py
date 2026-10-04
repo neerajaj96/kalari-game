@@ -306,6 +306,15 @@ if "blip(" not in dg:
 if "drum()" not in open(BASE + "/scripts/heat.gd").read():
     errs.append("heat: drum hook missing")
 
+# --- 8n. HUD buttons with negative offsets must be edge-anchored (else off-screen) ---
+import re as _re2
+for _bm in _re2.finditer(r'\[node name="(\w+)" type="Button"[^\]]*\](?:\n(?!\[node ).*)*', hts2 if 'hts2' in dir() else open(BASE + "/scenes/ui/hud.tscn").read()):
+    _bnm = _bm.group(1)
+    _bb = _bm.group(0)
+    _mt = _re2.search(r"offset_top = (-?[\d.]+)", _bb)
+    if _mt and float(_mt.group(1)) < 0 and "anchor_top = 1.0" not in _bb:
+        errs.append(f"hud: Button '{_bnm}' has negative top offset without anchor_top=1 (off-screen)")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)
