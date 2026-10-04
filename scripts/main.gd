@@ -2,8 +2,10 @@ extends Node3D
 # Main: world + player + xp + hud wiring. Player persists across world switches.
 
 const XPRank = preload("res://scripts/xp_rank.gd")
+const GraphicsDirector = preload("res://scripts/graphics_director.gd")
 
 var xp_rank = XPRank.new()
+var graphics_director: GraphicsDirector
 var quest_log := Node.new()
 var rituals := Node.new()
 var sadhana := Node.new()
@@ -21,6 +23,9 @@ var hud: CanvasLayer
 func _ready() -> void:
 	add_to_group("game")
 	add_child(xp_rank)
+	graphics_director = GraphicsDirector.new()
+	graphics_director.name = "GraphicsDirector"
+	add_child(graphics_director)
 	_attach(quest_log, "res://scripts/quests.gd")
 	_attach(rituals, "res://scripts/rituals.gd")
 	_attach(sadhana, "res://scripts/sadhana.gd")

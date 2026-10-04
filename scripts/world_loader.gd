@@ -2,6 +2,7 @@ extends Node3D
 # World loader: school <-> village. Keeps XP persistent via group call.
 
 const MeshBuilder = preload("res://scripts/mesh_builder.gd")
+const FoliageManager = preload("res://scripts/foliage_manager.gd")
 
 const SCHOOL := "res://scenes/school.tscn"
 const VILLAGE := "res://scenes/village.tscn"
@@ -43,6 +44,8 @@ func load_world(path: String) -> void:
 	current = ps.instantiate()
 	add_child(current)
 	_detail_swap(current)
+	if path == village_path:
+		FoliageManager.setup(current)
 	var game1 = get_tree().get_first_node_in_group("game")
 	if game1 and game1.get("shadows_on") == false:
 		var sun1 := current.get_node_or_null("Sun") as DirectionalLight3D
@@ -197,6 +200,10 @@ func _detail_swap(world: Node) -> void:
 		mi.material_override = orig.material
 		mi.position = orig.position + Vector3(0, j[3], 0)
 		mi.rotation = orig.rotation
+		# LOD: hero visuals cull past 45m with fade; collision originals stay.
+		mi.visibility_range_begin = 0.0
+		mi.visibility_range_end = 45.0
+		mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_FADE_SELF
 		# LOD follows the hidden original so dressing culls as one.
 		if "visibility_range_end" in orig:
 			mi.visibility_range_begin = orig.visibility_range_begin

@@ -238,6 +238,9 @@ func _physics_process(delta: float) -> void:
 			fwd.y = 0.0
 			velocity += fwd.normalized() * 3.5
 			_shake(0.2)
+			var cam0 = get_tree().get_first_node_in_group("main_camera")
+			if cam0 and cam0.has_method("kick_fov"):
+				cam0.kick_fov(4.0)
 			_ring_bell()
 			_count_rep()
 			var spark := get_node_or_null("HitSpark") as CPUParticles3D

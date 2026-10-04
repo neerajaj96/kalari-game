@@ -31,6 +31,19 @@ ambient_light_energy = 0.6
 fog_enabled = true
 fog_light_color = Color(0.65, 0.78, 0.9, 1)
 fog_density = 0.005
+fog_depth_begin = 18.0
+fog_depth_end = 70.0
+fog_aerial_perspective = 0.65
+fog_sky_affect = 0.25
+tonemap_mode = 2
+tonemap_exposure = 1.0
+adjustment_enabled = true
+adjustment_brightness = 1.0
+adjustment_contrast = 1.08
+adjustment_saturation = 1.05
+glow_enabled = true
+glow_intensity = 0.65
+glow_bloom = 0.08
 
 [sub_resource type="BoxMesh" id="rainmesh"]
 size = Vector3(0.03, 0.25, 0.03)
@@ -746,11 +759,38 @@ position = Vector3(6.0, 16.0, 2.0)
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 shadow_enabled = true
-shadow_blur = 2.0
+directional_shadow_max_distance = 55.0
+directional_shadow_split_1 = 0.08
+directional_shadow_split_2 = 0.28
+directional_shadow_split_3 = 0.62
+shadow_bias = 0.035
+shadow_normal_bias = 1.0
+shadow_opacity = 0.9
+shadow_blur = 1.2
 rotation = Vector3(-0.9, 0.3, 0)
 
 [node name="WorldEnv" type="WorldEnvironment" parent="."]
 environment = SubResource("env")
+
+[node name="ProbeCourt" type="ReflectionProbe3D" parent="."]
+position = Vector3(5.0, 2.0, -10.0)
+cull_mask = 1
+update_mode = 0
+intensity = 0.6
+extents = Vector3(8, 4, 8)
+
+[node name="ProbeWater" type="ReflectionProbe3D" parent="."]
+position = Vector3(0, 1.5, 11.0)
+cull_mask = 1
+update_mode = 0
+intensity = 0.7
+extents = Vector3(14, 3, 4)
+
+[node name="DeepaLight" type="OmniLight3D" parent="."]
+position = Vector3(12.5, 3.6, -8.5)
+light_color = Color(1, 0.75, 0.4)
+light_energy = 0.8
+omni_range = 6.0
 
 [node name="Rain" type="CPUParticles3D" parent="."]
 emitting = false
@@ -774,5 +814,5 @@ script = ExtResource("11")
 position = Vector3(0, 7.0, 11.0)
 rotation = Vector3(-0.55, 0, 0)
 current = true
-fov = 60.0
+fov = 55.0
 offset = Vector3(0, 7.0, 10.0)

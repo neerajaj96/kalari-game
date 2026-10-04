@@ -14,6 +14,8 @@ var _storm_goal := 0.0
 var _frame_t := 0.0
 var _last_rain := -1
 var _last_lamp := -1.0
+var _last_wet := -1.0
+var _wet_mats := {}
 
 # sun_rot, sun_energy, sun_color, ambient_color, ambient_energy, bg, fog_density, fog_color
 const KEYS := [
@@ -26,7 +28,23 @@ const KEYS := [
 
 func _ready() -> void:
 	day_t = [0.1, 0.35, 0.6][clampi(preset, 0, 2)]
+	_configure_sun()
 	_apply_frame()
+
+func _configure_sun() -> void:
+	# High-quality cascaded shadows; per-frame values still owned by _apply_frame.
+	var sun := get_node_or_null("Sun") as DirectionalLight3D
+	if sun == null:
+		return
+	sun.shadow_enabled = true
+	sun.directional_shadow_max_distance = 55.0
+	sun.directional_shadow_split_1 = 0.08
+	sun.directional_shadow_split_2 = 0.28
+	sun.directional_shadow_split_3 = 0.62
+	sun.shadow_bias = 0.035
+	sun.shadow_normal_bias = 1.0
+	sun.shadow_opacity = 0.9
+	sun.shadow_blur = 1.2
 
 func _process(delta: float) -> void:
 	# 2Hz throttle: light moves too slowly to need per-frame writes, and
@@ -100,8 +118,6 @@ func _apply_frame() -> void:
 		sun.rotation = f[0]
 		sun.light_energy = f[1]
 		sun.light_color = f[2]
-		sun.shadow_bias = 0.06
-		sun.shadow_opacity = 0.85
 	var wenv := get_node_or_null("WorldEnv") as WorldEnvironment
 	if wenv and wenv.environment:
 		var env: Environment = wenv.environment
@@ -110,7 +126,12 @@ func _apply_frame() -> void:
 		env.background_color = f[5]
 		env.fog_density = f[6]
 		env.fog_light_color = f[7]
-	# Lamp auto-light after dusk + storm gloom (write only on change).
+	# Wet earth: storm drives shared ground materials dark + glossy.
+	# One step (0.05) granularity so writes happen only while transitioning.
+	var wet_step := int(storm * 20.0)
+	if wet_step != _last_wet:
+		_last_wet = wet_step
+		_apply_wetness(wet_step / 20.0)
 	var lamp = get_node_or_null("Lamp")
 	if lamp and lamp.get("base") != null:
 		var night: float = clampf((day_t - 0.75) / 0.2, 0.0, 1.0)
@@ -122,6 +143,19 @@ func _apply_frame() -> void:
 	var sway = load("res://shaders/sway_leaf.tres") as ShaderMaterial
 	if sway:
 		sway.set_shader_parameter("strength", 0.06 + storm * 0.1)
+
+func _apply_wetness(w: float) -> void:
+	# Dry day: rough bright earth. Monsoon: dark wet soil, specular sky response.
+	for path in ["res://materials/mud.tres", "res://materials/ground_green.tres", "res://materials/laterite.tres"]:
+		if not _wet_mats.has(path):
+			var m := load(path) as StandardMaterial3D
+			if m == null:
+				continue
+			_wet_mats[path] = [m.albedo_color, m.roughness]
+		var base: Array = _wet_mats[path]
+		var m: StandardMaterial3D = load(path)
+		m.albedo_color = (base[0] as Color).lerp((base[0] as Color) * 0.55, w)
+		m.roughness = lerpf(float(base[1]), 0.25, w)
 	# Rain heaviness follows storm (amount reallocates — write only on change).
 	var rain = get_node_or_null("Rain") as CPUParticles3D
 	if rain:

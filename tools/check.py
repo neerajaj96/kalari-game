@@ -340,6 +340,68 @@ if "shadows_on" not in open(BASE + "/scripts/world_loader.gd").read():
 if "reps % 5" not in open(BASE + "/scripts/drill.gd").read():
     errs.append("drill: set-progress display missing")
 
+# --- 8o. graphics director: present, guarded, wired, no probing ---
+gd2 = open(BASE + "/scripts/graphics_director.gd").read() if os.path.exists(BASE + "/scripts/graphics_director.gd") else ""
+if "class_name GraphicsDirector" not in gd2:
+    errs.append("director: class missing")
+if "ProceduralSkyMaterial" not in gd2:
+    errs.append("director: procedural sky missing")
+if " in env" in gd2:
+    errs.append("director: object probing (crash risk)")
+if "GraphicsDirector" not in open(BASE + "/scripts/main.gd").read():
+    errs.append("director: not wired in main")
+
+# --- 8p. foliage: manager present, hooked for village, originals hidden ---
+fg = open(BASE + "/scripts/foliage_manager.gd").read() if os.path.exists(BASE + "/scripts/foliage_manager.gd") else ""
+for token in ["MultiMeshInstance3D", "instance_count", "GRASS_N", "REED_N"]:
+    if token not in fg:
+        errs.append(f"foliage: '{token}' missing")
+if "FoliageManager" not in open(BASE + "/scripts/world_loader.gd").read():
+    errs.append("foliage: not hooked in world_loader")
+
+# --- 8q. probes + hero lamps present ---
+_vts = open(BASE + "/scenes/village.tscn").read()
+_scs = open(BASE + "/scenes/school.tscn").read()
+for rn in ["ProbeCourt", "ProbeWater", "DeepaLight"]:
+    if rn not in _vts:
+        errs.append(f"village: '{rn}' missing")
+if "PootharaLight" not in _scs:
+    errs.append("school: PootharaLight missing")
+
+# --- 8r. G8 baseline bake: env grade+glow+tonemap, sun rig, FOV lock in tscn ---
+for _f2, _src in [(BASE + "/scenes/village.tscn", _vts), (BASE + "/scenes/school.tscn", _scs)]:
+    for token in ["tonemap_mode = 2", "tonemap_exposure = 1.0",
+            "adjustment_enabled = true", "adjustment_contrast = 1.08",
+            "adjustment_saturation = 1.05", "glow_enabled = true",
+            "glow_intensity = 0.65", "glow_bloom = 0.08",
+            "fog_depth_begin = 18.0", "fog_depth_end = 70.0",
+            "fog_aerial_perspective = 0.65", "fog_sky_affect = 0.25"]:
+        if token not in _src:
+            errs.append(f"{_f2}: baseline '{token}' missing (director/editor parity)")
+    for token in ["directional_shadow_max_distance = 55.0",
+            "directional_shadow_split_1 = 0.08", "shadow_bias = 0.035",
+            "shadow_normal_bias = 1.0", "shadow_opacity = 0.9",
+            "shadow_blur = 1.2"]:
+        if token not in _src:
+            errs.append(f"{_f2}: sun rig '{token}' missing")
+    if "fov = 55.0" not in _src:
+        errs.append(f"{_f2}: camera fov must be 55.0 (explore baseline, combat kicks to 62 at runtime)")
+    if "fov = 60.0" in _src:
+        errs.append(f"{_f2}: stale fov 60.0 (use 55.0 explore baseline)")
+
+# --- 8s. P1 renderer: Forward+ desktop + Mobile override, director params/tiers ---
+proj2 = open(BASE + "/project.godot").read()
+for token in ['renderer/rendering_method="forward_plus"', 'renderer/rendering_method.mobile="mobile"']:
+    if token not in proj2:
+        errs.append(f"project.godot: P1 '{token}' missing")
+gd3 = open(BASE + "/scripts/graphics_director.gd").read()
+for token in ["tonemap_agx_contrast", "ssao_radius", "sdfgi_cascades",
+        "volumetric_fog_density", "glow_hdr_threshold", "fog_aerial_perspective"]:
+    if token not in gd3:
+        errs.append(f"director: P1 '{token}' missing")
+if "ssr_enabled" not in gd3 or "forward_plus and (ultra or high)" not in gd3:
+    errs.append("director: P1 High tier (SSAO+SSR) missing")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)
@@ -349,8 +411,8 @@ if not m:
     errs.append(".env: GODOT_VERSION line missing")
 elif m.group(1).replace("-", ".") != bv:
     errs.append(f"versions: .env {m.group(1)} vs .build_version {bv}")
-if '"4.5"' not in proj or "config_version=5" not in proj:
-    errs.append("project.godot: expected 4.5 features + config_version=5")
+if '"4.6"' not in proj or "config_version=5" not in proj:
+    errs.append("project.godot: expected 4.6 features + config_version=5")
 
 # --- 10. preset <-> workflow cross-match ---
 pre = open(BASE + "/export_presets.cfg").read()
