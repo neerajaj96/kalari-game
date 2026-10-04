@@ -256,6 +256,14 @@ func _physics_process(delta: float) -> void:
 			var cam = get_tree().get_first_node_in_group("main_camera")
 			if cam and cam.has_method("kick_fov"):
 				cam.kick_fov(6.0)
+			# Dodge ribbon: dust bursts opposite the slip direction.
+			var ribbon := get_node_or_null("Dust") as CPUParticles3D
+			if ribbon:
+				var back := -velocity
+				back.y = 0.0
+				if back.length() > 0.5:
+					ribbon.direction = back.normalized()
+				ribbon.restart()
 	_check_death()
 
 func _apply_bob() -> void:

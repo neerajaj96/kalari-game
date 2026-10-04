@@ -454,6 +454,27 @@ for token in ['script = ExtResource("22")', "lamp_flicker.gd", "base = 0.9", "ba
 if "@export var base" not in open(BASE + "/scripts/lamp_flicker.gd").read():
     errs.append("flicker: 'base' must be @export (tscn assigns it per lamp)")
 
+# --- 8v. P8 combat VFX: slash arc, marma weight, dodge ribbon ---
+_sw = open(BASE + "/scripts/weapon_swing.gd").read()
+for token in ["_arc", "ARC_ALPHA", "BILLBOARD_ENABLED", "_set_arc_alpha", "PlaneMesh"]:
+    if token not in _sw:
+        errs.append(f"swing: P8 '{token}' missing")
+_ea = open(BASE + "/scripts/enemy_ai.gd").read()
+for token in ["_flash(is_marma", "_hitstop(is_marma", "0.08 if marma else 0.05", "add_shake(0.35)"]:
+    if token not in _ea:
+        errs.append(f"enemy: P8 marma '{token}' missing")
+_pg = open(BASE + "/scripts/player.gd").read()
+for token in ["Dodge ribbon", "ribbon.direction", "ribbon.restart()"]:
+    if token not in _pg:
+        errs.append(f"player: P8 '{token}' missing")
+# WAV data must be built locally and assigned once (engine getters drop writes).
+amb2 = open(BASE + "/scripts/ambience.gd").read()
+if "s.data = bytes" not in amb2:
+    errs.append("ambience: wav builders must assign 's.data = bytes' once")
+for bad in ["s.data.resize", "s.data.encode_s16"]:
+    if bad in amb2:
+        errs.append(f"ambience: '{bad}' writes vanish (build local bytes instead)")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)

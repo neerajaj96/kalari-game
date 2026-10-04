@@ -30,24 +30,30 @@ func apply_hit(dmg: float, is_marma: bool = false) -> void:
 	combat.take_hit(dmg, is_marma)
 	if combat.state != CombatState.S.DOWN and randf() < 0.35:
 		combat.try_dodge() # slip back, uses own stamina
-	_flash()
-	_hitstop()
+	_flash(is_marma)
+	_hitstop(is_marma)
 	if combat.state == CombatState.S.DOWN:
 		_die(is_marma)
 
-func _flash() -> void:
+func _flash(is_marma: bool = false) -> void:
 	var body := get_node_or_null("Body") as MeshInstance3D
 	if body == null:
 		return
 	var orig = body.material_override
 	body.material_override = FLASH_MAT
-	await get_tree().create_timer(0.1).timeout
+	if is_marma:
+		var cam = get_tree().get_first_node_in_group("main_camera")
+		if cam and cam.has_method("add_shake"):
+			cam.add_shake(0.35)
+		await get_tree().create_timer(0.15).timeout
+	else:
+		await get_tree().create_timer(0.1).timeout
 	if is_instance_valid(body):
 		body.material_override = orig
 
-func _hitstop() -> void:
+func _hitstop(marma: bool = false) -> void:
 	Engine.time_scale = 0.15
-	await get_tree().create_timer(0.05, true, false, true).timeout
+	await get_tree().create_timer(0.08 if marma else 0.05, true, false, true).timeout
 	if is_inside_tree():
 		Engine.time_scale = 1.0
 
