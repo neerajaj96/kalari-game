@@ -92,13 +92,13 @@ func _input(event: InputEvent) -> void:
 		adv = true
 	if adv:
 		_ov_i += 1
-		if _ov_i < _ov_lines.size():
-			hud.say(_ov_lines[_ov_i])
-			if audio != null and audio.has_method("bell") and _ov_i == 2:
-				audio.bell()
-		else:
-			_ov_i = -1
-			hud.say("Vanakkam. Touch earth: do 5 reps (Attack) then go Village.")
+	if _ov_i < _ov_lines.size():
+		hud.say(_ov_lines[_ov_i])
+		if audio != null and audio.has_method("bell") and _ov_i == 2:
+			audio.bell()
+	else:
+		_ov_i = -1
+		hud.say("Vanakkam. Touch earth: do 5 reps (Attack) then go Village.")
 
 func _attach(n: Node, path: String) -> bool:
 	var s: Script = load(path)
