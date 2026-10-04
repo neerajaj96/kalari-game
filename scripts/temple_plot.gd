@@ -10,7 +10,6 @@ var supply := 0
 var visited_hermitage := false
 var visited_sanctum := false
 var _t := 0.0
-var _announced := -1
 
 func _ready() -> void:
 	var f := FileAccess.open("res://data/temple_plot.json", FileAccess.READ)
@@ -41,12 +40,17 @@ func status() -> String:
 	var p: Dictionary = phases[phase]
 	var game = get_tree().get_first_node_in_group("game")
 	var rank := 1
-	if game and game.get("xp_rank") != null:
+	if game and game.get("xp_rank") != null and game.xp_rank.get("rank") != null:
 		rank = game.xp_rank.rank
 	var lock := ""
 	if rank < int(p.get("rank_needed", 1)):
 		lock = " [LOCKED: needs Rank %d, you are %d]" % [int(p.get("rank_needed", 1)), rank]
-	return "Phase %d/7 %s%s: %s (supply %d)" % [int(p.get("n", 0)), p.get("name", "?"), lock, p.get("brief", ""), supply]
+	var extra := ""
+	var needs: Dictionary = p.get("needs", {})
+	var want_kills := maxi(int(needs.get("kills", 0)), int(needs.get("kills_total", 0)))
+	if want_kills > 0 and game and game.get("quest_log") != null and game.quest_log.get("kills") != null:
+		extra = " (bandits down: %d/%d)" % [game.quest_log.kills, want_kills]
+	return "Phase %d/7 %s%s: %s (supply %d)%s" % [int(p.get("n", 0)), p.get("name", "?"), lock, p.get("brief", ""), supply, extra]
 
 func _process(delta: float) -> void:
 	_t += delta
@@ -84,7 +88,7 @@ func _done(p: Dictionary, game: Node) -> bool:
 	return true
 
 func _finish(p: Dictionary, game: Node) -> void:
-	if game.get("xp_rank") == null:
+	if game.get("xp_rank") == null or not game.xp_rank.has_method("add_xp"):
 		return
 	game.xp_rank.add_xp(int(p.get("xp", 100)))
 	# Keep overflow: extra loads count toward the next supply phase.

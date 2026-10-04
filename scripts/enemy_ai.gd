@@ -2,6 +2,7 @@ extends CharacterBody3D
 # Simple deterministic bandit AI: chase -> strike in range -> cooldown. No ML.
 
 const CombatState = preload("res://scripts/combat_state.gd")
+const FLASH_MAT = preload("res://materials/shrine_yellow.tres")
 
 @export var speed := 3.6
 @export var attack_range := 2.2
@@ -38,7 +39,7 @@ func _flash() -> void:
 	if body == null:
 		return
 	var orig = body.material_override
-	body.material_override = load("res://materials/shrine_yellow.tres")
+	body.material_override = FLASH_MAT
 	await get_tree().create_timer(0.1).timeout
 	if is_instance_valid(body):
 		body.material_override = orig

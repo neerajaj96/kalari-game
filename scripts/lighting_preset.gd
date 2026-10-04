@@ -11,6 +11,9 @@ extends Node3D
 var day_t := 0.35
 var storm := 0.0
 var _storm_goal := 0.0
+var _frame_t := 0.0
+var _last_rain := -1
+var _last_lamp := -1.0
 
 # sun_rot, sun_energy, sun_color, ambient_color, ambient_energy, bg, fog_density
 const KEYS := [
@@ -26,15 +29,19 @@ func _ready() -> void:
 	_apply_frame()
 
 func _process(delta: float) -> void:
+	# 2Hz throttle: light moves too slowly to need per-frame writes, and
+	# rain.amount reallocs on change — never touch it 60x/sec.
 	var dirty := false
 	if cycle:
 		day_t = fmod(day_t + delta / day_length, 1.0)
-		dirty = true
 	if not is_equal_approx(storm, _storm_goal):
 		storm = lerpf(storm, _storm_goal, minf(1.0, 2.0 * delta))
 		dirty = true
-	if dirty:
-		_apply_frame()
+	_frame_t += delta
+	if cycle or dirty:
+		if _frame_t >= 0.5:
+			_frame_t = 0.0
+			_apply_frame()
 
 func apply(p: int) -> void:
 	# Instant jump (kept for Rain toggle + plot callers).
@@ -98,12 +105,18 @@ func _apply_frame() -> void:
 		env.ambient_light_energy = f[4]
 		env.background_color = f[5]
 		env.fog_density = f[6]
-	# Lamp auto-light after dusk + storm gloom.
+	# Lamp auto-light after dusk + storm gloom (write only on change).
 	var lamp = get_node_or_null("Lamp")
 	if lamp and lamp.get("base") != null:
 		var night: float = clampf((day_t - 0.75) / 0.2, 0.0, 1.0)
-		lamp.base = 1.3 + night * 0.4 + storm * 0.2
-	# Rain heaviness follows storm.
+		var want_lamp: float = 1.3 + night * 0.4 + storm * 0.2
+		if not is_equal_approx(want_lamp, _last_lamp):
+			_last_lamp = want_lamp
+			lamp.base = want_lamp
+	# Rain heaviness follows storm (amount reallocates — write only on change).
 	var rain = get_node_or_null("Rain") as CPUParticles3D
 	if rain:
-		rain.amount = int(lerpf(150.0, 300.0, storm))
+		var want_rain := int(lerpf(150.0, 300.0, storm))
+		if want_rain != _last_rain:
+			_last_rain = want_rain
+			rain.amount = want_rain

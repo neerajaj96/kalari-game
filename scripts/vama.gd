@@ -23,15 +23,17 @@ func status() -> String:
 	var rank := 1
 	var sevas := 0
 	if game:
-		if game.get("xp_rank") != null:
+		if game.get("xp_rank") != null and game.xp_rank.get("rank") != null:
 			rank = game.xp_rank.rank
-		if game.get("rituals") != null:
+		if game.get("rituals") != null and game.rituals.get("idx") != null:
 			sevas = game.rituals.idx
 	if rank < 3:
 		return "Marga: needs Rank 3 (you %d). Train Kalari first." % rank
 	if sevas < 3:
 		return "Marga: needs tantri trust, 3 sevas done (you %d). Serve at temple." % sevas
-	var names := ["", "Five Elements Contemplation: do Forest Dhyana.", "Kula axis: stand at sanctum door.", "Vira resolve: defeat 1 bandit.", "Complete. Carry it quietly."]
+	if stage == 0:
+		return "Marga: gates met. Tantri nods shortly — stand ready."
+	var names := ["", "Five Elements Contemplation: do Forest Dhyana.", "Kula axis: stand at sanctum door.", "Vira resolve: defeat 1 bandit (fresh bandits return when you re-enter the village).", "Complete. Carry it quietly."]
 	return "Marga %d/3: %s" % [mini(stage, 3), names[mini(stage, 4)]]
 
 func on_forest_dhyana() -> void:

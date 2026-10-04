@@ -62,7 +62,7 @@ position = Vector3(-8.0, 1.5, -6.0)
 material = ExtResource("4")
 use_collision = true
 size = Vector3(4.6, 0.3, 4.6)
-position = Vector3(-8.0, 3.2, -6.0)
+position = Vector3(-8.0, 3.15, -6.0)
 rotation = Vector3(0, 0.785, 0)
 
 [node name="House2" type="CSGBox3D" parent="."]
@@ -75,7 +75,7 @@ position = Vector3(8.0, 1.5, -6.0)
 material = ExtResource("4")
 use_collision = true
 size = Vector3(4.6, 0.3, 4.6)
-position = Vector3(8.0, 3.2, -6.0)
+position = Vector3(8.0, 3.15, -6.0)
 rotation = Vector3(0, 0.785, 0)
 
 [node name="TempleComplex" type="Node3D" parent="."]
@@ -129,13 +129,13 @@ position = Vector3(1.62, 1.5, 0)
 material = ExtResource("12")
 use_collision = true
 size = Vector3(0.35, 1.4, 0.35)
-position = Vector3(1.7, 1.1, -0.85)
+position = Vector3(1.7, 1.3, -0.85)
 
 [node name="DwarapalakaR" type="CSGBox3D" parent="TempleComplex"]
 material = ExtResource("12")
 use_collision = true
 size = Vector3(0.35, 1.4, 0.35)
-position = Vector3(1.7, 1.1, 0.85)
+position = Vector3(1.7, 1.3, 0.85)
 
 [node name="Peetha" type="CSGBox3D" parent="TempleComplex"]
 material = ExtResource("12")
@@ -263,31 +263,31 @@ position = Vector3(-4.5, 0.9, -4.5)
 material = ExtResource("4")
 use_collision = true
 size = Vector3(2.4, 0.15, 2.4)
-position = Vector3(-4.5, 1.9, -4.5)
+position = Vector3(-4.5, 1.875, -4.5)
 
 [node name="Vilakku1" type="CSGBox3D" parent="TempleComplex"]
 material = ExtResource("5")
 use_collision = true
 size = Vector3(0.25, 0.4, 0.25)
-position = Vector3(-4.0, 0.5, -5.5)
+position = Vector3(-4.0, 0.2, -5.5)
 
 [node name="Vilakku2" type="CSGBox3D" parent="TempleComplex"]
 material = ExtResource("5")
 use_collision = true
 size = Vector3(0.25, 0.4, 0.25)
-position = Vector3(-1.5, 0.5, -5.5)
+position = Vector3(-1.5, 0.2, -5.5)
 
 [node name="Vilakku3" type="CSGBox3D" parent="TempleComplex"]
 material = ExtResource("5")
 use_collision = true
 size = Vector3(0.25, 0.4, 0.25)
-position = Vector3(1.0, 0.5, -5.5)
+position = Vector3(1.0, 0.2, -5.5)
 
 [node name="Vilakku4" type="CSGBox3D" parent="TempleComplex"]
 material = ExtResource("5")
 use_collision = true
 size = Vector3(0.25, 0.4, 0.25)
-position = Vector3(3.5, 0.5, -5.5)
+position = Vector3(3.5, 0.2, -5.5)
 
 [node name="Balikkal" type="CSGBox3D" parent="TempleComplex"]
 material = ExtResource("8")
@@ -299,7 +299,7 @@ position = Vector3(9.0, 0.6, 0)
 material = ExtResource("4")
 use_collision = true
 size = Vector3(2.0, 0.15, 2.0)
-position = Vector3(9.0, 2.2, 0)
+position = Vector3(9.0, 1.3, 0)
 
 [node name="DwajaPole" type="CSGBox3D" parent="TempleComplex"]
 material = ExtResource("9")
@@ -326,10 +326,34 @@ size = Vector3(0.4, 0.3, 0.4)
 position = Vector3(12.5, 3.1, 1.5)
 
 [node name="KoothamBase" type="CSGBox3D" parent="TempleComplex"]
-material = ExtResource("12")
+material = ExtResource("8")
 use_collision = true
 size = Vector3(5.0, 0.4, 4.0)
 position = Vector3(9.0, 0.2, -8.5)
+
+[node name="KoothamP1" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+use_collision = true
+size = Vector3(0.25, 2.3, 0.25)
+position = Vector3(6.8, 1.55, -10.2)
+
+[node name="KoothamP2" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+use_collision = true
+size = Vector3(0.25, 2.3, 0.25)
+position = Vector3(11.2, 1.55, -10.2)
+
+[node name="KoothamP3" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+use_collision = true
+size = Vector3(0.25, 2.3, 0.25)
+position = Vector3(6.8, 1.55, -6.8)
+
+[node name="KoothamP4" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+use_collision = true
+size = Vector3(0.25, 2.3, 0.25)
+position = Vector3(11.2, 1.55, -6.8)
 
 [node name="KoothamRoof" type="CSGBox3D" parent="TempleComplex"]
 material = ExtResource("4")
@@ -463,7 +487,7 @@ position = Vector3(0, -0.05, 8.5)
 material = ExtResource("4")
 use_collision = true
 size = Vector3(1.2, 0.1, 1.2)
-position = Vector3(-8.0, 0.1, 8.5)
+position = Vector3(-8.0, 0.075, 8.5)
 
 [node name="HermitStone1" type="CSGBox3D" parent="."]
 material = ExtResource("12")

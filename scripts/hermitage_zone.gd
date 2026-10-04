@@ -20,4 +20,6 @@ func _apply_zone(v: bool) -> void:
 	var game = get_tree().get_first_node_in_group("game")
 	if game == null or game.get("sadhana") == null:
 		return
+	if not game.sadhana.has_method("set_zone") or not game.sadhana.has_method("is_in_temple"):
+		return
 	game.sadhana.set_zone(v, game.sadhana.is_in_temple())

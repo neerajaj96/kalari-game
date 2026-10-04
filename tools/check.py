@@ -178,6 +178,30 @@ for vid, vxp in [("tattva", 120), ("kula", 150), ("vira", 180)]:
     elif int(hit[0].get("xp", -1)) != vxp:
         warns.append(f"vama.json: quest '{vid}' xp {hit[0].get('xp')} != code {vxp}")
 
+# --- 8b. sadhana XP table must equal data/sadhana.json sessions ---
+sj = DATA.get(BASE + "/data/sadhana.json", {}).get("sessions", {})
+sg = open(BASE + "/scripts/sadhana.gd").read()
+for k in ["kalari", "temple", "forest"]:
+    if k not in sj:
+        errs.append(f"sadhana.json: session '{k}' missing")
+m = re.search(r'var table := \{ "kalari": (\d+), "temple": (\d+), "forest": (\d+) \}', sg)
+if not m:
+    errs.append("sadhana.gd: XP table not found")
+elif [int(m.group(1)), int(m.group(2)), int(m.group(3))] != [int(sj["kalari"]["xp"]), int(sj["temple"]["xp"]), int(sj["forest"]["xp"])]:
+    errs.append("sadhana XP table forked from sadhana.json")
+
+# --- 8c. vama stage XP must equal data/vama.json quests ---
+vj = DATA.get(BASE + "/data/vama.json", {}).get("quests", [])
+vg = open(BASE + "/scripts/vama.gd").read()
+for vid, vxp in [("tattva", 120), ("kula", 150), ("vira", 180)]:
+    hit = [q for q in vj if isinstance(q, dict) and q.get("id") == vid]
+    if not hit:
+        errs.append(f"vama.json: quest '{vid}' missing")
+    elif int(hit[0].get("xp", -1)) != vxp:
+        errs.append(f"vama.json: quest '{vid}' xp {hit[0].get('xp')} != code {vxp}")
+if "_finish(120" not in vg or "_finish(150" not in vg or "_finish(180" not in vg:
+    errs.append("vama.gd: stage XP calls changed (keep 120/150/180 with vama.json)")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)

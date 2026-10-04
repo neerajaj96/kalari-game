@@ -11,9 +11,8 @@ func _ready() -> void:
 	# RankSash, enemy flash and Koombi too.
 	var src: StandardMaterial3D = load("res://materials/shrine_yellow.tres")
 	_glow_mat = src.duplicate()
-	var lamp_mesh := get_node_or_null("../GarbhaDeepam") as MeshInstance3D
-	if lamp_mesh == null:
-		lamp_mesh = get_node_or_null("../Koombi") as MeshInstance3D
+	# Koombi dome carries the glow (only shrine mesh in the school scene).
+	var lamp_mesh := get_node_or_null("../Koombi") as MeshInstance3D
 	if lamp_mesh:
 		lamp_mesh.material_override = _glow_mat
 

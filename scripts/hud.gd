@@ -17,6 +17,9 @@ var _tabs: Array = []
 
 var _last_hp := 100.0
 var _flash := 0.0
+var _last_hp_text := ""
+var _last_xp_text := ""
+var _boot_warned := false
 var _boot_t := 0.0
 var _boot_checked := false
 var _moves: Array = []
@@ -249,6 +252,13 @@ func show_tab_by_id(tab_id: String) -> void:
 			tabs_panel.visible = true
 			return
 
+func _deadzone(v: Vector2) -> Vector2:
+	# 0.15 stick deadzone; rescale so full deflection still reaches 1.0.
+	var l := v.length()
+	if l < 0.15:
+		return Vector2.ZERO
+	return v.normalized() * minf(1.0, (l - 0.15) / 0.85)
+
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		# PC mouse mirrors touch so the comment 'works with mouse' holds.
@@ -265,9 +275,7 @@ func _input(event: InputEvent) -> void:
 				knob.position = Vector2(58, 58)
 		return
 	if event is InputEventMouseMotion and joy_id == -2:
-		var md: Vector2 = (event.position - joy_origin) / 90.0
-		if md.length() > 1.0:
-			md = md.normalized()
+		var md: Vector2 = _deadzone((event.position - joy_origin) / 90.0)
 		if player:
 			player.set_move(Vector2(md.x, md.y))
 		if knob:
@@ -286,9 +294,7 @@ func _input(event: InputEvent) -> void:
 			if knob:
 				knob.position = Vector2(58, 58)
 	elif event is InputEventScreenDrag and event.index == joy_id:
-		var d: Vector2 = (event.position - joy_origin) / 90.0
-		if d.length() > 1.0:
-			d = d.normalized()
+		var d: Vector2 = _deadzone((event.position - joy_origin) / 90.0)
 		# Screen y-down -> world z-down mapping
 		if player:
 			player.set_move(Vector2(d.x, d.y))
@@ -298,22 +304,33 @@ func _input(event: InputEvent) -> void:
 func _process(_delta: float) -> void:
 	if not _boot_checked:
 		_boot_t += _delta
-		if _boot_t >= 2.0:
+		var w0 = get_tree().get_first_node_in_group("world")
+		var loaded := w0 != null and w0.get("current") != null
+		if loaded:
 			_boot_checked = true
-			var w = get_tree().get_first_node_in_group("world")
-			if w == null or w.get("current") == null:
-				say("BOOT ERROR: 3D world failed to load. Note this text and report it.")
-				return
+		elif _boot_t >= 6.0:
+			_boot_checked = true
+			say("BOOT ERROR: 3D world failed to load. Note this text and report it.")
+			return
+		elif _boot_t >= 2.0 and not _boot_warned:
+			_boot_warned = true
+			say("Loading Kalari... (slow storage, hold on)")
 	# Keyboard fallback
 	if player and joy_id == -1:
 		var kv := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 		if kv.length() > 0.05:
 			player.set_move(kv)
-	if player and xp and player.get("combat") != null:
+	if player and xp and player.get("combat") != null and xp.has_method("title") and xp.get("rank") != null:
 		var hp: float = player.combat.hp
 		var st: float = player.combat.stamina
-		hp_label.text = "HP %.0f  ST %.0f" % [hp, st]
-		xp_label.text = "Rank %d %s  XP %d" % [xp.rank, xp.title(), xp.xp]
+		var hp_text := "HP %.0f  ST %.0f" % [hp, st]
+		if hp_text != _last_hp_text:
+			_last_hp_text = hp_text
+			hp_label.text = hp_text
+		var xp_text := "Rank %d %s  XP %d" % [xp.rank, xp.title(), xp.xp]
+		if xp_text != _last_xp_text:
+			_last_xp_text = xp_text
+			xp_label.text = xp_text
 		if player.has_method("set_rank"):
 			player.set_rank(xp.rank)
 		hp_bar.value = hp

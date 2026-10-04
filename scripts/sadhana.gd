@@ -27,14 +27,14 @@ func start(place: String) -> String:
 		return "Breath settles... rest %ds before next session." % int(cooldown_t)
 	var game = get_tree().get_first_node_in_group("game")
 	var rank := 1
-	if game and game.get("xp_rank") != null:
+	if game and game.get("xp_rank") != null and game.xp_rank.get("rank") != null:
 		rank = game.xp_rank.rank
 	if place == "forest" and rank < 2:
 		return "Forest dhyana needs Rank 2 (Meithari-cleared). Train first."
 	active = true
 	kind = place
 	count = 0
-	half = false
+	half = true # first tap flips to inhale
 	var names := { "kalari": "Kalari Pranayama", "temple": "Bhadrakali Upasana", "forest": "Forest Dhyana" }
 	return "%s: 11 silent breaths. Tap Breathe in, out, steady. Stop if dizzy." % names.get(place, "Sadhana")
 
@@ -45,8 +45,10 @@ func tap() -> String:
 	half = not half
 	if count >= TARGET:
 		return _complete()
-	var phase := "in..." if not half else "out..."
-	return "%s breath %d/11" % [phase, count / 2 + 1]
+	# Odd taps are inhales starting breath N; even taps exhale to close it.
+	var done: int = count / 2
+	var phase := "in... (%d/11)" % (done + 1) if not half else "out... (%d/11 done)" % done
+	return phase
 
 func stop() -> String:
 	if not active:
@@ -80,7 +82,7 @@ func _complete() -> String:
 	return done_msg
 
 func place_of_player() -> String:
-	# Hermitage flag set by zone; sanctum proximity by trigger area handled via last_zone.
+	# Hermitage/sanctum flags from zones; school pit detected by world name.
 	if _forest:
 		return "forest"
 	if _temple:

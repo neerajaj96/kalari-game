@@ -13,17 +13,25 @@ var lines := [
 ]
 
 var _visits := 0
+var _cool := 0.0
 
 func _ready() -> void:
 	body_entered.connect(_on_body)
 
+func _process(delta: float) -> void:
+	if _cool > 0.0:
+		_cool = maxf(0.0, _cool - delta)
+
 func _on_body(b: Node) -> void:
 	if not b.is_in_group("player"):
 		return
+	if _cool > 0.0:
+		return
+	_cool = 8.0
 	_visits += 1
 	var game = get_tree().get_first_node_in_group("game")
 	var rank := 1
-	if game and game.get("xp_rank") != null:
+	if game and game.get("xp_rank") != null and game.xp_rank.get("rank") != null:
 		rank = game.xp_rank.rank
 	var hud = get_tree().get_first_node_in_group("hud")
 	if hud and hud.has_method("say"):

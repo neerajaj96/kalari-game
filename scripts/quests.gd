@@ -6,6 +6,7 @@ var kills: int = 0
 var reps: int = 0
 var q02_done := false
 var q03_done := false
+var _shamed := false
 
 func _ready() -> void:
 	var f := FileAccess.open("res://data/quests.json", FileAccess.READ)
@@ -18,13 +19,14 @@ func _ready() -> void:
 func add_kill(marma: bool = false) -> int:
 	kills += 1
 	var game = get_tree().get_first_node_in_group("game")
-	if game == null or game.get("xp_rank") == null:
+	if game == null or game.get("xp_rank") == null or not game.xp_rank.has_method("add_xp"):
 		return kills
 	if kills >= 1 and not q02_done and not marma:
 		q02_done = true
 		game.xp_rank.add_xp(150)
 		_say("Quest q02 done openly (+150 XP). No hidden knife — Unniyarcha nods.")
-	elif kills >= 1 and not q02_done and marma:
+	elif kills >= 1 and not q02_done and marma and not _shamed:
+		_shamed = true
 		_say("Back-stab pays marma XP, but q02 needs an open kill.")
 	if kills >= 2 and not q03_done:
 		q03_done = true

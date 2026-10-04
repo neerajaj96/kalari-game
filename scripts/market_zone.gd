@@ -12,7 +12,7 @@ func _on_body(b: Node) -> void:
 
 func _process(delta: float) -> void:
 	_t += delta
-	if _t < 3.0:
+	if _t < 8.0:
 		return
 	_t = 0.0
 	for b in get_overlapping_bodies():

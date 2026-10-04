@@ -60,9 +60,9 @@ func _complete() -> String:
 	var c: Dictionary = current()
 	var up := false
 	var game = get_tree().get_first_node_in_group("game")
-	if game and game.get("xp_rank") != null:
+	if game and game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
 		up = game.xp_rank.add_xp(int(c.get("xp", 40)))
-		if up and game.get("hud") != null:
+		if up and game.get("hud") != null and game.xp_rank.has_method("title"):
 			game.hud.say("Rank up! %s" % game.xp_rank.title())
 	phase = "IDLE"
 	idx += 1

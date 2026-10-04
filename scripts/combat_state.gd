@@ -45,6 +45,8 @@ func try_dodge(cost: float = 12.0, hold: float = 0.5) -> bool:
 	return true
 
 func take_hit(dmg: float, is_marma: bool = false) -> void:
+	if state == S.DOWN:
+		return # corpses don't flinch
 	if state == S.BLOCK:
 		if stamina >= 8.0:
 			stamina -= 8.0

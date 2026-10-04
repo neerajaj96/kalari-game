@@ -67,7 +67,7 @@ func _blink(delta: float, st: int) -> void:
 	# STRIKE/BLOCK/DODGE. Gurukkal has no Vadivu node, so he never blinks.
 	if _eye_l == null or _eye_r == null:
 		return
-	if st in [1, 0, 5]: # IDLE/STANCE/HIT only
+	if st in [1, 0]: # IDLE/STANCE only; flinch never blinks
 		_blink_t -= delta
 		if _blink_t <= 0.0:
 			_blink_t = randf_range(2.5, 5.0)

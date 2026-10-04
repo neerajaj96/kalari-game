@@ -23,9 +23,9 @@ func _process(delta: float) -> void:
 	var p := get_tree().get_first_node_in_group("player") as Node3D
 	if p:
 		var goal: Vector3 = p.global_position + offset
-		# Clamp to arena so we never show void
-		goal.x = clampf(goal.x, -8.0, 8.0)
-		goal.z = clampf(goal.z, -6.0, 12.0)
+		# Clamp to village bounds (pit sits inside them) so we never show void.
+		goal.x = clampf(goal.x, -13.0, 13.0)
+		goal.z = clampf(goal.z, -12.0, 14.0)
 		global_position = global_position.lerp(goal, minf(1.0, follow_speed * delta))
 	trauma = maxf(0.0, trauma - delta * 1.6)
 	if trauma > 0.0:

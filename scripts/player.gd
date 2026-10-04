@@ -99,7 +99,7 @@ func _count_rep() -> void:
 	if not in_school:
 		return
 	var n: int = game.quest_log.add_reps(1)
-	if game.get("xp_rank") != null:
+	if game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
 		if n == 5:
 			game.xp_rank.add_xp(120)
 			_say("5 reps! Gurukkal nods. First quest done (+120 XP). Go Village.")
@@ -251,7 +251,7 @@ func _apply_bob() -> void:
 	head.position.x = sin(_bob_t) * 0.02
 
 func _deal_melee_delayed() -> void:
-	await get_tree().create_timer(0.12).timeout
+	await get_tree().create_timer(0.12, true, false, true).timeout
 	if is_inside_tree():
 		_deal_melee()
 
@@ -274,7 +274,7 @@ func _deal_melee() -> void:
 		# Marma if player is behind enemy (enemy facing away)
 		var e_fwd: Vector3 = -e.global_transform.basis.z
 		e_fwd.y = 0.0
-		var behind: bool = e_fwd.normalized().dot((-to).normalized()) < -0.3
+		var behind: bool = e_fwd.normalized().dot((-to).normalized()) < -0.5
 		if e.has_method("apply_hit"):
 			e.apply_hit(cur_damage * _buff_marma, behind)
 			if behind:

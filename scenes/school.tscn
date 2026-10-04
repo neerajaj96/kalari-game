@@ -60,7 +60,7 @@ position = Vector3(-6.4, 2.0, 0)
 material = ExtResource("4")
 use_collision = true
 size = Vector3(1.2, 0.15, 1.2)
-position = Vector3(-5.5, -1.0, -2.5)
+position = Vector3(-5.5, -1.025, -2.5)
 
 [node name="PootharaT2" type="CSGBox3D" parent="."]
 material = ExtResource("4")
@@ -97,31 +97,31 @@ position = Vector3(-5.5, -0.2, -2.5)
 material = ExtResource("5")
 use_collision = true
 size = Vector3(0.6, 0.6, 0.6)
-position = Vector3(-4.0, -0.7, -2.5)
+position = Vector3(-4.0, -0.8, -2.5)
 
 [node name="OlaWallE_N" type="CSGBox3D" parent="."]
 material = ExtResource("6")
 use_collision = true
 size = Vector3(0.1, 2.0, 2.2)
-position = Vector3(6.9, 0.0, -2.0)
+position = Vector3(6.9, -0.3, -2.0)
 
 [node name="OlaWallE_S" type="CSGBox3D" parent="."]
 material = ExtResource("6")
 use_collision = true
 size = Vector3(0.1, 2.0, 2.2)
-position = Vector3(6.9, 0.0, 2.0)
+position = Vector3(6.9, -0.3, 2.0)
 
 [node name="OlaWallW" type="CSGBox3D" parent="."]
 material = ExtResource("6")
 use_collision = true
 size = Vector3(0.1, 2.0, 6.4)
-position = Vector3(-6.9, 0.0, 0)
+position = Vector3(-6.9, -0.3, 0)
 
 [node name="Roof" type="CSGBox3D" parent="."]
 material = ExtResource("6")
 use_collision = true
 size = Vector3(15.0, 0.2, 8.6)
-position = Vector3(0, 5.4, 0)
+position = Vector3(0, 5.3, 0)
 
 [node name="Gurukkal" parent="." instance=ExtResource("8")]
 position = Vector3(-2.5, -1.1, -1.5)
@@ -186,17 +186,17 @@ position = Vector3(4.5, 0.8, 1.5)
 material = ExtResource("5")
 use_collision = true
 size = Vector3(0.12, 0.08, 0.12)
-position = Vector3(-3.0, -1.0, -1.8)
+position = Vector3(-3.0, -1.06, -1.8)
 
 [node name="Flower2" type="CSGBox3D" parent="."]
 material = ExtResource("5")
 size = Vector3(0.12, 0.08, 0.12)
-position = Vector3(-3.6, -1.0, -2.0)
+position = Vector3(-3.6, -1.06, -2.0)
 
 [node name="Flower3" type="CSGBox3D" parent="."]
 material = ExtResource("5")
 size = Vector3(0.12, 0.08, 0.12)
-position = Vector3(-4.2, -1.0, -2.2)
+position = Vector3(-4.2, -1.06, -2.2)
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 shadow_enabled = true
