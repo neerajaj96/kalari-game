@@ -1,10 +1,14 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemy_ai.gd" id="1"]
 [ext_resource type="Material" path="res://materials/skin.tres" id="2"]
 [ext_resource type="Material" path="res://materials/sash_red.tres" id="3"]
 [ext_resource type="Script" path="res://scripts/vadivu_pose.gd" id="4"]
 [ext_resource type="Material" path="res://shaders/toon_skin.tres" id="5"]
+[ext_resource type="Material" path="res://materials/eye_white.tres" id="6"]
+[ext_resource type="Material" path="res://materials/eye_dark.tres" id="7"]
+[ext_resource type="Material" path="res://materials/hair_dark.tres" id="8"]
+[ext_resource type="Material" path="res://materials/hair_dark.tres" id="8"]
 
 [sub_resource type="CapsuleShape3D" id="cap"]
 radius = 0.45
@@ -25,6 +29,53 @@ height = 0.55
 radius = 0.14
 height = 0.7
 
+[sub_resource type="SphereMesh" id="eyeball"]
+radius = 0.055
+height = 0.11
+
+[sub_resource type="SphereMesh" id="pupil"]
+radius = 0.03
+height = 0.06
+
+[sub_resource type="BoxMesh" id="nosebox"]
+size = Vector3(0.06, 0.1, 0.08)
+
+[sub_resource type="SphereMesh" id="capmesh"]
+radius = 0.26
+height = 0.52
+
+[sub_resource type="BoxMesh" id="earbox"]
+size = Vector3(0.05, 0.12, 0.08)
+
+[sub_resource type="BoxMesh" id="mustachebox"]
+size = Vector3(0.14, 0.03, 0.03)
+
+[sub_resource type="BoxMesh" id="browbox"]
+size = Vector3(0.12, 0.03, 0.03)
+
+[sub_resource type="BoxMesh" id="mouthbox"]
+size = Vector3(0.16, 0.025, 0.02)
+
+[sub_resource type="SphereMesh" id="pecball"]
+radius = 0.14
+height = 0.28
+
+[sub_resource type="BoxMesh" id="bellybox"]
+size = Vector3(0.99, 0.2, 0.64)
+
+[sub_resource type="SphereMesh" id="fistball"]
+radius = 0.12
+height = 0.24
+
+[sub_resource type="BoxMesh" id="solebox"]
+size = Vector3(0.14, 0.08, 0.3)
+
+[sub_resource type="BoxMesh" id="thumbbox"]
+size = Vector3(0.04, 0.1, 0.04)
+
+[sub_resource type="BoxMesh" id="toothbox"]
+size = Vector3(0.1, 0.015, 0.01)
+
 [node name="Enemy" type="CharacterBody3D"]
 floor_snap_length = 0.3
 script = ExtResource("1")
@@ -44,10 +95,106 @@ mesh = SubResource("mesh")
 position = Vector3(0, 1.05, 0)
 scale = Vector3(1.05, 0.25, 1.05)
 
+[node name="PecL" type="MeshInstance3D" parent="Body"]
+material_override = ExtResource("5")
+mesh = SubResource("pecball")
+position = Vector3(-0.15, 0.22, -0.3)
+scale = Vector3(1.25, 0.7, 0.6)
+
+[node name="PecR" type="MeshInstance3D" parent="Body"]
+material_override = ExtResource("5")
+mesh = SubResource("pecball")
+position = Vector3(0.15, 0.22, -0.3)
+scale = Vector3(1.25, 0.7, 0.6)
+
+[node name="BellyBand" type="MeshInstance3D" parent="Body"]
+material_override = ExtResource("3")
+mesh = SubResource("bellybox")
+position = Vector3(0, -0.15, 0)
+
+[node name="ShoulderL" type="MeshInstance3D" parent="Body"]
+material_override = ExtResource("5")
+mesh = SubResource("pecball")
+position = Vector3(-0.5, 0.38, 0)
+
+[node name="ShoulderR" type="MeshInstance3D" parent="Body"]
+material_override = ExtResource("5")
+mesh = SubResource("pecball")
+position = Vector3(0.5, 0.38, 0)
+
 [node name="Head" type="MeshInstance3D" parent="."]
 material_override = ExtResource("5")
 mesh = SubResource("headmesh")
 position = Vector3(0, 1.85, 0)
+
+[node name="EyeL" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("6")
+mesh = SubResource("eyeball")
+position = Vector3(-0.09, 0.03, -0.21)
+
+[node name="EyeR" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("6")
+mesh = SubResource("eyeball")
+position = Vector3(0.09, 0.03, -0.21)
+
+[node name="PupilL" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("7")
+mesh = SubResource("pupil")
+position = Vector3(-0.09, 0.01, -0.25)
+
+[node name="PupilR" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("7")
+mesh = SubResource("pupil")
+position = Vector3(0.09, 0.01, -0.25)
+
+[node name="Nose" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("5")
+mesh = SubResource("nosebox")
+position = Vector3(0, -0.02, -0.26)
+
+[node name="HairCap" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("8")
+mesh = SubResource("capmesh")
+position = Vector3(0, 0.15, -0.02)
+scale = Vector3(1.02, 0.55, 1.02)
+
+[node name="Mustache" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("8")
+mesh = SubResource("mustachebox")
+position = Vector3(0, -0.09, -0.245)
+
+[node name="EarL" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("5")
+mesh = SubResource("earbox")
+position = Vector3(-0.24, 0, 0)
+
+[node name="EarR" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("5")
+mesh = SubResource("earbox")
+position = Vector3(0.24, 0, 0)
+
+[node name="BrowL" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("8")
+mesh = SubResource("browbox")
+position = Vector3(-0.09, 0.1, -0.225)
+rotation = Vector3(0, 0, -0.2)
+
+[node name="BrowR" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("8")
+mesh = SubResource("browbox")
+position = Vector3(0.09, 0.1, -0.225)
+rotation = Vector3(0, 0, 0.2)
+
+[node name="Mouth" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("3")
+mesh = SubResource("mouthbox")
+position = Vector3(0, -0.13, -0.225)
+
+[node name="Teeth" type="MeshInstance3D" parent="Head"]
+material_override = ExtResource("6")
+mesh = SubResource("toothbox")
+position = Vector3(0, -0.114, -0.232)
+scale = Vector3(1, 0.05, 1)
 
 [node name="Headband" type="MeshInstance3D" parent="."]
 material_override = ExtResource("3")
@@ -61,21 +208,51 @@ mesh = SubResource("limb_arm")
 position = Vector3(-0.55, 1.25, 0)
 rotation = Vector3(0, 0, 0.35)
 
+[node name="FistL" type="MeshInstance3D" parent="ArmL"]
+material_override = ExtResource("5")
+mesh = SubResource("fistball")
+position = Vector3(0, -0.32, 0)
+
+[node name="ThumbL" type="MeshInstance3D" parent="ArmL"]
+material_override = ExtResource("5")
+mesh = SubResource("thumbbox")
+position = Vector3(-0.10, -0.28, -0.04)
+
 [node name="ArmR" type="MeshInstance3D" parent="."]
 material_override = ExtResource("5")
 mesh = SubResource("limb_arm")
 position = Vector3(0.55, 1.25, 0)
 rotation = Vector3(0, 0, -0.35)
 
+[node name="FistR" type="MeshInstance3D" parent="ArmR"]
+material_override = ExtResource("5")
+mesh = SubResource("fistball")
+position = Vector3(0, -0.32, 0)
+
+[node name="ThumbR" type="MeshInstance3D" parent="ArmR"]
+material_override = ExtResource("5")
+mesh = SubResource("thumbbox")
+position = Vector3(-0.08, -0.28, -0.04)
+
 [node name="LegL" type="MeshInstance3D" parent="."]
 material_override = ExtResource("5")
 mesh = SubResource("limb_leg")
 position = Vector3(-0.18, 0.4, 0)
 
+[node name="SoleL" type="MeshInstance3D" parent="LegL"]
+material_override = ExtResource("5")
+mesh = SubResource("solebox")
+position = Vector3(0, -0.38, -0.04)
+
 [node name="LegR" type="MeshInstance3D" parent="."]
 material_override = ExtResource("5")
 mesh = SubResource("limb_leg")
 position = Vector3(0.18, 0.4, 0)
+
+[node name="SoleR" type="MeshInstance3D" parent="LegR"]
+material_override = ExtResource("5")
+mesh = SubResource("solebox")
+position = Vector3(0, -0.38, -0.04)
 
 [node name="Vadivu" type="Node" parent="."]
 script = ExtResource("4")

@@ -30,6 +30,10 @@ for f, src in TSCN.items():
         p = rm.group(0)
         if not os.path.exists(BASE + "/" + p[6:]):
             errs.append(f"{f}: missing {p}")
+    declared = set(re.findall(r'\[ext_resource[^\]]*id="([^"]+)"', src))
+    for ref in set(re.findall(r'ExtResource\("([^"]+)"', src)):
+        if ref not in declared:
+            errs.append(f"{f}: ExtResource(\"{ref}\") has no ext_resource declaration")
 
 # --- 1b. every CSG must collide (infinite-fall guard) + floor snap ---
 for f, src in TSCN.items():

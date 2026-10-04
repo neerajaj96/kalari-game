@@ -41,13 +41,11 @@ position = Vector3(0, -1.2, 0)
 [node name="MudPlatform" type="CSGBox3D" parent="."]
 material = ExtResource("2")
 use_collision = true
-use_collision = true
 size = Vector3(14.0, 0.6, 7.6)
 position = Vector3(0, -1.6, 0)
 
 [node name="PillarE" type="CSGBox3D" parent="."]
 material = ExtResource("3")
-use_collision = true
 use_collision = true
 size = Vector3(0.4, 6.4, 0.4)
 position = Vector3(6.4, 2.0, 0)
@@ -55,13 +53,11 @@ position = Vector3(6.4, 2.0, 0)
 [node name="PillarW" type="CSGBox3D" parent="."]
 material = ExtResource("3")
 use_collision = true
-use_collision = true
 size = Vector3(0.4, 6.4, 0.4)
 position = Vector3(-6.4, 2.0, 0)
 
 [node name="PootharaT1" type="CSGBox3D" parent="."]
 material = ExtResource("4")
-use_collision = true
 use_collision = true
 size = Vector3(1.2, 0.15, 1.2)
 position = Vector3(-5.5, -1.0, -2.5)
@@ -69,13 +65,11 @@ position = Vector3(-5.5, -1.0, -2.5)
 [node name="PootharaT2" type="CSGBox3D" parent="."]
 material = ExtResource("4")
 use_collision = true
-use_collision = true
 size = Vector3(1.0, 0.15, 1.0)
 position = Vector3(-5.5, -0.85, -2.5)
 
 [node name="PootharaT3" type="CSGBox3D" parent="."]
 material = ExtResource("4")
-use_collision = true
 use_collision = true
 size = Vector3(0.8, 0.15, 0.8)
 position = Vector3(-5.5, -0.7, -2.5)
@@ -83,13 +77,11 @@ position = Vector3(-5.5, -0.7, -2.5)
 [node name="PootharaT4" type="CSGBox3D" parent="."]
 material = ExtResource("4")
 use_collision = true
-use_collision = true
 size = Vector3(0.6, 0.15, 0.6)
 position = Vector3(-5.5, -0.55, -2.5)
 
 [node name="PootharaT5" type="CSGBox3D" parent="."]
 material = ExtResource("4")
-use_collision = true
 use_collision = true
 size = Vector3(0.4, 0.15, 0.4)
 position = Vector3(-5.5, -0.4, -2.5)
@@ -110,13 +102,11 @@ position = Vector3(-4.0, -0.7, -2.5)
 [node name="OlaWallE_N" type="CSGBox3D" parent="."]
 material = ExtResource("6")
 use_collision = true
-use_collision = true
 size = Vector3(0.1, 2.0, 2.2)
 position = Vector3(6.9, 0.0, -2.0)
 
 [node name="OlaWallE_S" type="CSGBox3D" parent="."]
 material = ExtResource("6")
-use_collision = true
 use_collision = true
 size = Vector3(0.1, 2.0, 2.2)
 position = Vector3(6.9, 0.0, 2.0)
@@ -124,13 +114,11 @@ position = Vector3(6.9, 0.0, 2.0)
 [node name="OlaWallW" type="CSGBox3D" parent="."]
 material = ExtResource("6")
 use_collision = true
-use_collision = true
 size = Vector3(0.1, 2.0, 6.4)
 position = Vector3(-6.9, 0.0, 0)
 
 [node name="Roof" type="CSGBox3D" parent="."]
 material = ExtResource("6")
-use_collision = true
 use_collision = true
 size = Vector3(15.0, 0.2, 8.6)
 position = Vector3(0, 5.4, 0)

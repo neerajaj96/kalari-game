@@ -18,6 +18,11 @@ var _phase := 0.0
 var _breath := 0.0
 var _strike_t := 1.0
 var _was_strike := false
+var _eye_l: MeshInstance3D
+var _eye_r: MeshInstance3D
+var _teeth: MeshInstance3D
+var _blink_t := 0.0
+var _blink_phase := 1.0 # >=0.12 means open
 
 # Rest rotations so walk/attack always ease home.
 var _arm_rest_l := Vector3.ZERO
@@ -36,6 +41,10 @@ func _ready() -> void:
 		_arm_rest_l = _arm_l.rotation
 	if _arm_r:
 		_arm_rest_r = _arm_r.rotation
+	_eye_l = p.get_node_or_null("EyeL") as MeshInstance3D
+	_eye_r = p.get_node_or_null("EyeR") as MeshInstance3D
+	_teeth = p.get_node_or_null("Teeth") as MeshInstance3D
+	_blink_t = randf_range(1.5, 4.0) # desync fighters
 
 func _process(delta: float) -> void:
 	if _body == null:
@@ -50,6 +59,35 @@ func _process(delta: float) -> void:
 		planar = Vector2(v.x, v.z).length()
 	_pose_body(delta, st)
 	_limbs(delta, st, planar)
+	_blink(delta, st)
+	_yell(st)
+
+func _blink(delta: float, st: int) -> void:
+	# Eyelids: squash eye spheres 0.12s every few seconds. Wide-eyed in
+	# STRIKE/BLOCK/DODGE. Gurukkal has no Vadivu node, so he never blinks.
+	if _eye_l == null or _eye_r == null:
+		return
+	if st in [1, 0, 5]: # IDLE/STANCE/HIT only
+		_blink_t -= delta
+		if _blink_t <= 0.0:
+			_blink_t = randf_range(2.5, 5.0)
+			_blink_phase = 0.0
+	if _blink_phase < 0.12:
+		_blink_phase += delta
+		_eye_l.scale.y = 0.1
+		_eye_r.scale.y = 0.1
+	else:
+		_eye_l.scale.y = lerpf(_eye_l.scale.y, 1.0, minf(1.0, 14.0 * delta))
+		_eye_r.scale.y = lerpf(_eye_r.scale.y, 1.0, minf(1.0, 14.0 * delta))
+
+func _yell(st: int) -> void:
+	# Strike yell: teeth slit flashes during swing-out, vanishes after.
+	if _teeth == null:
+		return
+	if st == 2 and _strike_t < 0.39:
+		_teeth.scale.y = 1.0
+	else:
+		_teeth.scale.y = 0.05
 
 func _pose_body(delta: float, st: int) -> void:
 	var goal_scale := Vector3.ONE
