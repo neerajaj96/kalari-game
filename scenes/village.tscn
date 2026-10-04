@@ -772,23 +772,23 @@ rotation = Vector3(-0.9, 0.3, 0)
 [node name="WorldEnv" type="WorldEnvironment" parent="."]
 environment = SubResource("env")
 
-[node name="ProbeCourt" type="ReflectionProbe3D" parent="."]
+[node name="ProbeCourt" type="ReflectionProbe" parent="."]
 position = Vector3(5.0, 2.0, -10.0)
 cull_mask = 1
 update_mode = 0
 intensity = 0.6
-extents = Vector3(8, 4, 8)
+size = Vector3(16, 8, 16)
 
-[node name="ProbeWater" type="ReflectionProbe3D" parent="."]
+[node name="ProbeWater" type="ReflectionProbe" parent="."]
 position = Vector3(0, 1.5, 11.0)
 cull_mask = 1
 update_mode = 0
 intensity = 0.7
-extents = Vector3(14, 3, 4)
+size = Vector3(28, 6, 8)
 
 [node name="DeepaLight" type="OmniLight3D" parent="."]
 position = Vector3(12.5, 3.6, -8.5)
-light_color = Color(1, 0.75, 0.4)
+light_color = Color(1, 0.75, 0.4, 1)
 light_energy = 0.8
 omni_range = 6.0
 

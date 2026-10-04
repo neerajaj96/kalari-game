@@ -203,7 +203,7 @@ func _detail_swap(world: Node) -> void:
 		# LOD: hero visuals cull past 45m with fade; collision originals stay.
 		mi.visibility_range_begin = 0.0
 		mi.visibility_range_end = 45.0
-		mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_FADE_SELF
+		mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 		# LOD follows the hidden original so dressing culls as one.
 		if "visibility_range_end" in orig:
 			mi.visibility_range_begin = orig.visibility_range_begin

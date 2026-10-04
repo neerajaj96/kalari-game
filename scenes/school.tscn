@@ -155,7 +155,7 @@ omni_range = 9.0
 
 [node name="PootharaLight" type="OmniLight3D" parent="."]
 position = Vector3(-5.5, 0.5, -2.5)
-light_color = Color(1, 0.7, 0.35)
+light_color = Color(1, 0.7, 0.35, 1)
 light_energy = 0.7
 omni_range = 4.0
 

@@ -350,6 +350,12 @@ if " in env" in gd2:
     errs.append("director: object probing (crash risk)")
 if "GraphicsDirector" not in open(BASE + "/scripts/main.gd").read():
     errs.append("director: not wired in main")
+if "sky.sky_material" not in gd2:
+    errs.append("director: Sky uses 'sky_material' in Godot 4 (not 'material')")
+# Godot 4.6 hard-errors on user funcs shadowing Object virtuals (CI red).
+for _gf in sorted(glob.glob(BASE + "/scripts/*.gd")):
+    if "func _set(" in open(_gf).read():
+        errs.append(f"{_gf}: 'func _set(' shadows Object._set virtual (rename it)")
 
 # --- 8p. foliage: manager present, hooked for village, originals hidden ---
 fg = open(BASE + "/scripts/foliage_manager.gd").read() if os.path.exists(BASE + "/scripts/foliage_manager.gd") else ""
@@ -367,6 +373,16 @@ for rn in ["ProbeCourt", "ProbeWater", "DeepaLight"]:
         errs.append(f"village: '{rn}' missing")
 if "PootharaLight" not in _scs:
     errs.append("school: PootharaLight missing")
+# Godot 4 class is ReflectionProbe (no 3D suffix); box is 'size', not 'extents'.
+for _f2, _src in [(BASE + "/scenes/village.tscn", _vts), (BASE + "/scenes/school.tscn", _scs)]:
+    if "ReflectionProbe3D" in _src:
+        errs.append(f"{_f2}: 'ReflectionProbe3D' is not a Godot 4 class (use ReflectionProbe)")
+    if "\nextents = Vector3" in _src:
+        errs.append(f"{_f2}: probe box is 'size = Vector3' in Godot 4 (not 'extents')")
+# Godot 4.6 text parser rejects 3-component Color() in resources (needs alpha).
+for _f2 in sorted(glob.glob(BASE + "/scenes/**/*.tscn", recursive=True) + glob.glob(BASE + "/materials/*.tres") + glob.glob(BASE + "/shaders/*.tres")):
+    for _m in re.finditer(r"Color\(([^,()]*,[^,()]*,[^,()]*)\)", open(_f2).read()):
+        errs.append(f"{_f2}: 3-component '{_m.group(0)}' (append ', 1' for 4.6)")
 
 # --- 8r. G8 baseline bake: env grade+glow+tonemap, sun rig, FOV lock in tscn ---
 for _f2, _src in [(BASE + "/scenes/village.tscn", _vts), (BASE + "/scenes/school.tscn", _scs)]:

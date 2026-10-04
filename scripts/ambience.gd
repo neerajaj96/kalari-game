@@ -143,7 +143,7 @@ func _lap() -> AudioStreamWAV:
 	for i in range(5 * RATE):
 		var t := float(i) / RATE
 		last = (last + 0.05 * (randf() * 2.0 - 1.0)) / 1.05
-		_put(s, i, last * 2.0 * (0.3 + 0.7 * (0.5 + 0.5 * sin(TAU * 0.2 * t)))))
+		_put(s, i, last * 2.0 * (0.3 + 0.7 * (0.5 + 0.5 * sin(TAU * 0.2 * t))))
 	return s
 
 func _wash() -> AudioStreamWAV:
@@ -264,11 +264,11 @@ func _process(delta: float) -> void:
 		if cur.get("day_t") != null:
 			var dt := float(cur.day_t)
 			night = clampf((dt - 0.8) / 0.15, 0.0, 1.0)
-	_set("murmur", -26.0 + wmarket * 12.0)
-	_set("drone", -60.0 + wtemple * 46.0)
-	_set("lap", -60.0 + wwater * 44.0)
-	_set("wash", -60.0 + storm * 44.0)
-	_set("insects", -60.0 + night * 40.0)
+	_set_db("murmur", -26.0 + wmarket * 12.0)
+	_set_db("drone", -60.0 + wtemple * 46.0)
+	_set_db("lap", -60.0 + wwater * 44.0)
+	_set_db("wash", -60.0 + storm * 44.0)
+	_set_db("insects", -60.0 + night * 40.0)
 	_events(delta, wmarket, wtemple, storm, night)
 
 func _w(pp: Vector3, c: Vector3, r: float) -> float:
@@ -276,6 +276,6 @@ func _w(pp: Vector3, c: Vector3, r: float) -> float:
 	d.y = 0.0
 	return clampf(1.0 - d.length() / r, 0.0, 1.0)
 
-func _set(name: String, db: float) -> void:
+func _set_db(name: String, db: float) -> void:
 	if _players.has(name):
 		_players[name].volume_db = clampf(db, -60.0, -8.0)
