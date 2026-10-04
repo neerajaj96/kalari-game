@@ -29,6 +29,12 @@ func save_game() -> void:
 		cfg.set_value("progress", "vama_stage", game.vama.stage)
 		cfg.set_value("progress", "vama_on", game.vama.enabled)
 		cfg.set_value("progress", "vama_forest", game.vama.forest_done)
+	if game.get("audio") != null and game.audio.get("storm_count") != null:
+		cfg.set_value("progress", "storms", game.audio.storm_count)
+	if game.get("audio") != null and game.audio.get("muted") != null:
+		cfg.set_value("progress", "muted", game.audio.muted)
+	if game.get("shadows_on") != null:
+		cfg.set_value("progress", "shadows", game.shadows_on)
 	var w = get_tree().get_first_node_in_group("world")
 	if w != null and w.get("current") != null:
 		cfg.set_value("progress", "world", str(w.current.name))
@@ -39,7 +45,7 @@ func load_game() -> Dictionary:
 	if cfg.load(PATH) != OK:
 		return {}
 	var d := {}
-	for k in ["xp", "kills", "reps", "q02", "q03", "sevas", "phase", "supply", "visit_h", "visit_s", "vama_stage", "vama_on", "vama_forest", "world"]:
+	for k in ["xp", "kills", "reps", "q02", "q03", "sevas", "phase", "supply", "visit_h", "visit_s", "vama_stage", "vama_on", "vama_forest", "storms", "muted", "shadows", "world"]:
 		d[k] = cfg.get_value("progress", k, null)
 	return d
 
@@ -80,6 +86,13 @@ func apply_save(d: Dictionary, game: Node) -> void:
 			game.vama.enabled = bool(d["vama_on"])
 		if d.get("vama_forest") != null:
 			game.vama.forest_done = int(d["vama_forest"])
+	if game.get("audio") != null and d.get("storms") != null:
+		game.audio.storm_count = int(d["storms"])
+	if game.get("audio") != null and d.get("muted") != null:
+		game.audio.muted = bool(d["muted"])
+		AudioServer.set_bus_mute(0, bool(d["muted"]))
+	if d.get("shadows") != null:
+		game.set("shadows_on", bool(d["shadows"]))
 
 func _recompute_rank(game: Node) -> void:
 	# Rank derives from XP against thresholds (never stored).

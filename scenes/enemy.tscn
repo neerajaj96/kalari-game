@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemy_ai.gd" id="1"]
 [ext_resource type="Material" path="res://materials/skin.tres" id="2"]
@@ -8,7 +8,7 @@
 [ext_resource type="Material" path="res://materials/eye_white.tres" id="6"]
 [ext_resource type="Material" path="res://materials/eye_dark.tres" id="7"]
 [ext_resource type="Material" path="res://materials/hair_dark.tres" id="8"]
-[ext_resource type="Material" path="res://materials/hair_dark.tres" id="8"]
+[ext_resource type="Material" path="res://shaders/toon_brute.tres" id="9"]
 
 [sub_resource type="CapsuleShape3D" id="cap"]
 radius = 0.45
@@ -85,7 +85,7 @@ shape = SubResource("cap")
 position = Vector3(0, 0.9, 0)
 
 [node name="Body" type="MeshInstance3D" parent="."]
-material_override = ExtResource("5")
+material_override = ExtResource("9")
 mesh = SubResource("mesh")
 position = Vector3(0, 1.05, 0)
 
@@ -123,7 +123,7 @@ mesh = SubResource("pecball")
 position = Vector3(0.5, 0.38, 0)
 
 [node name="Head" type="MeshInstance3D" parent="."]
-material_override = ExtResource("5")
+material_override = ExtResource("9")
 mesh = SubResource("headmesh")
 position = Vector3(0, 1.85, 0)
 
@@ -203,7 +203,7 @@ position = Vector3(0, 1.92, 0)
 scale = Vector3(1.05, 0.3, 1.05)
 
 [node name="ArmL" type="MeshInstance3D" parent="."]
-material_override = ExtResource("5")
+material_override = ExtResource("9")
 mesh = SubResource("limb_arm")
 position = Vector3(-0.55, 1.25, 0)
 rotation = Vector3(0, 0, 0.35)
@@ -219,7 +219,7 @@ mesh = SubResource("thumbbox")
 position = Vector3(-0.10, -0.28, -0.04)
 
 [node name="ArmR" type="MeshInstance3D" parent="."]
-material_override = ExtResource("5")
+material_override = ExtResource("9")
 mesh = SubResource("limb_arm")
 position = Vector3(0.55, 1.25, 0)
 rotation = Vector3(0, 0, -0.35)
@@ -235,7 +235,7 @@ mesh = SubResource("thumbbox")
 position = Vector3(-0.08, -0.28, -0.04)
 
 [node name="LegL" type="MeshInstance3D" parent="."]
-material_override = ExtResource("5")
+material_override = ExtResource("9")
 mesh = SubResource("limb_leg")
 position = Vector3(-0.18, 0.4, 0)
 
@@ -245,7 +245,7 @@ mesh = SubResource("solebox")
 position = Vector3(0, -0.38, -0.04)
 
 [node name="LegR" type="MeshInstance3D" parent="."]
-material_override = ExtResource("5")
+material_override = ExtResource("9")
 mesh = SubResource("limb_leg")
 position = Vector3(0.18, 0.4, 0)
 

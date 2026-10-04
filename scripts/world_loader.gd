@@ -43,6 +43,11 @@ func load_world(path: String) -> void:
 	current = ps.instantiate()
 	add_child(current)
 	_detail_swap(current)
+	var game1 = get_tree().get_first_node_in_group("game")
+	if game1 and game1.get("shadows_on") == false:
+		var sun1 := current.get_node_or_null("Sun") as DirectionalLight3D
+		if sun1:
+			sun1.shadow_enabled = false
 	var game0 = get_tree().get_first_node_in_group("game")
 	if game0 and game0.get("save") != null and game0.save.has_method("save_game"):
 		game0.save.save_game()
@@ -164,8 +169,8 @@ func _detail_swap(world: Node) -> void:
 	# Showcase nodes get generated-mesh visuals; the hidden CSG original
 	# keeps collision (CSG collision stays active while hidden).
 	var jobs := [
-		["TempleComplex/RoofMain", "pyramid", [4.6, 4.6, 1.2, 0.5], -0.125],
-		["TempleComplex/Shikhara", "stepped", [1.6, 3, 0.27], -0.4],
+		["TempleComplex/RoofMain", "pyramid", [4.6, 4.6, 1.2, 0.65], -0.125],
+		["TempleComplex/Shikhara", "stepped", [1.6, 5, 0.17], -0.4],
 		["TempleComplex/Kalasham", "lathe", [], -0.22],
 		["Ground", "ground", [30.0, 24.0, 0.15, 8.0], 0.1],
 		["House1Roof", "pyramid", [4.6, 4.6, 0.9, 0.4], -0.15],

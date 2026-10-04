@@ -774,4 +774,5 @@ script = ExtResource("11")
 position = Vector3(0, 7.0, 11.0)
 rotation = Vector3(-0.55, 0, 0)
 current = true
+fov = 60.0
 offset = Vector3(0, 7.0, 10.0)

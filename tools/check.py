@@ -306,6 +306,40 @@ if "blip(" not in dg:
 if "drum()" not in open(BASE + "/scripts/heat.gd").read():
     errs.append("heat: drum hook missing")
 
+# --- 8o. drill mode + settings panel wired ---
+hts3 = open(BASE + "/scenes/ui/hud.tscn").read()
+for rn in ["DrillButton", "SettingsButton", "SettingsPanel", "SoundButton", "ShadowButton", "ResetButton", "SettingsClose"]:
+    if rn not in hts3:
+        errs.append(f"hud: P1 '{rn}' missing")
+dg3 = open(BASE + "/scripts/drill.gd").read() if os.path.exists(BASE + "/scripts/drill.gd") else ""
+for token in ["func toggle", "CALLS", "WINDOW", "add_xp(25)"]:
+    if token not in dg3:
+        errs.append(f"drill: '{token}' missing")
+
+# --- 8n. storm-repair phase: gate key, save round-trip, storm counter ---
+pj = DATA.get(BASE + "/data/temple_plot.json", {}).get("phases", [])
+_sr = [p for p in pj if p.get("id") == "storm_repair"]
+if not _sr:
+    errs.append("temple_plot: storm_repair phase missing")
+else:
+    for k in ["rank_needed", "needs", "xp", "needs_storms"]:
+        if k not in _sr[0]:
+            errs.append(f"temple_plot storm_repair lacks '{k}'")
+if "storm_count" not in open(BASE + "/scripts/ambience.gd").read():
+    errs.append("ambience: storm_count missing")
+if '"storms"' not in open(BASE + "/scripts/save_game.gd").read():
+    errs.append("save: storms key missing")
+
+# --- 8o. settings persistence: sound/shadows saved, re-applied, drill display ---
+sg3 = open(BASE + "/scripts/save_game.gd").read()
+for k in ['"muted"', '"shadows"']:
+    if k not in sg3:
+        errs.append(f"save: {k} key missing")
+if "shadows_on" not in open(BASE + "/scripts/world_loader.gd").read():
+    errs.append("world_loader: shadows re-apply missing")
+if "reps % 5" not in open(BASE + "/scripts/drill.gd").read():
+    errs.append("drill: set-progress display missing")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)

@@ -212,7 +212,10 @@ func _events(delta: float, wmarket: float, wtemple: float, storm: float, night: 
 		_crier()
 	if storm >= 0.5 and not _storm_was:
 		_storm_was = true
+		storm_count += 1
 		_sting(_thunder_buf(), -10.0)
+		if storm_count == 3:
+			_say("Lightning split the lamp row! The Tantri will ask for oil and guards.")
 	elif storm < 0.5:
 		_storm_was = false
 	if night >= 0.8 and _watch_t >= 120.0:
@@ -223,6 +226,7 @@ var _bell_t := 90.0
 var _crier_t := 50.0
 var _watch_t := 100.0
 var _storm_was := false
+var storm_count := 0
 
 const CRIES := [
 	"Crier: Fresh karimeen! Morning catch!",

@@ -11,7 +11,8 @@ var fov_kick := 0.0
 
 func _ready() -> void:
 	add_to_group("main_camera")
-	base_fov = fov
+	base_fov = 60.0
+	fov = base_fov
 
 func add_shake(amount: float) -> void:
 	trauma = minf(1.0, trauma + amount)

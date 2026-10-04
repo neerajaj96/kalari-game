@@ -13,6 +13,8 @@ var heat := Node.new()
 var save := Node.new()
 var audio := Node.new()
 var dialogue := Node.new()
+var drill := Node.new()
+var shadows_on := true
 var player: CharacterBody3D
 var hud: CanvasLayer
 
@@ -27,6 +29,7 @@ func _ready() -> void:
 	_attach(heat, "res://scripts/heat.gd")
 	_attach(audio, "res://scripts/ambience.gd")
 	_attach(dialogue, "res://scripts/dialogue.gd")
+	_attach(drill, "res://scripts/drill.gd")
 	_attach(save, "res://scripts/save_game.gd")
 	# HUD first so load failures always have a voice.
 	var hs: PackedScene = load("res://scenes/ui/hud.tscn")

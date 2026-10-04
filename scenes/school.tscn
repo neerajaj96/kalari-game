@@ -125,7 +125,7 @@ position = Vector3(0, 5.3, 0)
 
 [node name="Gurukkal" parent="." instance=ExtResource("8")]
 position = Vector3(-2.5, -1.1, -1.5)
-rotation = Vector3(0, 0.6, 0)
+rotation = Vector3(0.06, 0.6, 0)
 
 [node name="GurukkalZone" type="Area3D" parent="."]
 script = ExtResource("11")
@@ -235,4 +235,5 @@ script = ExtResource("10")
 position = Vector3(0, 6.0, 10.0)
 rotation = Vector3(-0.5, 0, 0)
 current = true
+fov = 60.0
 offset = Vector3(0, 6.0, 9.0)

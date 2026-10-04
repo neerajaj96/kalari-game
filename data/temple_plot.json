@@ -8,6 +8,7 @@
     { "id": "walls", "n": 4, "name": "Walls & Timber", "rank_needed": 2, "needs": { "supply": 3 }, "xp": 150, "brief": "Laterite + forest timber: 3 loads from market." },
     { "id": "roof", "n": 5, "name": "Roof & Kalasha", "rank_needed": 3, "needs": { "supply": 2, "kills_total": 2 }, "xp": 200, "brief": "Copper crown: 2 loads + 2 total bandits down (site is coveted)." },
     { "id": "dwaja", "n": 6, "name": "Dwaja & Abhisheka", "rank_needed": 3, "needs": { "supply": 1, "kills_total": 3 }, "xp": 200, "brief": "Raise the mast, guard the night: 1 load + 3 total bandits down." },
-    { "id": "festival", "n": 7, "name": "Festival & Ankam (locked)", "rank_needed": 4, "needs": {}, "xp": 300, "brief": "Needs Rank 4 Otta-yogi (future update). The temple stands; the duel awaits." }
+    { "id": "festival", "n": 7, "name": "Festival & Ankam (locked)", "rank_needed": 4, "needs": {}, "xp": 300, "brief": "Needs Rank 4 Otta-yogi (future update). The temple stands; the duel awaits." },
+    { "id": "storm_repair", "n": 8, "name": "Storm Repair", "rank_needed": 3, "needs": { "supply": 2, "kills_total": 4 }, "xp": 250, "brief": "The third storm cracked the lamps. 2 oil loads + drive off the rain-looters.", "needs_storms": 3 }
   ]
 }

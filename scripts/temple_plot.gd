@@ -68,10 +68,17 @@ func _process(delta: float) -> void:
 	if _done(p, game):
 		_finish(p, game)
 
+func _storms_seen(game: Node, need: int) -> bool:
+	if game.get("audio") != null and game.audio.get("storm_count") != null:
+		return int(game.audio.storm_count) >= need
+	return false
+
 func _done(p: Dictionary, game: Node) -> bool:
 	var needs: Dictionary = p.get("needs", {})
 	if str(p.get("id", "")) == "sthala":
 		return visited_hermitage and visited_sanctum
+	if str(p.get("id", "")) == "storm_repair" and not _storms_seen(game, int(p.get("needs_storms", 3))):
+		return false
 	if needs.has("supply") and supply < int(needs["supply"]):
 		return false
 	if needs.has("kills") or needs.has("kills_total"):

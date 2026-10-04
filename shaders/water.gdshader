@@ -14,7 +14,9 @@ void vertex() {
 void fragment() {
 	float sparkle = smoothstep(0.75, 1.0,
 		sin(UV.x * 40.0 + TIME * 2.0) * sin(UV.y * 40.0 - TIME * 1.7));
+	float glint = smoothstep(0.9, 1.0,
+		sin(UV.x * 83.0 - TIME * 3.1) * sin(UV.y * 77.0 + TIME * 2.3));
 	ALBEDO = mix(deep.rgb, shallow.rgb, 0.5 + 0.5 * UV.x);
-	EMISSION = vec3(0.9, 0.95, 1.0) * sparkle * 0.4;
+	EMISSION = vec3(0.9, 0.95, 1.0) * (sparkle * 0.4 + glint * 0.25);
 	ALPHA = 0.88;
 }

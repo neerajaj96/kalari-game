@@ -15,13 +15,13 @@ var _frame_t := 0.0
 var _last_rain := -1
 var _last_lamp := -1.0
 
-# sun_rot, sun_energy, sun_color, ambient_color, ambient_energy, bg, fog_density
+# sun_rot, sun_energy, sun_color, ambient_color, ambient_energy, bg, fog_density, fog_color
 const KEYS := [
-	[0.0, Vector3(-0.45, 0.75, 0), 0.85, Color(1.0, 0.8, 0.62), Color(1.0, 0.85, 0.7), 0.5, Color(0.5, 0.6, 0.78), 0.006],
-	[0.35, Vector3(-0.75, 0.45, 0), 1.15, Color(1.0, 0.96, 0.9), Color(0.9, 0.95, 1.0), 0.55, Color(0.53, 0.75, 0.95), 0.005],
-	[0.6, Vector3(-0.5, 0.2, 0), 0.65, Color(0.72, 0.79, 0.87), Color(0.7, 0.75, 0.8), 0.75, Color(0.45, 0.5, 0.55), 0.008],
-	[0.8, Vector3(-0.35, 0.85, 0), 0.7, Color(1.0, 0.6, 0.4), Color(0.9, 0.65, 0.5), 0.5, Color(0.45, 0.35, 0.35), 0.007],
-	[0.95, Vector3(-0.3, 0.1, 0), 0.4, Color(0.5, 0.6, 0.9), Color(0.45, 0.55, 0.8), 0.35, Color(0.12, 0.16, 0.28), 0.01],
+	[0.0, Vector3(-0.45, 0.75, 0), 0.85, Color(1.0, 0.8, 0.62), Color(1.0, 0.85, 0.7), 0.55, Color(0.5, 0.6, 0.78), 0.006, Color(0.5, 0.55, 0.65)],
+	[0.35, Vector3(-0.75, 0.45, 0), 1.15, Color(1.0, 0.96, 0.9), Color(0.9, 0.95, 1.0), 0.5, Color(0.53, 0.75, 0.95), 0.005, Color(0.65, 0.78, 0.9)],
+	[0.6, Vector3(-0.5, 0.2, 0), 0.65, Color(0.72, 0.79, 0.87), Color(0.7, 0.75, 0.8), 0.75, Color(0.45, 0.5, 0.55), 0.008, Color(0.5, 0.55, 0.6)],
+	[0.8, Vector3(-0.35, 0.85, 0), 0.7, Color(1.0, 0.6, 0.4), Color(0.9, 0.65, 0.5), 0.5, Color(0.45, 0.35, 0.35), 0.007, Color(0.5, 0.38, 0.32)],
+	[0.95, Vector3(-0.3, 0.1, 0), 0.4, Color(0.5, 0.6, 0.9), Color(0.45, 0.55, 0.8), 0.35, Color(0.12, 0.16, 0.28), 0.01, Color(0.1, 0.13, 0.22)],
 ]
 
 func _ready() -> void:
@@ -80,6 +80,7 @@ func _mix(a: Array, b: Array, k: float) -> Array:
 		lerpf(float(a[5]), float(b[5]), k),
 		(a[6] as Color).lerp(b[6], k),
 		lerpf(float(a[7]), float(b[7]), k),
+		(a[8] as Color).lerp(b[8], k),
 	]
 
 func _apply_frame() -> void:
@@ -91,6 +92,7 @@ func _apply_frame() -> void:
 	f[3] = (f[3] as Color).lerp(o[4], storm)
 	f[4] = lerpf(float(f[4]), float(o[5]), storm)
 	f[5] = (f[5] as Color).lerp(o[6], storm)
+	f[7] = (f[7] as Color).lerp(o[8], storm)
 	f[1] = maxf(float(f[1]), 0.35)
 	f[4] = maxf(float(f[4]), 0.35)
 	var sun := get_node_or_null("Sun") as DirectionalLight3D
@@ -98,6 +100,8 @@ func _apply_frame() -> void:
 		sun.rotation = f[0]
 		sun.light_energy = f[1]
 		sun.light_color = f[2]
+		sun.shadow_bias = 0.06
+		sun.shadow_opacity = 0.85
 	var wenv := get_node_or_null("WorldEnv") as WorldEnvironment
 	if wenv and wenv.environment:
 		var env: Environment = wenv.environment
@@ -105,6 +109,7 @@ func _apply_frame() -> void:
 		env.ambient_light_energy = f[4]
 		env.background_color = f[5]
 		env.fog_density = f[6]
+		env.fog_light_color = f[7]
 	# Lamp auto-light after dusk + storm gloom (write only on change).
 	var lamp = get_node_or_null("Lamp")
 	if lamp and lamp.get("base") != null:
@@ -113,6 +118,10 @@ func _apply_frame() -> void:
 		if not is_equal_approx(want_lamp, _last_lamp):
 			_last_lamp = want_lamp
 			lamp.base = want_lamp
+	# Vegetation gusts follow storm (shared sway material, write on change).
+	var sway = load("res://shaders/sway_leaf.tres") as ShaderMaterial
+	if sway:
+		sway.set_shader_parameter("strength", 0.06 + storm * 0.1)
 	# Rain heaviness follows storm (amount reallocates — write only on change).
 	var rain = get_node_or_null("Rain") as CPUParticles3D
 	if rain:

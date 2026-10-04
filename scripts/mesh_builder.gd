@@ -47,10 +47,11 @@ static func lathed_kalasham(rings: int = 8, radius: float = 0.22, height: float 
 	pts.append(Vector2(0.0, 0.0)) # closed base center
 	for i in range(1, rings + 1):
 		var t := float(i) / rings
-		# dome profile: bulb at 1/3, pinch at neck, point at top
-		var r := radius * (0.35 + 0.65 * sin(t * PI * 0.85))
+		# double-bulb dome profile: bulb, waist, bulb, pinch, point
+		var r := radius * (0.35 + 0.5 * sin(t * PI * 0.85) + 0.15 * sin(t * PI * 2.2))
 		if t > 0.85:
 			r = radius * 0.18 * (1.0 - (t - 0.85) / 0.15)
+		r = maxf(r, 0.0)
 		pts.append(Vector2(r, t * height))
 	var segs := 12
 	for i in range(rings + 1):
@@ -71,8 +72,8 @@ static func lathed_kalasham(rings: int = 8, radius: float = 0.22, height: float 
 static func noisy_ground(w: float, d: float, amp: float, flat_r: float = 3.0) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var nx := 16
-	var nz := 16
+	var nx := 24
+	var nz := 24
 	var grid: Array = []
 	for iz in range(nz + 1):
 		var row: Array = []

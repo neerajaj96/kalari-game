@@ -36,7 +36,7 @@ func _ready() -> void:
 	for b in ["AttackButton", "BlockButton", "DodgeButton", "VillageButton",
 			"SchoolButton", "RainButton", "RitualButton", "SadhanaButton",
 			"BreatheButton", "TabsButton", "PlotButton", "MargaButton",
-			"SaveButton", "MuteButton"]:
+			"SaveButton", "MuteButton", "DrillButton", "SettingsButton"]:
 		var btn := get_node_or_null("Root/" + b) as Button
 		if btn == null:
 			push_warning("HUD missing " + b)
@@ -45,6 +45,10 @@ func _ready() -> void:
 	var close_btn := get_node_or_null("Root/TabsPanel/TabsClose") as Button
 	if close_btn:
 		close_btn.pressed.connect(_on_tabs_close)
+	for sb in ["SoundButton", "ShadowButton", "ResetButton", "SettingsClose"]:
+		var sbtn := get_node_or_null("Root/SettingsPanel/" + sb) as Button
+		if sbtn:
+			sbtn.pressed.connect(_on_settings_button.bind(sb))
 	tabs_list.item_selected.connect(_on_tab_selected)
 	_load_tabs()
 	_load_arsenal()
@@ -102,6 +106,8 @@ func _on_hud_button(b: String) -> void:
 		"MargaButton": _on_marga()
 		"SaveButton": _on_save()
 		"MuteButton": _on_mute()
+		"DrillButton": _on_drill()
+		"SettingsButton": _on_settings()
 
 func bind(p, x) -> void:
 	player = p
@@ -256,8 +262,46 @@ func _on_mute() -> void:
 		return
 	say(game.audio.toggle_mute())
 
+func _on_drill() -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if game == null or game.get("drill") == null or not game.drill.has_method("toggle"):
+		say("Drill unavailable.")
+		return
+	say(game.drill.toggle())
+
+func _on_settings() -> void:
+	var p := get_node_or_null("Root/SettingsPanel") as Panel
+	if p:
+		p.visible = not p.visible
+
 func _on_tabs_close() -> void:
 	tabs_panel.visible = false
+
+func _on_settings_button(b: String) -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if b == "SettingsClose":
+		var p := get_node_or_null("Root/SettingsPanel") as Panel
+		if p:
+			p.visible = false
+	elif b == "SoundButton":
+		_on_mute()
+		var sb := get_node_or_null("Root/SettingsPanel/SoundButton") as Button
+		if sb and game and game.get("audio") != null:
+			sb.text = "Sound: off" if game.audio.muted else "Sound: on"
+	elif b == "ShadowButton":
+		var w = get_tree().get_first_node_in_group("world")
+		var sun = w.current.get_node_or_null("Sun") if w and w.get("current") else null
+		if sun:
+			sun.shadow_enabled = not sun.shadow_enabled
+			if game:
+				game.set("shadows_on", sun.shadow_enabled)
+			var sh := get_node_or_null("Root/SettingsPanel/ShadowButton") as Button
+			if sh:
+				sh.text = "Shadows: on" if sun.shadow_enabled else "Shadows: off"
+	elif b == "ResetButton":
+		if FileAccess.file_exists("user://kalari_save.cfg"):
+			DirAccess.remove_absolute("user://kalari_save.cfg")
+		get_tree().reload_current_scene()
 
 func _on_tab_selected(i: int) -> void:
 	_show_tab(i)

@@ -114,7 +114,7 @@ position = Vector3(0, 1.05, 0)
 material_override = ExtResource("9")
 mesh = SubResource("torso")
 position = Vector3(0, 0.55, 0)
-scale = Vector3(1.02, 0.4, 1.02)
+scale = Vector3(0.96, 0.4, 0.96)
 
 [node name="Head" type="MeshInstance3D" parent="."]
 material_override = ExtResource("10")
