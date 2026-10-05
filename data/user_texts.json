@@ -16,7 +16,7 @@
       "id": "ksetra_dvitala",
       "name_en": "Dvitala: the two-storey Vishnu shrine",
       "name_ml": "ദ്വിതല ശ്രീകോവിൽ",
-      "what": "East-facing square chathura-vimana in two talas: granite adhisthana mouldings, laterite pada with pilasters, 9-band prastara, hara aedicules (kuta/sala/panjara), upper tala, timber pyramidal roof and gilt copper stupi-kalasha. Scale runs padonatrikara (2.75 hastas) to 15 hastas in 8-angula steps; 1 hasta = 24 angulas.",
+      "what": "East-facing square chathura-vimana in two talas (flagship v2): granite adhisthana mouldings, hollow laterite pada with east door gap and lintel, 9-band prastara, hara aedicules (kuta/sala/panjara), upper tala, timber pyramidal roof and gilt copper stupi-kalasha. Garbhagriha holds pitha + standing Vishnu (darshana through the door, Tantri-only crossing). Scale runs padonatrikara (2.75 hastas) to 15 hastas in 8-angula steps; 1 hasta = 24 angulas.",
       "how_in_game": "Generated from spec/vishnu-dvitala.v1.json by ksetra_builder.gd; every member carries its rule provenance, inspectable via ProvenanceLookup.",
       "philosophy": "Height is measured order: base, wall and crown each know their share.",
       "sources": [
@@ -38,11 +38,11 @@
       "id": "ksetra_provenance",
       "name_en": "Provenance: object back to verse",
       "name_ml": "പ്രമാണം",
-      "what": "Every generated member keeps rule ids: GAME OBJECT -> RULE -> KNOWLEDGE ENTITY -> SOURCE (work, patala, verse, layer). 269 rules gated; contradictions preserved, never merged.",
-      "how_in_game": "ProvenanceLookup.chain_for() renders the chain for any built node; 23/23 spec nodes resolve in-engine.",
+      "what": "Every generated member keeps rule ids: GAME OBJECT -> RULE -> KNOWLEDGE ENTITY -> SOURCE (work, patala, verse, layer). 487 rules (PRIMARY/TRANSLATION/OCR/OBSERVED); contradictions preserved, never merged.",
+      "how_in_game": "ProvenanceLookup.chain_for() renders the chain for any built node; 33/33 flagship nodes resolve in-engine. Keys B/D/S run the Sesha bali, dhvaja and shuddhi programs.",
       "philosophy": "Never invent a rule; what cannot be sourced is marked SOURCE_REQUIRED, PARTIAL or OPEN.",
       "sources": [
-        "ksetra-engine kg/rules (269), contradictions.yaml (5)"
+        "ksetra-engine kg/rules (487), contradictions.yaml (7)"
       ]
     }
   ]

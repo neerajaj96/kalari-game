@@ -1,12 +1,12 @@
 {
   "meta": {
-    "name": "Vishnu Dvitala Ksetra (slice v1)",
+    "name": "Vishnu Dvitala Ksetra (flagship v2)",
     "deity": "Vishnu (standing; shankha/chakra/gada/padma)",
     "facing": "east",
     "yoni": "vrisha",
-    "version": "1",
+    "version": "2",
     "notes": [
-      "East-facing square dvitala (chathura-vimana, Guruvayur-like massing).",
+      "East-facing square dvitala (chathura-vimana, Guruvayur-like massing). FLAGSHIP canonical A->Z.",
       "Yoni pairing: east-facing prasada carries vrisha-yoni and vrisha-yoni idol (TS P2V2 passage; Vimarshini/Vivarana in anchor).",
       "Garbha proportion OPEN: chosen 1/2 of uttara-vistara as conventional nirantara; TS 9-method derivation to be pinned at next corpus pass."
     ]
@@ -62,11 +62,15 @@
           "TS-P2V23B-kudyastambha",
           "TS-P2V26B-bhittivibhaga",
           "TS-P2V36B-ghanabhitti",
-          "TS-P2V37B-vedika"
+          "TS-P2V37B-vedika",
+          "TS-P2V28B-doorwidth",
+          "TS-P2V29B-doorheight",
+          "TS-P2V30B-doorplank"
         ],
         "material": "laterite",
         "pilasters": "12 kudya-stambhas (4 corners + 2 per face, equal spacing)",
-        "door": "east_main",
+        "door": "east_main_hollow_gap_with_lintel",
+        "walls": "hollow N/S/W + split E with door gap; inner t = garbha/8",
         "ghanadvaras": [
           "north",
           "south",
@@ -482,6 +486,150 @@
         "provenance": [
           "TS-P2V60B-tala2"
         ]
+      },
+      {
+        "id": "nidhi_deposit",
+        "kind": "foundation_deposit",
+        "rel": {
+          "under": "adhisthana.center"
+        },
+        "params": {
+          "pot": "nidhi_kumbha_copper_or_stone",
+          "lid": "kurma_shila_oriented",
+          "lotus": "silver_padma",
+          "bricks": 8
+        },
+        "provenance": [
+          "TS-P1V74B-nidhipot",
+          "TS-P1V77B-kurmashila",
+          "TS-P1V79B-silverlotus",
+          "TS-P1V81B-bricks"
+        ]
+      },
+      {
+        "id": "palika_row",
+        "kind": "sowing_pots",
+        "rel": {
+          "in": "ankura_mandapa"
+        },
+        "params": {
+          "palikas": 16,
+          "bija": "sowed_milk_wash"
+        },
+        "provenance": [
+          "TS-P3V02B-palika16",
+          "TS-P3V03B-bija"
+        ]
+      },
+      {
+        "id": "kautuka_shayya",
+        "kind": "consecration_furniture",
+        "rel": {
+          "in": "adhivasa_mandapa"
+        },
+        "params": {
+          "kautuka": "bracelet_rite",
+          "shayya": "facing_prasada"
+        },
+        "provenance": [
+          "TS-P3V38B-kautuka",
+          "TS-P4V114B-shayana"
+        ]
+      },
+      {
+        "id": "brahma_kalasha",
+        "kind": "vessel_row",
+        "rel": {
+          "in": "kalasha_mandapa"
+        },
+        "params": {
+          "vessels": "8_9_5_options_17_dravya",
+          "parikalasha": "parikhanda_madhya"
+        },
+        "provenance": [
+          "SESHA-P4V02-brahmakalasha",
+          "SESHA-P4V04-parikalasha",
+          "SESHA-P7V41B-kalashafill"
+        ]
+      },
+      {
+        "id": "bali_circuit",
+        "kind": "offering_stations",
+        "rel": {
+          "on": "pradakshina_path"
+        },
+        "params": {
+          "savana": 3,
+          "kshetrapala": "ten_direction_retinue"
+        },
+        "provenance": [
+          "SESHA-P5V02-savanatraya",
+          "SESHA-P5V07-balikrama",
+          "SESHA-P8V04-kshetrapala"
+        ]
+      },
+      {
+        "id": "dhvaja_vahana",
+        "kind": "flag_vehicle",
+        "rel": {
+          "at": "dwaja.base"
+        },
+        "params": {
+          "vahana": "rishabha",
+          "parita": "eight_lokapala_flags"
+        },
+        "provenance": [
+          "SESHA-P9V02-dhvajavahana",
+          "SESHA-P9V03-dhvasthapana"
+        ]
+      },
+      {
+        "id": "shuddhi_station",
+        "kind": "purification_place",
+        "rel": {
+          "at": "complex.entry"
+        },
+        "params": {
+          "acts": "dig_bandha_nadi_shuddhi"
+        },
+        "provenance": [
+          "SESHA-P8V05-digbandha"
+        ]
+      },
+      {
+        "id": "japa_mandapa",
+        "kind": "chanting_hall",
+        "rel": {
+          "near": "agra_mandapa"
+        },
+        "params": {
+          "mula": "tara_nati_svanama",
+          "angas": "shad_ashta_dvadasha"
+        },
+        "provenance": [
+          "SESHA-P3V02-mantramula",
+          "SESHA-P3V04-mantraanga"
+        ]
+      },
+      {
+        "id": "mula_bimba",
+        "kind": "standing_murti",
+        "rel": {
+          "on": "pitha.center_garbhagriha"
+        },
+        "params": {
+          "form": "standing_Vishnu_stylized",
+          "height": "garbha_half_mode",
+          "diadem": "copper",
+          "darshana": "through_east_door",
+          "access": "tantri_melshanti_only"
+        },
+        "provenance": [
+          "TS-P2V121B-bimbaheight",
+          "TS-P2V123B-bimbawidth",
+          "TS-P2V109B-diadem",
+          "TS-P2V117B-padmapitha"
+        ]
       }
     ]
   },
@@ -713,6 +861,162 @@
       "work": "Tantrasamuccaya",
       "patala": 3,
       "verse": 46,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P1V74B-nidhipot": {
+      "work": "Tantrasamuccaya",
+      "patala": 1,
+      "verse": 74,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P1V77B-kurmashila": {
+      "work": "Tantrasamuccaya",
+      "patala": 1,
+      "verse": 77,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P1V79B-silverlotus": {
+      "work": "Tantrasamuccaya",
+      "patala": 1,
+      "verse": 79,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P1V81B-bricks": {
+      "work": "Tantrasamuccaya",
+      "patala": 1,
+      "verse": 81,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P3V02B-palika16": {
+      "work": "Tantrasamuccaya",
+      "patala": 3,
+      "verse": 2,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P3V03B-bija": {
+      "work": "Tantrasamuccaya",
+      "patala": 3,
+      "verse": 3,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P3V38B-kautuka": {
+      "work": "Tantrasamuccaya",
+      "patala": 3,
+      "verse": 38,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P4V114B-shayana": {
+      "work": "Tantrasamuccaya",
+      "patala": 4,
+      "verse": 114,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "SESHA-P7V41B-kalashafill": {
+      "work": "Seshasamuccaya",
+      "patala": 7,
+      "verse": 41,
+      "layer": "OCR"
+    },
+    "SESHA-P3V02-mantramula": {
+      "work": "Seshasamuccaya",
+      "patala": 3,
+      "verse": 2,
+      "layer": "OCR"
+    },
+    "SESHA-P3V04-mantraanga": {
+      "work": "Seshasamuccaya",
+      "patala": 3,
+      "verse": 3,
+      "layer": "OCR"
+    },
+    "SESHA-P4V02-brahmakalasha": {
+      "work": "Seshasamuccaya",
+      "patala": 4,
+      "verse": 2,
+      "layer": "OCR"
+    },
+    "SESHA-P4V04-parikalasha": {
+      "work": "Seshasamuccaya",
+      "patala": 4,
+      "verse": 4,
+      "layer": "OCR"
+    },
+    "SESHA-P5V02-savanatraya": {
+      "work": "Seshasamuccaya",
+      "patala": 5,
+      "verse": 2,
+      "layer": "OCR"
+    },
+    "SESHA-P5V07-balikrama": {
+      "work": "Seshasamuccaya",
+      "patala": 5,
+      "verse": 7,
+      "layer": "OCR"
+    },
+    "SESHA-P8V04-kshetrapala": {
+      "work": "Seshasamuccaya",
+      "patala": 8,
+      "verse": 4,
+      "layer": "OCR"
+    },
+    "SESHA-P8V05-digbandha": {
+      "work": "Seshasamuccaya",
+      "patala": 8,
+      "verse": 5,
+      "layer": "OCR"
+    },
+    "SESHA-P9V02-dhvajavahana": {
+      "work": "Seshasamuccaya",
+      "patala": 9,
+      "verse": 2,
+      "layer": "OCR"
+    },
+    "SESHA-P9V03-dhvasthapana": {
+      "work": "Seshasamuccaya",
+      "patala": 9,
+      "verse": 3,
+      "layer": "OCR"
+    },
+    "TS-P2V28B-doorwidth": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 28,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V29B-doorheight": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 29,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V30B-doorplank": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 30,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V121B-bimbaheight": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 121,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V123B-bimbawidth": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 123,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V109B-diadem": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 109,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V117B-padmapitha": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 117,
       "layer": "TRANSLATION(hand-reviewed)"
     }
   }

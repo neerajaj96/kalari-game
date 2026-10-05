@@ -54,6 +54,8 @@ func load_world(path: String) -> void:
 	var game1 = get_tree().get_first_node_in_group("game")
 	if game1 and game1.get("shadows_on") == false:
 		var sun1 := current.get_node_or_null("Sun") as DirectionalLight3D
+		if sun1 == null:
+			sun1 = current.get_node_or_null("DayNight/Sun") as DirectionalLight3D
 		if sun1:
 			sun1.shadow_enabled = false
 	var game0 = get_tree().get_first_node_in_group("game")

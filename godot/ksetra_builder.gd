@@ -152,9 +152,38 @@ func _build_all() -> void:
 		_box(root, "Adhisthana_" + names[i], granite,
 			Vector3(w, mould_h, w), Vector3(0, y + mould_h / 2.0, 0), prov_pr)
 		y += mould_h
-	# --- tala1 pada (laterite, east door gap approximated by door frame) ---
+	# --- tala1 pada: hollow laterite walls (inner t = garbha/8 per TS-P2V19B),
+	# east door gap with lintel (divisors/height/planks TS-P2V28B/29B/30B) ---
 	var h1 := _m(3.0)
-	_box(root, "PadaT1", laterite, Vector3(gh, h1, gh), Vector3(0, y + h1 / 2.0, 0), prov_pr)
+	var wt := gh / 8.0
+	var wall_prov: Array = prov_pr + ["TS-P2V19B-walls"] if not prov_pr.has("TS-P2V19B-walls") else prov_pr
+	_box(root, "PadaT1_N", laterite, Vector3(gh, h1, wt), Vector3(0, y + h1 / 2.0, -gh / 2.0 + wt / 2.0), wall_prov)
+	_box(root, "PadaT1_S", laterite, Vector3(gh, h1, wt), Vector3(0, y + h1 / 2.0, gh / 2.0 - wt / 2.0), wall_prov)
+	_box(root, "PadaT1_W", laterite, Vector3(wt, h1, gh - 2.0 * wt), Vector3(-gh / 2.0 + wt / 2.0, y + h1 / 2.0, 0), wall_prov)
+	var dw := gh / 4.0
+	var dh := h1 * 0.85
+	var segw := (gh - 2.0 * wt - dw) / 2.0
+	_box(root, "PadaT1_E_N", laterite, Vector3(wt, h1, segw),
+		Vector3(gh / 2.0 - wt / 2.0, y + h1 / 2.0, -(dw / 2.0 + segw / 2.0)), door_prov)
+	_box(root, "PadaT1_E_S", laterite, Vector3(wt, h1, segw),
+		Vector3(gh / 2.0 - wt / 2.0, y + h1 / 2.0, dw / 2.0 + segw / 2.0), door_prov)
+	_box(root, "PadaT1_Lintel", laterite, Vector3(wt, h1 - dh, dw),
+		Vector3(gh / 2.0 - wt / 2.0, y + dh + (h1 - dh) / 2.0, 0), door_prov)
+	# garbhagriha interior: padma-pitha + standing Vishnu (stylized massing;
+	# height/width/diadem per V121B/V123B/V109B, tala grades V86B; darshana
+	# through the east door; Tantri-only crossing per K-TANTRI-ONLY)
+	var bimba_prov: Array = ["TS-P2V121B-bimbaheight", "TS-P2V123B-bimbawidth", "TS-P2V109B-diadem", "TS-P2V117B-padmapitha"]
+	_box(root, "Pitha", granite, Vector3(1.0, 0.4, 1.0), Vector3(0, y + 0.2, 0), bimba_prov)
+	_cyl(root, "PadmaCapital", cream, 0.42, 0.15, Vector3(0, y + 0.47, 0), bimba_prov, false)
+	_box(root, "BimbaBody", granite, Vector3(0.5, 1.1, 0.35), Vector3(0, y + 1.1, 0), bimba_prov, false)
+	_box(root, "BimbaHead", granite, Vector3(0.28, 0.3, 0.28), Vector3(0, y + 1.8, 0), bimba_prov, false)
+	_box(root, "BimbaDiadem", copper, Vector3(0.34, 0.22, 0.34), Vector3(0, y + 2.0, 0), bimba_prov, false)
+	_box(root, "BimbaArmL", granite, Vector3(0.14, 0.7, 0.14), Vector3(-0.36, y + 1.15, 0), bimba_prov, false)
+	_box(root, "BimbaArmR", granite, Vector3(0.14, 0.7, 0.14), Vector3(0.36, y + 1.15, 0), bimba_prov, false)
+	# dvarapalas flanking the east door (spec dvarapala_L/R, TS-P2V2-yoni)
+	var dvara_prov: Array = ["TS-P2V2-yoni"]
+	_box(root, "DvarapalaL", granite, Vector3(0.35, 1.4, 0.35), Vector3(gh / 2.0 + 0.35, y + 0.7, -0.85), dvara_prov)
+	_box(root, "DvarapalaR", granite, Vector3(0.35, 1.4, 0.35), Vector3(gh / 2.0 + 0.35, y + 0.7, 0.85), dvara_prov)
 	# ghanadvaras: solid false doors on non-main faces (TS-P2V26B-bhittivibhaga)
 	var ghana_prov: Array = prov_pr + ["TS-P2V26B-bhittivibhaga"] if not prov_pr.has("TS-P2V26B-bhittivibhaga") else prov_pr
 	_box(root, "Ghanadvara_N", laterite, Vector3(0.88, 1.75, 0.1),
@@ -217,9 +246,13 @@ func _build_all() -> void:
 	y += _m(3.0)
 	_box(root, "StupiKalasha", copper, Vector3(0.3, _m(0.75), 0.3), Vector3(0, y + _m(0.75) / 2.0, 0), prov_pr)
 
-	# --- east axis: sopana, mukhamandapa, namaskara, balikkal, dwaja ---
+	# --- east axis: sopana steps, mukhamandapa, namaskara, balikkal, dwaja ---
 	var ex := gh / 2.0
-	_box(root, "Sopana", granite, Vector3(1.2, 0.3, 2.0), Vector3(ex + 0.9, 0.15, 0), prov_pr)
+	# sopana: three granite steps rising to the door (TS-P2V33B-sopana)
+	var sopana_prov: Array = prov_pr + ["TS-P2V33B-sopana"] if not prov_pr.has("TS-P2V33B-sopana") else prov_pr
+	_box(root, "Sopana1", granite, Vector3(0.6, 0.15, 2.0), Vector3(ex + 0.5, 0.075, 0), sopana_prov)
+	_box(root, "Sopana2", granite, Vector3(0.6, 0.3, 2.0), Vector3(ex + 1.0, 0.15, 0), sopana_prov)
+	_box(root, "Sopana3", granite, Vector3(0.6, 0.45, 2.0), Vector3(ex + 1.5, 0.225, 0), sopana_prov)
 	# mukhamandapa: 4 pillars + slab + pyramid
 	var mx := ex + 3.0
 	for px in [mx - 1.0, mx + 1.0]:
@@ -243,10 +276,54 @@ func _build_all() -> void:
 		var br := uh + 2.5
 		_box(root, "Bali_" + bali_names[i], granite, Vector3(0.4, 0.5, 0.4),
 			Vector3(cos(ang) * br, 0.25, sin(ang) * br), prov_pr, true, 30.0)
-	# dwaja (8-sided approx by box) + deepa
-	_box(root, "DwajaPole", timber, Vector3(0.3, 6.0, 0.3), Vector3(nx + 5.0, 3.0, 0), prov_pr)
+	# dwaja: 8-sided areca pole (spec dwaja.sides=8) + copper kavacha top
+	_cyl(root, "DwajaPole", timber, 0.18, 6.0, Vector3(nx + 5.0, 3.0, 0), prov_pr).sides = 8
 	_box(root, "DwajaTop", copper, Vector3(0.5, 0.5, 0.5), Vector3(nx + 5.0, 6.2, 0), prov_pr)
 	_box(root, "DeepaStambha", granite, Vector3(0.3, 3.0, 0.3), Vector3(nx + 6.5, 1.5, 1.5), prov_pr)
+	# rishabha vahana at the dwaja base (SESHA-P9V02: bull for the deity)
+	var dhvaja_prov: Array = prov_pr + ["SESHA-P9V02-dhvajavahana", "SESHA-P9V03-dhvasthapana"]
+	_box(root, "RishabhaBase", granite, Vector3(1.0, 0.3, 0.6), Vector3(nx + 5.0, 0.15, 1.4), dhvaja_prov)
+	_box(root, "Rishabha", cream, Vector3(0.8, 0.6, 0.4), Vector3(nx + 5.0, 0.6, 1.4), dhvaja_prov)
+
+	# --- flagship v2 micro-objects (all provenance-tagged, dressing LOD) ---
+	# foundation deposit set at the adhishthana north-east base (buried program shown exposed)
+	var deposit_prov: Array = ["TS-P1V74B-nidhipot", "TS-P1V77B-kurmashila", "TS-P1V79B-silverlotus", "TS-P1V81B-bricks"]
+	_cyl(root, "NidhiKumbha", copper, 0.22, 0.35, Vector3(ex + 0.4, 0.18, -1.6), deposit_prov, false)
+	_box(root, "KurmaShila", granite, Vector3(0.5, 0.12, 0.5), Vector3(ex + 0.4, 0.41, -1.6), deposit_prov, false)
+	_box(root, "SilverLotus", cream, Vector3(0.3, 0.08, 0.3), Vector3(ex + 0.4, 0.5, -2.1), deposit_prov, false)
+	_box(root, "DepositBricks", laterite, Vector3(0.6, 0.25, 0.6), Vector3(ex + 0.4, 0.12, -2.6), deposit_prov, false)
+	# palika-16 sowing grid south of mukhamandapa (TS-P3V02B/V03B)
+	var palika_prov: Array = ["TS-P3V02B-palika16", "TS-P3V03B-bija"]
+	for pi in range(16):
+		var px := 4.0 + float(pi % 4) * 0.5
+		var pz := 3.0 + float(pi / 4) * 0.5
+		_box(root, "Palika_%d" % pi, laterite, Vector3(0.28, 0.22, 0.28),
+			Vector3(px, 0.11, pz), palika_prov, false, 30.0)
+	# kautuka stand + shayya platform north of mukhamandapa (TS-P3V38B/V114B)
+	var kautuka_prov: Array = ["TS-P3V38B-kautuka", "TS-P4V114B-shayana"]
+	_box(root, "ShayyaPlatform", cream, Vector3(2.0, 0.5, 1.0), Vector3(mx, 0.25, -3.5), kautuka_prov)
+	_box(root, "KautukaStand", timber, Vector3(0.3, 0.6, 0.3), Vector3(mx, 0.3, -2.5), kautuka_prov)
+	# brahma-kalasha vessel row by the thidappalli (SESHA-P4V02/V04 + V41B fills)
+	var kalasha_prov: Array = ["SESHA-P4V02-brahmakalasha", "SESHA-P4V04-parikalasha", "SESHA-P7V41B-kalashafill"]
+	for ki in range(5):
+		_cyl(root, "BrahmaKalasha_%d" % ki, copper, 0.15, 0.4,
+			Vector3(4.5 + float(ki) * 0.5, 0.2, -4.5), kalasha_prov, false)
+	# kshetrapala guardian stone NE (SESHA-P8V04 ten-direction retinue)
+	_box(root, "Kshetrapala", granite, Vector3(0.6, 1.0, 0.6), Vector3(9.0, 0.5, -9.0),
+		["SESHA-P5V02-savanatraya", "SESHA-P5V07-balikrama", "SESHA-P8V04-kshetrapala"], true, 30.0)
+	# eight lokapala parita flags inside the lamp ring (SESHA-P9V03)
+	for fi in range(8):
+		var fang := TAU * float(fi) / 8.0
+		_box(root, "ParitaFlag_%d" % fi, cream, Vector3(0.3, 0.6, 0.05),
+			Vector3(cos(fang) * 17.5, 1.6, sin(fang) * 17.5), dhvaja_prov, false, 40.0)
+	# shuddhi platform + poles by the east gate (SESHA-P8V05 dig-bandha/nadi)
+	var shuddhi_prov: Array = ["SESHA-P8V05-digbandha"]
+	_box(root, "ShuddhiPlatform", granite, Vector3(1.6, 0.3, 1.6), Vector3((uh + 18.0) / 2.0, 0.15, 3.0), shuddhi_prov)
+	_box(root, "ShuddhiPoleL", timber, Vector3(0.15, 2.0, 0.15), Vector3((uh + 18.0) / 2.0, 1.15, 2.5), shuddhi_prov)
+	_box(root, "ShuddhiPoleR", timber, Vector3(0.15, 2.0, 0.15), Vector3((uh + 18.0) / 2.0, 1.15, 3.5), shuddhi_prov)
+	# japa mandapa SW for mantra-anga practice (SESHA-P3V02/V04)
+	var mantra_prov: Array = ["SESHA-P3V02-mantramula", "SESHA-P3V04-mantraanga"]
+	_build_hall(root, "JapaMandapa", Vector3(-5.0, 0, 5.0), timber, cream, mantra_prov)
 
 	# --- prakara rings (nalambalam rect, vilakkumadam, sivelipura path, maryada+gopura) ---
 	_build_ring(root, "Nalambalam", uh + 6.0, 2.2, cream, prov_pr)

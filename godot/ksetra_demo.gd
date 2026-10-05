@@ -34,7 +34,7 @@ func _ready() -> void:
 	sched.inventory = inv
 	sched.slot_opened.connect(func(id: String) -> void: _say("Nitya slot open: " + id + ". " + inv.summary()))
 	sched.slot_opened.connect(_on_slot)
-	sched.rite_stepped.connect(func(id: String) -> void: _say("Adhivasa rite: " + id + ". " + inv.summary()))
+	sched.rite_stepped.connect(func(id: String) -> void: _say("Rite step: " + id + ". " + inv.summary()))
 	sched.step_waiting.connect(func(id: String, why: String) -> void: _say("Waiting: " + id + " — " + why + ". " + inv.summary()))
 	_build_slice(0)
 	print("KSETRA DEMO OK: built + scheduler + provenance index live")
@@ -59,7 +59,8 @@ func _build_slice(i: int) -> void:
 		return
 	var meta: Dictionary = spec.get("meta", {})
 	_spawn_devotees(float(spec.get("prasada", {}).get("uttara_hasta", 12.0)) * 0.72 + 2.5)
-	_say(str(meta.get("name", "?")) + " (K = toggle slice. Drag orbit, wheel zoom, click member.)")
+	_spawn_role_figures()
+	_say(str(meta.get("name", "?")) + " (K slice. A adhivasa B bali D dhvaja S shuddhi F fetch X drill R rain. Drag orbit, wheel zoom, click member.)")
 
 var _crowd: Array = []
 var _monsoon := false
@@ -115,6 +116,40 @@ func _spawn_devotees(ring_r: float) -> void:
 		d.set_meta("provenance", ["TS-P2V2-yoni"])
 		_crowd.append(d)
 
+func _spawn_role_figures() -> void:
+	# Stationary role figures: Tantri at the sopana (garbhagriha authority),
+	# Marar musician in the courtyard. Provenance: roles.v1.json + TS-P1V04B.
+	# Cleared and re-seeded per slice (positions suit both slices).
+	for c in get_children():
+		if c is MeshInstance3D and (str(c.name) == "Tantri" or str(c.name) == "Marar"):
+			c.queue_free()
+	var specs := [
+		{"nm": "Tantri", "pos": Vector3(3.6, 0.9, -1.6), "tint": Color(0.95, 0.75, 0.35),
+			"prov": ["TS-P1V04B-yajamana"], "note": "Tantri: garbhagriha only."},
+		{"nm": "Marar", "pos": Vector3(12.5, 0.9, -2.5), "tint": Color(0.85, 0.85, 0.9),
+			"prov": ["TS-P4V101B-upachara"], "note": "Marar: edakka at sopanam."},
+	]
+	for s in specs:
+		var body := MeshInstance3D.new()
+		body.name = str(s["nm"])
+		var mesh := CapsuleMesh.new()
+		mesh.radius = 0.3
+		mesh.height = 1.2
+		body.mesh = mesh
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = s["tint"]
+		mat.roughness = 0.85
+		body.material_override = mat
+		body.position = s["pos"]
+		body.set_meta("provenance", s["prov"])
+		add_child(body)
+		var tag := Label3D.new()
+		tag.text = s["note"]
+		tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		tag.font_size = 36
+		tag.position = Vector3(0, 1.1, 0)
+		body.add_child(tag)
+
 func _process(_delta: float) -> void:
 	if _cam == null:
 		return
@@ -139,6 +174,21 @@ func _unhandled_input(event: InputEvent) -> void:
 			var sched := get_node_or_null("KsetraScheduler")
 			if sched and sched.has_method("start_adhivasa"):
 				_say("Adhivasa program begun: " + str(sched.start_adhivasa()))
+			return
+		if (event as InputEventKey).keycode == KEY_B:
+			var sched_b := get_node_or_null("KsetraScheduler")
+			if sched_b and sched_b.has_method("start_bali_circuit"):
+				_say("Bali circuit begun: " + str(sched_b.start_bali_circuit()))
+			return
+		if (event as InputEventKey).keycode == KEY_D:
+			var sched_d := get_node_or_null("KsetraScheduler")
+			if sched_d and sched_d.has_method("start_dhvaja"):
+				_say("Dhvaja program begun: " + str(sched_d.start_dhvaja()))
+			return
+		if (event as InputEventKey).keycode == KEY_S:
+			var sched_s := get_node_or_null("KsetraScheduler")
+			if sched_s and sched_s.has_method("start_shuddhi"):
+				_say("Shuddhi program begun: " + str(sched_s.start_shuddhi()))
 			return
 		if (event as InputEventKey).keycode == KEY_X:
 			# Defilement drill (SESHA-P6V01): sthana-shuddhi then pratima-shuddhi, remedy cycles.

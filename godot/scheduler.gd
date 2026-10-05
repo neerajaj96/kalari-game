@@ -44,6 +44,25 @@ var ankurarpana_steps := [
 	{"id": "palika_place", "rule": "TS-P3V02B-palika16"},
 	{"id": "bija_sow", "rule": "TS-P3V03B-bija"},
 ]
+# Daily bali circuit, SESHA P5 order (savana-traya + dvara, then kalpti + Kshetrapala).
+var bali_steps := [
+	{"id": "savana_bali", "rule": "SESHA-P5V02-savanatraya"},
+	{"id": "dvara_bali", "rule": "SESHA-P5V02-savanatraya"},
+	{"id": "kshetrapala_bali", "rule": "SESHA-P5V07-balikrama"},
+]
+# Flag program, SESHA P9 order (vahana mapping, then invoke/raise/worship).
+var dhvaja_steps := [
+	{"id": "dhvaja_aropana", "rule": "SESHA-P9V02-dhvajavahana"},
+	{"id": "pataka_puja", "rule": "SESHA-P9V03-dhvasthapana"},
+]
+# Purification program, SESHA P8 order (binding, then channel work).
+var shuddhi_steps := [
+	{"id": "dig_bandha", "rule": "SESHA-P8V05-digbandha"},
+	{"id": "nadi_shuddhi", "rule": "SESHA-P8V05-digbandha"},
+]
+# Maintenance clock, SESHA P6V60B (1-month soft limit, 12-year hard cycle).
+var kala_avadhi_months := 1
+var kala_avadhi_years := 12
 var _program: Array = []
 var _step_i := -1  # -1 = nitya mode; >=0 steps through adhivasa program
 var _t := 0.0
@@ -92,6 +111,18 @@ func start_upachara() -> String:
 func start_homa_prelude() -> String:
 	# Homa prelude (SESHA P2V33B). Returns first step id.
 	return _start_program(homa_prelude_steps)
+
+func start_bali_circuit() -> String:
+	# Daily bali circuit (SESHA P5V02/V07). Returns first step id.
+	return _start_program(bali_steps)
+
+func start_dhvaja() -> String:
+	# Flag program (SESHA P9V02/V03). Returns first step id.
+	return _start_program(dhvaja_steps)
+
+func start_shuddhi() -> String:
+	# Purification program (SESHA P8V05). Returns first step id.
+	return _start_program(shuddhi_steps)
 
 func _start_program(prog: Array) -> String:
 	_program = prog

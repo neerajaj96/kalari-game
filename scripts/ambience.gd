@@ -280,25 +280,29 @@ func _process(delta: float) -> void:
 	if player == null or not is_instance_valid(player):
 		return
 	var pp: Vector3 = player.global_position
+	var w = get_tree().get_first_node_in_group("world")
+	var in_ksetra := w != null and w.get("current") != null and "Ksetra" in str(w.current.name)
 	var wmarket := _w(pp, ZONES["market"], 8.0)
 	var wtemple := _w(pp, ZONES["temple"], 8.0)
 	var wwater := _w(pp, ZONES["water"], 7.0)
+	# Ksetra visit: the whole shrine ground carries the temple drone.
+	var wksetra := 1.0 if in_ksetra else 0.0
 	var storm := 0.0
 	var night := 0.0
-	var w = get_tree().get_first_node_in_group("world")
 	if w != null and w.get("current") != null:
 		var cur: Node = w.current
-		if cur.get("storm") != null:
-			storm = clampf(float(cur.storm), 0.0, 1.0)
-		if cur.get("day_t") != null:
-			var dt := float(cur.day_t)
+		var wx: Node = cur.get_node_or_null("DayNight") if cur.get_node_or_null("DayNight") != null else cur
+		if wx.get("storm") != null:
+			storm = clampf(float(wx.storm), 0.0, 1.0)
+		if wx.get("day_t") != null:
+			var dt := float(wx.day_t)
 			night = clampf((dt - 0.8) / 0.15, 0.0, 1.0)
 	_set_db("murmur", -26.0 + wmarket * 12.0)
-	_set_db("drone", -60.0 + wtemple * 46.0)
+	_set_db("drone", -60.0 + maxf(wtemple, wksetra) * 46.0)
 	_set_db("lap", -60.0 + wwater * 44.0)
 	_set_db("wash", -60.0 + storm * 44.0)
 	_set_db("insects", -60.0 + night * 40.0)
-	_events(delta, wmarket, wtemple, storm, night)
+	_events(delta, wmarket, maxf(wtemple, wksetra), storm, night)
 
 func _w(pp: Vector3, c: Vector3, r: float) -> float:
 	var d: Vector3 = pp - c

@@ -175,10 +175,12 @@ func _on_rain() -> void:
 		if cur.has_method("set_storm"):
 			cur.set_storm(0.0)
 		return
-	if cur.has_method("apply"):
-		cur.apply(2 if _monsoon else 1)
-	if cur.has_method("set_storm"):
-		cur.set_storm(1.0 if _monsoon else 0.0)
+	# Weather director: village root owns apply/set_storm; ksetra nests them on DayNight.
+	var wx: Node = cur.get_node_or_null("DayNight") if cur.get_node_or_null("DayNight") != null else cur
+	if wx.has_method("apply"):
+		wx.apply(2 if _monsoon else 1)
+	if wx.has_method("set_storm"):
+		wx.set_storm(1.0 if _monsoon else 0.0)
 	say("Monsoon ON — slippery Kalari" if _monsoon else "Noon sun")
 
 func _on_ritual() -> void:
@@ -299,6 +301,8 @@ func _on_settings_button(b: String) -> void:
 	elif b == "ShadowButton":
 		var w = get_tree().get_first_node_in_group("world")
 		var sun = w.current.get_node_or_null("Sun") if w and w.get("current") else null
+		if sun == null and w and w.get("current"):
+			sun = w.current.get_node_or_null("DayNight/Sun")
 		if sun:
 			sun.shadow_enabled = not sun.shadow_enabled
 			if game:

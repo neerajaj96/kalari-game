@@ -1,7 +1,9 @@
 extends Node
 ## Data-driven offering inventory: stocks consumed by rite steps, restocked by seva fetch.
 ## Fail-closed: consume() returns false when stock is short; the rite step waits.
-## Provenance: TS-P4V76-ghrita (ghee+honey goblet), TS-P3V02B-palika16 (fills/adornments).
+## Provenance: TS-P4V76-ghrita (ghee+honey goblet), TS-P3V02B-palika16 (fills/adornments),
+## SESHA-P5V02-savanatraya + P5V07-balikrama (bali rice), SESHA-P9V02/V03 (flag cloth),
+## SESHA-P8V05-digbandha (shuddhi water/ghee).
 class_name KsetraInventory
 
 var stock := {
@@ -34,6 +36,13 @@ var step_cost := {
 	"pitha_shakti": {"flowers": 1},
 	"agni_adhana": {},
 	"ghee_archana": {"ghee": 2},
+	"savana_bali": {"rice": 1},
+	"dvara_bali": {"rice": 1, "flowers": 1},
+	"kshetrapala_bali": {"rice": 2},
+	"dhvaja_aropana": {"cloth": 1, "flowers": 1},
+	"pataka_puja": {"flowers": 1, "ghee": 1},
+	"dig_bandha": {},
+	"nadi_shuddhi": {"water": 1, "ghee": 1},
 }
 
 func consume(step_id: String) -> bool:

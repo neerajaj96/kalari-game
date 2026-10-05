@@ -70,6 +70,14 @@ func _ready() -> void:
 				world.go_village()
 				if world.has_method("_place_player"):
 					world._place_player()
+			elif str(d.get("world", "")) == "Ksetra" and world.has_method("go_ksetra"):
+				world.go_ksetra()
+				if world.has_method("_place_player"):
+					world._place_player()
+			elif str(d.get("world", "")) == "School" and world.has_method("go_school"):
+				world.go_school()
+				if world.has_method("_place_player"):
+					world._place_player()
 			hud.say("Welcome back. Progress restored.")
 		else:
 			_overture()
