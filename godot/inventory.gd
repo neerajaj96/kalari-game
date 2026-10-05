@@ -17,6 +17,7 @@ var step_cost := {
 	"ucha": {"oil": 1, "rice": 1},
 	"deeparadhana": {"oil": 2, "flowers": 1},
 	"athazha": {"ghee": 1, "rice": 1},
+	"kautuka_bandhana": {"thread": 1},
 	"mandapa_shuddhi": {"flowers": 2, "cloth": 1},
 	"shayya_build": {"rice": 1, "cloth": 1},
 	"deepa_light": {"oil": 2},

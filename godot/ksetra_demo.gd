@@ -105,6 +105,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			if sched and sched.has_method("start_adhivasa"):
 				_say("Adhivasa program begun: " + str(sched.start_adhivasa()))
 			return
+		if (event as InputEventKey).keycode == KEY_X:
+			# Defilement drill (SESHA-P6V01): sthana-shuddhi then pratima-shuddhi, remedy cycles.
+			_say("Defilement reported. Prayaschitta at once: sthana-shuddhi, then pratima-shuddhi. Remedies cycle: khanana, harana, daha, purana, go-nivasana.")
+			return
 		if (event as InputEventKey).keycode == KEY_F:
 			# Seva fetch: restock the current slot's offering (mirrors market FETCH loop).
 			var sched2 = get_node_or_null("KsetraScheduler")

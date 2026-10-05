@@ -17,6 +17,7 @@ var idx := 0
 var adhivasa_offsets := [12, 9, 7, 5]  # TS-P3V1 (uttama/madhyama.../kartur-anurupa)
 # Consecration-eve program, order per TS Patala 4 (each cites its rule).
 var adhivasa_steps := [
+	{"id": "kautuka_bandhana", "rule": "TS-P3V38B-kautuka"},
 	{"id": "mandapa_shuddhi", "rule": "TS-P4V01-mandapashuddhi"},
 	{"id": "shayya_build", "rule": "TS-P4V52-shayya"},
 	{"id": "deepa_light", "rule": "TS-P4V64-deepa"},
