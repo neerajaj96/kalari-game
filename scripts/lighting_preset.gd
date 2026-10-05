@@ -37,7 +37,7 @@ func _ready() -> void:
 func _configure_sun() -> void:
 	# Cascaded shadows (Mobile gets a tighter frustum); per-frame values
 	# still owned by _apply_frame.
-	var sun := get_node_or_null("Sun") as DirectionalLight3D
+	var sun := _resolve("Sun") as DirectionalLight3D
 	if sun == null:
 		return
 	sun.shadow_enabled = true
@@ -73,6 +73,41 @@ func apply(p: int) -> void:
 
 func set_storm(v: float) -> void:
 	_storm_goal = clampf(v, 0.0, 1.0)
+
+func _resolve(name_: String) -> Node:
+	# Cross-world lookup: the script sits on the world root in village/school
+	# but on DayNight in ksetra, so Sun/WorldEnv/Rain live at different depths.
+	# Self first (school Lamp parity), then parent, then deep search.
+	var n := get_node_or_null(name_)
+	if n != null:
+		return n
+	var p := get_parent()
+	if p == null:
+		return null
+	var m := p.get_node_or_null(name_)
+	if m != null:
+		return m
+	return p.find_child(name_, true, false)
+
+func _flicker_lamps() -> Array:
+	# Every flicker lamp (base export) across self + parent subtrees, exact
+	# legacy "Lamp" first. Previously only a node literally named "Lamp" was
+	# driven, so night/storm boost was silently dead in village + ksetra.
+	var out: Array = []
+	var seen := {}
+	var roots: Array = [self]
+	if get_parent() != null:
+		roots.append(get_parent())
+	for r in roots:
+		var exact := (r as Node).get_node_or_null("Lamp")
+		if exact != null and not seen.has(exact.get_instance_id()):
+			seen[exact.get_instance_id()] = true
+			out.append(exact)
+		for n in (r as Node).find_children("*", "OmniLight3D", true, false):
+			if n.get("base") != null and not seen.has(n.get_instance_id()):
+				seen[n.get_instance_id()] = true
+				out.append(n)
+	return out
 
 func _sample(t: float) -> Array:
 	var a: Array = KEYS[0]
@@ -117,12 +152,12 @@ func _apply_frame() -> void:
 	f[7] = (f[7] as Color).lerp(o[8], storm)
 	f[1] = maxf(float(f[1]), 0.35)
 	f[4] = maxf(float(f[4]), 0.35)
-	var sun := get_node_or_null("Sun") as DirectionalLight3D
+	var sun := _resolve("Sun") as DirectionalLight3D
 	if sun:
 		sun.rotation = f[0]
 		sun.light_energy = f[1]
 		sun.light_color = f[2]
-	var wenv := get_node_or_null("WorldEnv") as WorldEnvironment
+	var wenv := _resolve("WorldEnv") as WorldEnvironment
 	if wenv and wenv.environment:
 		var env: Environment = wenv.environment
 		env.ambient_light_color = f[3]
@@ -136,13 +171,14 @@ func _apply_frame() -> void:
 	if wet_step != _last_wet:
 		_last_wet = wet_step
 		_apply_wetness(wet_step / 20.0)
-	var lamp = get_node_or_null("Lamp")
-	if lamp and lamp.get("base") != null:
-		var night: float = clampf((day_t - 0.75) / 0.2, 0.0, 1.0)
-		var want_lamp: float = 1.3 + night * 0.4 + storm * 0.2
-		if not is_equal_approx(want_lamp, _last_lamp):
-			_last_lamp = want_lamp
-			lamp.base = want_lamp
+	var lamp_list := _flicker_lamps()
+	for lamp in lamp_list:
+		if lamp and lamp.get("base") != null:
+			var night: float = clampf((day_t - 0.75) / 0.2, 0.0, 1.0)
+			var want_lamp: float = 1.3 + night * 0.4 + storm * 0.2
+			if not is_equal_approx(want_lamp, _last_lamp):
+				_last_lamp = want_lamp
+				lamp.set("base", want_lamp)
 	# Vegetation gusts follow storm (shared sway material, write on change).
 	var sway = load("res://shaders/sway_leaf.tres") as ShaderMaterial
 	if sway:
@@ -163,7 +199,7 @@ func _apply_wetness(w: float) -> void:
 		m.metallic_specular = lerpf(float(base[2]), 0.85, w)
 	# Rain heaviness follows storm (amount reallocates — write only on change).
 	# Mobile caps the deluge for fill-rate.
-	var rain = get_node_or_null("Rain") as CPUParticles3D
+	var rain = _resolve("Rain") as CPUParticles3D
 	if rain:
 		var want_rain := int(lerpf(80.0, 150.0, storm)) if mobile else int(lerpf(150.0, 300.0, storm))
 		if want_rain != _last_rain:

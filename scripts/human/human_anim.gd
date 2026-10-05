@@ -25,7 +25,7 @@ func setup(sk: Skeleton3D, dna: HumanDNA, face: FaceAnim, ik: IKSolver) -> void:
 	_ik = ik
 	_phase = randf() * TAU
 
-func animate(delta: float, state: int, planar_speed: float, move_dir_local: Vector3) -> void:
+func animate(delta: float, state: int, planar_speed: float, move_dir_local: Vector3, face_lock: String = "") -> void:
 	if _sk == null:
 		return
 	_breath += delta * (1.1 + _dna.idle_energy * 0.6)
@@ -44,7 +44,11 @@ func animate(delta: float, state: int, planar_speed: float, move_dir_local: Vect
 	_pose_legs(delta, state, planar_speed, move_dir_local)
 	_pose_arms(delta, state, planar_speed)
 	_pose_spine_head(delta, state)
-	_map_face(state)
+	if face_lock != "":
+		if _face != null:
+			_face.set_expression(face_lock)
+	else:
+		_map_face(state)
 	if _ik != null and state != 6:
 		_ik.foot_plant = 1.0 if planar_speed < 0.6 else 0.55
 		_ik.plant_feet(0.0, _phase, clampf(planar_speed / 4.0, 0.0, 1.0))

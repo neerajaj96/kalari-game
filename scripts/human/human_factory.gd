@@ -264,12 +264,12 @@ static func _hide_primitives(parent: Node) -> void:
 			if v2 != null:
 				v2.visible = false
 
-static func drive(body: Node3D, delta: float, state: int, planar: float, move_local: Vector3) -> void:
+static func drive(body: Node3D, delta: float, state: int, planar: float, move_local: Vector3, face_lock: String = "") -> void:
 	if body == null or not is_instance_valid(body):
 		return
 	var anim := body.get_node_or_null("HumanAnim") as Node
 	if anim != null and anim.has_method("animate"):
-		anim.animate(delta, state, planar, move_local)
+		anim.animate(delta, state, planar, move_local, face_lock)
 
 static func update_rank_accent(host: Node, rank: int) -> void:
 	if host == null or not is_instance_valid(host):
