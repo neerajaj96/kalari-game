@@ -51,6 +51,16 @@ func _process(delta: float) -> void:
 			bz1 = 28.0
 		goal.x = clampf(goal.x, -bx, bx)
 		goal.z = clampf(goal.z, bz0, bz1)
+		# Wall-clip guard: pull the eye to the first obstruction so close-range
+		# inspection never sinks into mandapa walls/roofs. Player capsule skipped
+		# (ray starts inside it, hit_from_inside=false).
+		var pq := PhysicsRayQueryParameters3D.create(
+			p.global_position + Vector3(0, 1.5, 0), goal + Vector3(0, 0.5, 0))
+		var phit := get_world_3d().direct_space_state.intersect_ray(pq)
+		if not phit.is_empty():
+			var hp: Vector3 = phit["position"]
+			var back: Vector3 = (goal + Vector3(0, 0.5, 0) - hp).normalized()
+			goal = hp - Vector3(0, 0.5, 0) - back * 0.45
 		global_position = global_position.lerp(goal, minf(1.0, follow_speed * delta))
 	base_fov = lerpf(55.0, 62.0, _combat)
 	trauma = maxf(0.0, trauma - delta * 1.6)
