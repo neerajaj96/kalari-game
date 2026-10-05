@@ -359,6 +359,13 @@ offset_right = 360.0
 offset_bottom = 176.0
 text = "Reset progress"
 
+[node name="PerfButton" type="Button" parent="Root/SettingsPanel"]
+offset_left = 40.0
+offset_top = 188.0
+offset_right = 360.0
+offset_bottom = 232.0
+text = "Perf: off"
+
 [node name="SettingsClose" type="Button" parent="Root/SettingsPanel"]
 offset_left = 40.0
 offset_top = 232.0

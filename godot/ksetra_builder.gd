@@ -93,7 +93,7 @@ func _cone(parent: Node, nm: String, mat: Material, radius: float, h: float,
 	return mi
 
 func _cyl(parent: Node, nm: String, mat: Material, radius: float, height: float,
-		pos: Vector3, prov: Array, collide := true) -> CSGCylinder3D:
+		pos: Vector3, prov: Array, collide := true, lod_end := 0.0) -> CSGCylinder3D:
 	var c := CSGCylinder3D.new()
 	c.name = nm
 	c.material = mat
@@ -102,14 +102,51 @@ func _cyl(parent: Node, nm: String, mat: Material, radius: float, height: float,
 	c.sides = 24
 	c.position = pos
 	c.use_collision = collide
+	if lod_end > 0.0:
+		c.visibility_range_begin = 0.0
+		c.visibility_range_end = lod_end
+		c.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	c.set_meta("provenance", prov)
 	parent.add_child(c)
 	return c
+
+func _lod(n: Node, lod_end: float) -> Node:
+	# Far dressing cull for small overlays (regalia, knobs, spokes, horns).
+	# Works on any GeometryInstance3D (CSG or mesh); returns the node.
+	if n is GeometryInstance3D and lod_end > 0.0:
+		n.set("visibility_range_begin", 0.0)
+		n.set("visibility_range_end", lod_end)
+		n.set("visibility_range_fade_mode", GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF)
+	return n
 
 func _lathe(parent: Node, nm: String, mat: Material, radius: float, h: float,
 		profile: Array, pos: Vector3, prov: Array, segs := 12) -> MeshInstance3D:
 	# Lathed vessel/finial/figure: profile = Array[Vector2] radius-fraction x height-fraction,
 	# revolved around Y. No collision (dressing/hero overlay); provenance-tagged.
+	var mi := MeshInstance3D.new()
+	mi.name = nm
+	mi.mesh = _lathe_mesh(profile, radius, h, segs)
+	mi.material_override = mat
+	mi.position = pos
+	mi.set_meta("provenance", prov)
+	parent.add_child(mi)
+	return mi
+
+static var _shared_mesh := {}
+
+static func _shared_box(key: String, size: Vector3) -> BoxMesh:
+	if not _shared_mesh.has(key):
+		var bm := BoxMesh.new()
+		bm.size = size
+		_shared_mesh[key] = bm
+	return _shared_mesh[key]
+
+static func _shared_lathe(key: String, profile: Array, radius: float, h: float, segs := 12) -> ArrayMesh:
+	if not _shared_mesh.has(key):
+		_shared_mesh[key] = _lathe_mesh(profile, radius, h, segs)
+	return _shared_mesh[key]
+
+static func _lathe_mesh(profile: Array, radius: float, h: float, segs := 12) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var pts: Array[Vector2] = [Vector2(0.0, 0.0)]
@@ -126,14 +163,32 @@ func _lathe(parent: Node, nm: String, mat: Material, radius: float, h: float,
 			_tri(st, p00, p11, p01)
 			_tri(st, p00, p10, p11)
 	st.generate_normals()
-	var mi := MeshInstance3D.new()
-	mi.name = nm
-	mi.mesh = st.commit()
-	mi.material_override = mat
-	mi.position = pos
-	mi.set_meta("provenance", prov)
-	parent.add_child(mi)
-	return mi
+	return st.commit()
+
+func _mmi(parent: Node, nm: String, mesh: Mesh, transforms: Array, mat: Material,
+		prov: Array, lod_end := 0.0, craft := {}) -> MultiMeshInstance3D:
+	# Instanced dressing: one draw for N repeats (palikas, kavu, flags, vessels).
+	# No collision (dressing only); LOD + provenance + optional craft on the set.
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = mesh
+	mm.instance_count = transforms.size()
+	for i in range(transforms.size()):
+		mm.set_instance_transform(i, transforms[i])
+	var mmi := MultiMeshInstance3D.new()
+	mmi.name = nm
+	mmi.multimesh = mm
+	mmi.material_override = mat
+	if lod_end > 0.0:
+		mmi.visibility_range_begin = 0.0
+		mmi.visibility_range_end = lod_end
+		mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	mmi.set_meta("provenance", prov)
+	if not craft.is_empty():
+		mmi.set_meta("craft_visual", craft)
+	mmi.position = Vector3.ZERO
+	parent.add_child(mmi)
+	return mmi
 
 func _ball(parent: Node, nm: String, mat: Material, radius: float, h: float,
 		pos: Vector3, prov: Array) -> MeshInstance3D:
@@ -187,11 +242,13 @@ func _mat(color: Color, rough := 0.8, metal := 0.0, emission := 0.0, detail := "
 	m.metallic = metal
 	if detail == "stone" or detail == "grain":
 		# Procedural craft microdetail (never canon): grayscale speckle/grain
-		# albedo + heightmap relief, generated once and shared. No binary assets.
+		# albedo + heightmap relief + roughness variation, generated once and
+		# shared. No binary assets. (Godot 4 names: roughness_texture/heightmap.)
 		m.albedo_texture = _detail_albedo(detail)
 		m.heightmap_enabled = true
 		m.heightmap_texture = _detail_height(detail)
 		m.heightmap_scale = 0.02
+		m.roughness_texture = _detail_rough(detail)
 	if emission > 0.0:
 		m.emission_enabled = true
 		m.emission = color
@@ -245,11 +302,15 @@ static func _detail_images(kind: String) -> Array:
 				var g := 0.88 + n * 0.12
 				alb.set_pixel(xx, yy, Color(g, g, g, 1.0))
 	var hgt_img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	var rgh_img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
 	for yy in range(64):
 		for xx in range(64):
 			var hv: float = hgt[yy][xx]
 			hgt_img.set_pixel(xx, yy, Color(hv, hv, hv, 1.0))
-	var out := [ImageTexture.create_from_image(alb), ImageTexture.create_from_image(hgt_img)]
+			var rv := 0.72 + hv * 0.28
+			rgh_img.set_pixel(xx, yy, Color(rv, rv, rv, 1.0))
+	var out := [ImageTexture.create_from_image(alb), ImageTexture.create_from_image(hgt_img),
+		ImageTexture.create_from_image(rgh_img)]
 	_detail_cache[kind] = out
 	return out
 
@@ -259,6 +320,9 @@ static func _detail_albedo(kind: String) -> ImageTexture:
 static func _detail_height(kind: String) -> ImageTexture:
 	return _detail_images(kind)[1]
 
+static func _detail_rough(kind: String) -> ImageTexture:
+	return _detail_images(kind)[2]
+
 static func _craft(node: Node, kind: String, basis: String, replaces: String) -> void:
 	# CRAFT-VISUAL metadata (visual craft only, never canon; see kg/ontology.md).
 	# kind: profile|massing|material|placement. Faces/tala/yoni/dimensions stay prov-only.
@@ -267,6 +331,34 @@ static func _craft(node: Node, kind: String, basis: String, replaces: String) ->
 
 const CRAFT_ROOF := {"kind": "massing", "basis": "Kerala field convention",
 	"status": "OPEN-adjacent", "replaces": "solid pyramid approximation (TS-P2V48B timber note)"}
+const CRAFT_GABLE := {"kind": "massing", "basis": "Kerala field convention",
+	"status": "OPEN-adjacent", "replaces": "bare gabled eave (rectangular plan needs ridge, not pyramid)"}
+
+func _gable_assembly(parent: Node, nm: String, mat: Material, center: Vector3,
+		half_span: float, half_len: float, h: float, prov: Array) -> void:
+	# Gabled tile roof for rectangular footprints: ridge beam + 2x4 slope
+	# rafters + 2 batten bands per slope + gable fascia boards. Overlay only.
+	var ridge_a := center + Vector3(0, h, -half_len)
+	var ridge_b := center + Vector3(0, h, half_len)
+	_beam_to(parent, "%s_Ridge" % nm, mat, ridge_a, ridge_b, Vector2(0.12, 0.14), prov, CRAFT_GABLE)
+	for zi in range(4):
+		var z := lerpf(-half_len + 0.3, half_len - 0.3, float(zi) / 3.0)
+		for sgn in [-1.0, 1.0]:
+			_beam_to(parent, "%s_Rafter_%d_%d" % [nm, zi, sgn], mat,
+				center + Vector3(sgn * half_span, 0, z),
+				center + Vector3(0, h, z), Vector2(0.09, 0.12), prov, CRAFT_GABLE)
+	for t in range(2):
+		var frac := float(t + 1) / 3.0
+		var bx := half_span * (1.0 - frac) + 0.06
+		var by := h * frac
+		for sgn in [-1.0, 1.0]:
+			_box(parent, "%s_Batten_%d_%d" % [nm, t, sgn], mat,
+				Vector3(0.12, 0.07, half_len * 2.0 - 0.2),
+				center + Vector3(sgn * bx, by, 0), prov, false, 0.0, CRAFT_GABLE)
+	for esgn in [-1.0, 1.0]:
+		_beam_to(parent, "%s_Fascia_%d" % [nm, esgn], mat,
+			center + Vector3(0, 0.05, esgn * (half_len + 0.1)),
+			center + Vector3(0, h, esgn * (half_len - 0.2)), Vector2(0.1, 0.14), prov, CRAFT_GABLE)
 const CRAFT_PROFILE := {"kind": "profile", "basis": "Kerala field convention",
 	"status": "OPEN-adjacent", "replaces": "flat stepped slabs (TS-P2V16B widths kept exact)"}
 
@@ -447,36 +539,43 @@ func _build_all() -> void:
 	# (shankha/chakra/gada/padma per meta iconography).
 	_lathe(root, "BimbaBody", granite, 0.28, 1.1,
 		[Vector2(1.0, 0.0), Vector2(0.72, 1.0)], Vector3(0, y + 0.55, 0), bimba_prov)
+	# sacred-thread + waistband relief rings (craft bands on the canon massing)
+	_cyl(root, "BimbaThread", cream, 0.26, 0.05, Vector3(0, y + 1.35, 0), bimba_prov, false)
+	_cyl(root, "BimbaWaistband", copper, 0.28, 0.07, Vector3(0, y + 0.75, 0), bimba_prov, false)
 	_ball(root, "BimbaHead", granite, 0.16, 0.32, Vector3(0, y + 1.8, 0), bimba_prov)
 	_lathe(root, "BimbaDiadem", copper, 0.2, 0.22,
 		[Vector2(1.0, 0.0), Vector2(0.9, 0.4), Vector2(0.7, 0.7), Vector2(0.0, 1.0)], Vector3(0, y + 1.89, 0), bimba_prov)
-	_ball(root, "BimbaUshnisha", copper, 0.07, 0.1, Vector3(0, y + 2.14, 0), bimba_prov)
+	_lod(_ball(root, "BimbaUshnisha", copper, 0.07, 0.1, Vector3(0, y + 2.14, 0), bimba_prov), 25.0)
 	_box(root, "BimbaArmL1", granite, Vector3(0.14, 0.7, 0.14), Vector3(-0.36, y + 1.15, 0.1), bimba_prov, false)
 	_box(root, "BimbaArmR1", granite, Vector3(0.14, 0.7, 0.14), Vector3(0.36, y + 1.15, 0.1), bimba_prov, false)
 	_box(root, "BimbaArmL2", granite, Vector3(0.14, 0.7, 0.14), Vector3(-0.36, y + 1.15, -0.12), bimba_prov, false)
 	_box(root, "BimbaArmR2", granite, Vector3(0.14, 0.7, 0.14), Vector3(0.36, y + 1.15, -0.12), bimba_prov, false)
-	_ball(root, "EmblemShankha", cream, 0.07, 0.14, Vector3(-0.36, y + 0.78, 0.15), bimba_prov)
-	_cyl(root, "EmblemChakra", copper, 0.09, 0.03, Vector3(0.36, y + 0.78, 0.15), bimba_prov, false)
+	_lod(_ball(root, "EmblemShankha", cream, 0.07, 0.14, Vector3(-0.36, y + 0.78, 0.15), bimba_prov), 25.0)
+	_lod(_cyl(root, "EmblemChakra", copper, 0.09, 0.03, Vector3(0.36, y + 0.78, 0.15), bimba_prov, false), 25.0)
 	for spi in range(4):
 		var sang := float(spi) * PI / 4.0
-		_box(root, "ChakraSpoke_%d" % spi, copper, Vector3(0.02, 0.16, 0.02),
-			Vector3(0.36 + cos(sang) * 0.05, y + 0.78 + sin(sang) * 0.05, 0.15), bimba_prov, false)
-	_box(root, "EmblemGadaKnob", copper, Vector3(0.1, 0.1, 0.1),
-		Vector3(-0.36, y + 1.02, -0.12), bimba_prov, false)
+		_lod(_box(root, "ChakraSpoke_%d" % spi, copper, Vector3(0.02, 0.16, 0.02),
+			Vector3(0.36 + cos(sang) * 0.05, y + 0.78 + sin(sang) * 0.05, 0.15), bimba_prov, false), 25.0)
+	_lod(_box(root, "EmblemGadaKnob", copper, Vector3(0.1, 0.1, 0.1),
+		Vector3(-0.36, y + 1.02, -0.12), bimba_prov, false), 25.0)
 	for ppi in range(4):
 		var pang := float(ppi) * PI / 2.0 + PI / 4.0
-		_box(root, "PadmaPetal_%d" % ppi, cream, Vector3(0.05, 0.04, 0.12),
-			Vector3(0.36 + cos(pang) * 0.09, y + 0.8, -0.12 + sin(pang) * 0.09), bimba_prov, false)
-	_cyl(root, "EmblemGada", copper, 0.05, 0.3, Vector3(-0.36, y + 0.85, -0.12), bimba_prov, false)
-	_lathe(root, "EmblemPadma", cream, 0.08, 0.16,
-		[Vector2(0.4, 0.0), Vector2(1.0, 0.6), Vector2(0.0, 1.0)], Vector3(0.36, y + 0.78, -0.12), bimba_prov)
+		_lod(_box(root, "PadmaPetal_%d" % ppi, cream, Vector3(0.05, 0.04, 0.12),
+			Vector3(0.36 + cos(pang) * 0.09, y + 0.8, -0.12 + sin(pang) * 0.09), bimba_prov, false), 25.0)
+	_lod(_cyl(root, "EmblemGada", copper, 0.05, 0.3, Vector3(-0.36, y + 0.85, -0.12), bimba_prov, false), 25.0)
+	_lod(_lathe(root, "EmblemPadma", cream, 0.08, 0.16,
+		[Vector2(0.4, 0.0), Vector2(1.0, 0.6), Vector2(0.0, 1.0)], Vector3(0.36, y + 0.78, -0.12), bimba_prov), 25.0)
 	# dvarapala figures flanking the east door (spec dvarapala_L/R, TS-P2V2-yoni)
 	var dvara_prov: Array = ["TS-P2V2-yoni"]
 	for dsgn in [-1.0, 1.0]:
 		var dnm := "DvarapalaL" if dsgn < 0.0 else "DvarapalaR"
-		_box(root, dnm + "_Body", granite, Vector3(0.3, 1.1, 0.3), Vector3(gh / 2.0 + 0.35, y + 0.55, dsgn * 1.0), dvara_prov)
-		_ball(root, dnm + "_Head", granite, 0.13, 0.26, Vector3(gh / 2.0 + 0.35, y + 1.23, dsgn * 1.0), dvara_prov)
-		_box(root, dnm + "_Diadem", copper, Vector3(0.3, 0.12, 0.3), Vector3(gh / 2.0 + 0.35, y + 1.42, dsgn * 1.0), dvara_prov)
+		var dx: float = gh / 2.0 + 0.35
+		var dz: float = dsgn * 1.0
+		_box(root, dnm + "_Oma", granite, Vector3(0.5, 0.15, 0.5), Vector3(dx, y + 0.075, dz), dvara_prov)
+		_box(root, dnm + "_Body", granite, Vector3(0.3, 1.1, 0.3), Vector3(dx, y + 0.55 + 0.1, dz), dvara_prov)
+		_ball(root, dnm + "_Head", granite, 0.13, 0.26, Vector3(dx, y + 1.23 + 0.1, dz), dvara_prov)
+		_box(root, dnm + "_Diadem", copper, Vector3(0.3, 0.12, 0.3), Vector3(dx, y + 1.42 + 0.1, dz), dvara_prov)
+		_box(root, dnm + "_Staff", timber, Vector3(0.06, 1.3, 0.06), Vector3(dx + 0.28, y + 0.65, dz), dvara_prov)
 	# sanctum barrier: solid StaticBody across the door gap (K-TANTRI-ONLY —
 	# Tantri/Melshanti cross; sevaka serves from namaskara-mandapa).
 	# The trigger teaching lives in-scene (SanctumTrigger Area); builder owns collision only.
@@ -543,8 +642,8 @@ func _build_all() -> void:
 			_lathe(root, "Hara_KutaDome_%d" % i, laterite, 0.3, 0.3,
 				[Vector2(1.0, 0.0), Vector2(0.7, 0.5), Vector2(0.0, 1.0)],
 				apos + Vector3(0, hh / 2.0, 0), prov_pr)
-			_ball(root, "Hara_KutaStupi_%d" % i, copper, 0.06, 0.12,
-				apos + Vector3(0, hh / 2.0 + 0.36, 0), prov_pr)
+			_lod(_ball(root, "Hara_KutaStupi_%d" % i, copper, 0.06, 0.12,
+				apos + Vector3(0, hh / 2.0 + 0.36, 0), prov_pr), 25.0)
 		elif kind == "sala":
 			_eave_pyramid(root, "Hara_SalaCap_%d" % i, laterite, 0.7, 0.7, 0.25,
 				apos + Vector3(0, hh / 2.0, 0), prov_pr, 0.08)
@@ -587,6 +686,9 @@ func _build_all() -> void:
 		var lspan := Vector3(0.9, 0.12, 0.14) if mface % 2 == 1 else Vector3(0.14, 0.12, 0.9)
 		_box(root, "MurtiNiche_Lintel_%d" % mface, laterite, lspan,
 			mcen + Vector3(0, 0.56, 0), murti_prov, true, 0.0, CRAFT_PROFILE)
+		var bspan := Vector3(0.7, 1.1, 0.06) if mface % 2 == 1 else Vector3(0.06, 1.1, 0.7)
+		_box(root, "MurtiNiche_Backplate_%d" % mface, laterite, bspan,
+			mcen - mout * 0.06, murti_prov, true, 0.0, CRAFT_PROFILE)
 	y += h2
 	_box(root, "PrastaraT2", laterite, Vector3(gh * 0.72 + 0.4, _m(1.0), gh * 0.72 + 0.4),
 		Vector3(0, y + _m(1.0) / 2.0, 0), prov_pr)
@@ -629,7 +731,7 @@ func _build_all() -> void:
 			_pillar(root, "MukhaPillar", timber, Vector3(px, 0, pz), 0.25, 2.2, prov_pr, true)
 	_box(root, "MukhaSlab", timber, Vector3(3.0, 0.25, 3.0), Vector3(mx, 2.3, 0), door_prov)
 	_eave_pyramid(root, "MukhaRoof", timber, 3.6, 3.6, 1.0, Vector3(mx, 2.42, 0), prov_pr)
-	_roof_assembly(root, "Mukha", timber, Vector3(mx, 2.42, 0), 1.8, 1.0, 2, 0, rafter_prov)
+	_roof_assembly(root, "Mukha", timber, Vector3(mx, 2.42, 0), 1.8, 1.0, 2, 2, rafter_prov)
 	# namaskara mandapa (detached square)
 	var nx := ex + 6.5
 	for px in [nx - 1.1, nx + 1.1]:
@@ -638,7 +740,7 @@ func _build_all() -> void:
 	_box(root, "NamaskaraSlab", granite, Vector3(3.0, 0.4, 3.0), Vector3(nx, 0.2, 0), prov_pr)
 	_box(root, "NamaskaraRoofBase", timber, Vector3(3.4, 0.25, 3.4), Vector3(nx, 2.5, 0), prov_pr)
 	_eave_pyramid(root, "NamaskaraRoof", timber, 4.0, 4.0, 1.1, Vector3(nx, 2.62, 0), prov_pr)
-	_roof_assembly(root, "Namaskara", timber, Vector3(nx, 2.62, 0), 2.0, 1.1, 2, 0, rafter_prov)
+	_roof_assembly(root, "Namaskara", timber, Vector3(nx, 2.62, 0), 2.0, 1.1, 2, 2, rafter_prov)
 	# valia balikkal + 8 bali stones along pradakshina
 	_box(root, "ValiaBalikkal", granite, Vector3(0.8, 1.2, 0.8), Vector3(nx + 3.0, 0.6, 0), prov_pr)
 	var bali_names := ["Ishan", "Indra", "Agni", "Yama", "Nirriti", "Varuna", "Vayu", "Soma"]
@@ -658,8 +760,11 @@ func _build_all() -> void:
 	_box(root, "RishabhaBody", cream, Vector3(0.8, 0.5, 0.4), Vector3(nx + 5.0, 0.55, 1.4), dhvaja_prov)
 	_box(root, "RishabhaHead", cream, Vector3(0.3, 0.35, 0.3), Vector3(nx + 5.4, 0.65, 1.4), dhvaja_prov)
 	_box(root, "RishabhaHump", cream, Vector3(0.25, 0.2, 0.3), Vector3(nx + 4.85, 0.85, 1.4), dhvaja_prov)
-	_box(root, "RishabhaHornL", copper, Vector3(0.05, 0.2, 0.05), Vector3(nx + 5.4, 0.9, 1.3), dhvaja_prov)
-	_box(root, "RishabhaHornR", copper, Vector3(0.05, 0.2, 0.05), Vector3(nx + 5.4, 0.9, 1.5), dhvaja_prov)
+	_lod(_box(root, "RishabhaHornL", copper, Vector3(0.05, 0.2, 0.05), Vector3(nx + 5.4, 0.9, 1.3), dhvaja_prov), 25.0)
+	_lod(_box(root, "RishabhaHornR", copper, Vector3(0.05, 0.2, 0.05), Vector3(nx + 5.4, 0.9, 1.5), dhvaja_prov), 25.0)
+	_box(root, "RishabhaDewlap", cream, Vector3(0.2, 0.25, 0.15), Vector3(nx + 5.45, 0.45, 1.4), dhvaja_prov, false)
+	_box(root, "RishabhaTail", cream, Vector3(0.05, 0.4, 0.05), Vector3(nx + 4.55, 0.5, 1.4), dhvaja_prov, false)
+	_box(root, "RishabhaHoof", granite, Vector3(0.85, 0.08, 0.45), Vector3(nx + 5.0, 0.34, 1.4), dhvaja_prov)
 
 	# --- flagship v2 micro-objects (all provenance-tagged, dressing LOD) ---
 	# foundation deposit set at the adhishthana north-east base (buried program shown exposed)
@@ -670,32 +775,38 @@ func _build_all() -> void:
 	_box(root, "KurmaShila", granite, Vector3(0.5, 0.12, 0.5), Vector3(ex + 0.4, 0.41, -1.6), deposit_prov, false)
 	_box(root, "SilverLotus", cream, Vector3(0.3, 0.08, 0.3), Vector3(ex + 0.4, 0.5, -2.1), deposit_prov, false)
 	_box(root, "DepositBricks", laterite, Vector3(0.6, 0.25, 0.6), Vector3(ex + 0.4, 0.12, -2.6), deposit_prov, false)
-	# palika-16 sowing grid south of mukhamandapa (TS-P3V02B/V03B)
+	# palika-16 sowing grid south of mukhamandapa (TS-P3V02B/V03B), one draw
 	var palika_prov: Array = ["TS-P3V02B-palika16", "TS-P3V03B-bija"]
+	var palika_xf: Array = []
 	for pi in range(16):
-		var px := 4.0 + float(pi % 4) * 0.5
-		var pz := 3.0 + float(pi / 4) * 0.5
-		_box(root, "Palika_%d" % pi, laterite, Vector3(0.28, 0.22, 0.28),
-			Vector3(px, 0.11, pz), palika_prov, false, 30.0)
+		palika_xf.append(Transform3D(Basis(),
+			Vector3(4.0 + float(pi % 4) * 0.5, 0.11, 3.0 + float(pi / 4) * 0.5)))
+	_mmi(root, "PalikaSet", _shared_box("palika", Vector3(0.28, 0.22, 0.28)),
+		palika_xf, laterite, palika_prov, 30.0)
 	# kautuka stand + shayya platform north of mukhamandapa (TS-P3V38B/V114B)
 	var kautuka_prov: Array = ["TS-P3V38B-kautuka", "TS-P4V114B-shayana"]
 	_box(root, "ShayyaPlatform", cream, Vector3(2.0, 0.5, 1.0), Vector3(mx, 0.25, -3.5), kautuka_prov)
 	_box(root, "KautukaStand", timber, Vector3(0.3, 0.6, 0.3), Vector3(mx, 0.3, -2.5), kautuka_prov)
-	# brahma-kalasha vessel row by the thidappalli (SESHA-P4V02/V04 + V41B fills)
+	# brahma-kalasha vessel row by the thidappalli (SESHA-P4V02/V04 + V41B fills), one draw
 	var kalasha_prov: Array = ["SESHA-P4V02-brahmakalasha", "SESHA-P4V04-parikalasha", "SESHA-P7V41B-kalashafill"]
+	var kalasha_prof := [Vector2(0.6, 0.02), Vector2(0.9, 0.2), Vector2(0.5, 0.5), Vector2(0.7, 0.7),
+		Vector2(0.2, 0.85), Vector2(0.0, 1.0)]
+	var kalasha_xf: Array = []
 	for ki in range(5):
-		_lathe(root, "BrahmaKalasha_%d" % ki, copper, 0.15, 0.4,
-			[Vector2(0.6, 0.02), Vector2(0.9, 0.2), Vector2(0.5, 0.5), Vector2(0.7, 0.7),
-			Vector2(0.2, 0.85), Vector2(0.0, 1.0)],
-			Vector3(4.5 + float(ki) * 0.5, 0.0, -4.5), kalasha_prov)
+		kalasha_xf.append(Transform3D(Basis(), Vector3(4.5 + float(ki) * 0.5, 0.0, -4.5)))
+	_mmi(root, "BrahmaKalashaSet", _shared_lathe("kalasha", kalasha_prof, 0.15, 0.4),
+		kalasha_xf, copper, kalasha_prov, 30.0)
 	# kshetrapala guardian stone NE (SESHA-P8V04 ten-direction retinue)
 	_box(root, "Kshetrapala", granite, Vector3(0.6, 1.0, 0.6), Vector3(9.0, 0.5, -9.0),
 		["SESHA-P5V02-savanatraya", "SESHA-P5V07-balikrama", "SESHA-P8V04-kshetrapala"], true, 30.0)
-	# eight lokapala parita flags inside the lamp ring (SESHA-P9V03)
+	# eight lokapala parita flags inside the lamp ring (SESHA-P9V03), one draw
+	var parita_xf: Array = []
 	for fi in range(8):
 		var fang := TAU * float(fi) / 8.0
-		_box(root, "ParitaFlag_%d" % fi, cream, Vector3(0.3, 0.6, 0.05),
-			Vector3(cos(fang) * 17.5, 1.6, sin(fang) * 17.5), dhvaja_prov, false, 40.0)
+		parita_xf.append(Transform3D(Basis(Vector3.UP, -fang),
+			Vector3(cos(fang) * 17.5, 1.6, sin(fang) * 17.5)))
+	_mmi(root, "ParitaFlagSet", _shared_box("parita", Vector3(0.3, 0.6, 0.05)),
+		parita_xf, cream, dhvaja_prov, 40.0)
 	# shuddhi platform + poles by the east gate (SESHA-P8V05 dig-bandha/nadi)
 	var shuddhi_prov: Array = ["SESHA-P8V05-digbandha"]
 	_box(root, "ShuddhiPlatform", granite, Vector3(1.6, 0.3, 1.6), Vector3((uh + 18.0) / 2.0, 0.15, 3.0), shuddhi_prov)
@@ -717,11 +828,13 @@ func _build_all() -> void:
 	_box(root, "GopuraJambR", cream, Vector3(2.0, 3.0, 1.0), Vector3(gx, 1.5, 2.0), prov_pr)
 	_box(root, "GopuraTop", cream, Vector3(2.4, 2.0, 5.6), Vector3(gx, 4.0, 0), prov_pr)
 	_eave_pyramid(root, "GopuraRoof", timber, 3.0, 6.2, 1.4, Vector3(gx, 5.0, 0), prov_pr, 0.4)
+	_gable_assembly(root, "Gopura", timber, Vector3(gx, 5.0, 0), 1.5, 3.1, 1.4, prov_pr)
 	# gopura crown: tier band + corner stupi balls + open passage leaves (craft).
 	_box(root, "GopuraTierBand", cream, Vector3(2.5, 0.25, 5.7), Vector3(gx, 5.1, 0), prov_pr, false, 0.0, CRAFT_PROFILE)
+	_box(root, "GopuraTierBand", cream, Vector3(2.5, 0.25, 5.7), Vector3(gx, 5.1, 0), prov_pr, false, 0.0, CRAFT_PROFILE)
 	for gfi in range(4):
-		_ball(root, "GopuraStupi_%d" % gfi, copper, 0.09, 0.18,
-			Vector3(gx + (0.9 if gfi % 2 == 0 else -0.9), 5.3, 2.5 if gfi < 2 else -2.5), prov_pr)
+		_lod(_ball(root, "GopuraStupi_%d" % gfi, copper, 0.09, 0.18,
+			Vector3(gx + (0.9 if gfi % 2 == 0 else -0.9), 5.3, 2.5 if gfi < 2 else -2.5), prov_pr), 25.0)
 	for glsgn in [-1.0, 1.0]:
 		_box(root, "GopuraLeaf_%d" % glsgn, timber, Vector3(0.8, 2.2, 0.06),
 			Vector3(gx - 0.5, 1.1, glsgn * 1.44), prov_pr, true, 0.0, CRAFT_TIMBER)
@@ -740,13 +853,22 @@ func _build_all() -> void:
 	_box(root, "KulamCurbS", granite, Vector3(6.6, 0.2, 0.3), Vector3(kcx, 0.1, kcz + 3.15), prov_pr)
 	_box(root, "KulamCurbE", granite, Vector3(0.3, 0.2, 6.6), Vector3(kcx + 3.15, 0.1, kcz), prov_pr)
 	_box(root, "KulamCurbW", granite, Vector3(0.3, 0.2, 6.6), Vector3(kcx - 3.15, 0.1, kcz), prov_pr)
-	# kavu trees (dressing LOD) + naaga stones at the grove edge
+	# kavu trees (dressing LOD) + naaga stones at the grove edge, three draws
+	var trunk_xf: Array = []
+	var crown_xf: Array = []
+	var crown_top_xf: Array = []
 	for i in range(6):
 		var tx := -(uh / 2.0 + 11.0) + float(i % 3) * 2.0
 		var tz := -(uh / 2.0 + 11.0) + float(i / 3) * 2.0
-		_box(root, "KavuTrunk_%d" % i, timber, Vector3(0.35, 4.0, 0.35), Vector3(tx, 2.0, tz), prov_pr, false, 40.0)
-		_box(root, "KavuCrown_%d" % i, leaf, Vector3(2.4, 0.6, 2.4), Vector3(tx, 4.2, tz), prov_pr, false, 40.0)
-		_box(root, "KavuCrownTop_%d" % i, leaf, Vector3(1.6, 0.4, 1.6), Vector3(tx + 0.3, 4.8, tz - 0.3), prov_pr, false, 40.0)
+		trunk_xf.append(Transform3D(Basis(), Vector3(tx, 2.0, tz)))
+		crown_xf.append(Transform3D(Basis(), Vector3(tx, 4.2, tz)))
+		crown_top_xf.append(Transform3D(Basis(), Vector3(tx + 0.3, 4.8, tz - 0.3)))
+	_mmi(root, "KavuTrunkSet", _shared_box("kavutrunk", Vector3(0.35, 4.0, 0.35)),
+		trunk_xf, timber, prov_pr, 40.0)
+	_mmi(root, "KavuCrownSet", _shared_box("kavucrown", Vector3(2.4, 0.6, 2.4)),
+		crown_xf, leaf, prov_pr, 40.0)
+	_mmi(root, "KavuCrownTopSet", _shared_box("kavucrowntop", Vector3(1.6, 0.4, 1.6)),
+		crown_top_xf, leaf, prov_pr, 40.0)
 	var kavu_prov: Array = ["TS-P3V1-material", "TS-P1V39B-supadma"]
 	for ni in range(3):
 		_box(root, "NaagaStone_%d" % ni, granite, Vector3(0.4, 0.5, 0.2),
@@ -833,6 +955,26 @@ func _build_circular_ksetra(root: Node, gh: float, uh: float, west: bool,
 		_beam_to(root, "ConeRafter_%d" % ri, timber,
 			Vector3(cos(rang) * (gh / 2.0 + 0.8), y, sin(rang) * (gh / 2.0 + 0.8)),
 			Vector3(0, y + _m(3.5), 0), Vector2(0.09, 0.12), crafter_prov, CRAFT_ROOF)
+	# cone tile batten rings + eave fascia ring (craft courses on the cone)
+	for ci in range(2):
+		var cfrac := float(ci + 1) / 3.0
+		var crr := (gh / 2.0 + 0.8) * (1.0 - cfrac) + 0.06
+		var cyy := y + _m(3.5) * cfrac
+		for cj in range(8):
+			var cang := TAU * float(cj) / 8.0 + float(ci) * PI / 8.0
+			var cchord := 2.0 * crr * sin(PI / 8.0) + 0.05
+			var cseg := _box(root, "ConeBatten_%d_%d" % [ci, cj], timber,
+				Vector3(cchord, 0.07, 0.14),
+				Vector3(cos(cang) * crr, cyy, sin(cang) * crr), crafter_prov, false, 0.0, CRAFT_ROOF)
+			cseg.rotation.y = -cang
+	var frr := gh / 2.0 + 0.86
+	for fi in range(8):
+		var fang := TAU * float(fi) / 8.0
+		var fchord := 2.0 * frr * sin(PI / 8.0) + 0.05
+		var fseg := _box(root, "ConeFascia_%d" % fi, timber,
+			Vector3(fchord, 0.18, 0.12),
+			Vector3(cos(fang) * frr, y + 0.02, sin(fang) * frr), crafter_prov, false, 0.0, CRAFT_ROOF)
+		fseg.rotation.y = -fang
 	y += _m(3.5)
 	_lathe(root, "StupiKalasha", copper, 0.28, _m(0.75),
 		[Vector2(0.5, 0.02), Vector2(0.85, 0.12), Vector2(0.6, 0.3), Vector2(0.9, 0.5),
@@ -891,10 +1033,11 @@ func _build_circular_ksetra(root: Node, gh: float, uh: float, west: bool,
 	_box(root, "GopuraJambR", cream, Vector3(2.0, 3.0, 1.0), Vector3(gx, 1.5, 2.0), prov_pr)
 	_box(root, "GopuraTop", cream, Vector3(2.4, 2.0, 5.6), Vector3(gx, 4.0, 0), prov_pr)
 	_eave_pyramid(root, "GopuraRoof", timber, 3.0, 6.2, 1.4, Vector3(gx, 5.0, 0), prov_pr, 0.4)
+	_gable_assembly(root, "Gopura", timber, Vector3(gx, 5.0, 0), 1.5, 3.1, 1.4, prov_pr)
 	_box(root, "GopuraTierBand", cream, Vector3(2.5, 0.25, 5.7), Vector3(gx, 5.1, 0), prov_pr, false, 0.0, CRAFT_PROFILE)
 	for gfi in range(4):
-		_ball(root, "GopuraStupi_%d" % gfi, copper, 0.09, 0.18,
-			Vector3(gx + (0.9 if gfi % 2 == 0 else -0.9), 5.3, 2.5 if gfi < 2 else -2.5), prov_pr)
+		_lod(_ball(root, "GopuraStupi_%d" % gfi, copper, 0.09, 0.18,
+			Vector3(gx + (0.9 if gfi % 2 == 0 else -0.9), 5.3, 2.5 if gfi < 2 else -2.5), prov_pr), 25.0)
 	for glsgn in [-1.0, 1.0]:
 		_box(root, "GopuraLeaf_%d" % glsgn, timber, Vector3(0.8, 2.2, 0.06),
 			Vector3(gx - sgn * 0.5, 1.1, glsgn * 1.44), prov_pr, true, 0.0, CRAFT_TIMBER)
@@ -944,3 +1087,9 @@ func _build_hall(parent: Node, nm: String, at: Vector3, wood: Material, base_mat
 		for hz in [-1.0, 1.0]:
 			_beam_to(parent, "%s_Hip_%d%d" % [nm, hx, hz], wood,
 				at + Vector3(hx * 2.8, 2.92, hz * 2.3), hapex, Vector2(0.12, 0.14), hprov, CRAFT_ROOF)
+	for hi in range(2):
+		var hxi := lerpf(-2.2, 2.2, float(hi + 1) / 3.0)
+		for hsgn in [-1.0, 1.0]:
+			_beam_to(parent, "%s_HallRafter_%d_%d" % [nm, hi, hsgn], wood,
+				at + Vector3(hxi, 2.92, hsgn * 2.5),
+				at + Vector3(hxi * 0.2, 3.92, 0), Vector2(0.09, 0.12), hprov, CRAFT_ROOF)

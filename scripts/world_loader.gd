@@ -51,6 +51,8 @@ func load_world(path: String) -> void:
 	_detail_swap(current)
 	if path == village_path:
 		FoliageManager.setup(current)
+	elif path == ksetra_path:
+		FoliageManager.setup_ksetra(current)
 	var game1 = get_tree().get_first_node_in_group("game")
 	if game1 and game1.get("shadows_on") == false:
 		var sun1 := current.get_node_or_null("Sun") as DirectionalLight3D

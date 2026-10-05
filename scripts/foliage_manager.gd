@@ -9,12 +9,83 @@ const GRASS_N := 150
 const REED_N := 30
 const BUSH_N := 20
 const PALM_N := 10
+# Ksetra grounds (kept far under the same caps): swept courts stay clear,
+# planting lives outside Maryada + kulam banks + kavu edge.
+const KSETRA_GRASS_N := 60
+const KSETRA_REED_N := 12
+const KSETRA_BUSH_N := 8
 
 static func setup(world: Node) -> void:
 	_setup_grass(world)
 	setup_reeds(world)
 	_setup_bushes(world)
 	setup_palms(world)
+
+static func setup_ksetra(world: Node) -> void:
+	# Courtyard verges + tank bank + grove edge; temple courts stay swept bare.
+	var grass := BoxMesh.new()
+	grass.size = Vector3(0.3, 0.4, 0.3)
+	var mat: ShaderMaterial = load("res://shaders/sway_leaf.tres")
+	_kmake(world, "KsetraGrass", grass, mat, KSETRA_GRASS_N, 101, 0.2, 0)
+	var reed := BoxMesh.new()
+	reed.size = Vector3(0.12, 1.0, 0.12)
+	_kmake(world, "KsetraReeds", reed, mat, KSETRA_REED_N, 102, 0.5, 1)
+	var bush := BoxMesh.new()
+	bush.size = Vector3(0.9, 0.55, 0.9)
+	_kmake(world, "KsetraBush", bush, mat, KSETRA_BUSH_N, 103, 0.28, 2)
+
+static func _kblocked(x: float, z: float, band: int) -> bool:
+	# band 0 verge ring outside Maryada; 1 kulam bank; 2 kavu edge.
+	if band == 1:
+		return Vector2(x, z).distance_to(Vector2(-13.3, 13.3)) > 7.0
+	if band == 2:
+		return Vector2(x, z).distance_to(Vector2(-15.0, -15.0)) > 5.0
+	var r := Vector2(x, z).length()
+	return r < 27.5 or r > 34.0
+
+static func _kmake(world: Node, mm_name: String, mesh: Mesh, mat: Material,
+		count: int, seed_off: int, base_y: float, band: int) -> void:
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = mesh
+	mm.instance_count = count
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 4321 + seed_off
+	var placed := 0
+	var guard := 0
+	while placed < count and guard < count * 60:
+		guard += 1
+		var x := 0.0
+		var z := 0.0
+		if band == 0:
+			var ang := rng.randf_range(0.0, TAU)
+			var rad := rng.randf_range(27.5, 34.0)
+			x = cos(ang) * rad
+			z = sin(ang) * rad
+		elif band == 1:
+			var ang2 := rng.randf_range(0.0, TAU)
+			var rad2 := rng.randf_range(4.0, 7.0)
+			x = -13.3 + cos(ang2) * rad2
+			z = 13.3 + sin(ang2) * rad2
+		else:
+			x = rng.randf_range(-19.0, -11.0)
+			z = rng.randf_range(-19.0, -11.0)
+		if _kblocked(x, z, band):
+			continue
+		var s := rng.randf_range(0.7, 1.3)
+		var t := Transform3D(Basis(Vector3.UP, rng.randf_range(0.0, TAU)).scaled(Vector3(s, s, s)), Vector3(x, base_y * s, z))
+		mm.set_instance_transform(placed, t)
+		placed += 1
+	mm.instance_count = placed
+	var mmi := MultiMeshInstance3D.new()
+	mmi.name = mm_name
+	mmi.multimesh = mm
+	mmi.visibility_range_begin = 0.0
+	mmi.visibility_range_end = 45.0
+	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	if mat:
+		mmi.material_override = mat
+	world.add_child(mmi)
 
 static func _setup_grass(world: Node) -> void:
 	var mesh := BoxMesh.new()

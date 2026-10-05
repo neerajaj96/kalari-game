@@ -46,7 +46,7 @@ func _ready() -> void:
 	var close_btn := get_node_or_null("Root/TabsPanel/TabsClose") as Button
 	if close_btn:
 		close_btn.pressed.connect(_on_tabs_close)
-	for sb in ["SoundButton", "ShadowButton", "ResetButton", "SettingsClose"]:
+	for sb in ["SoundButton", "ShadowButton", "ResetButton", "PerfButton", "SettingsClose"]:
 		var sbtn := get_node_or_null("Root/SettingsPanel/" + sb) as Button
 		if sbtn:
 			sbtn.pressed.connect(_on_settings_button.bind(sb))
@@ -313,6 +313,13 @@ func _on_settings_button(b: String) -> void:
 	elif b == "ResetButton":
 		if FileAccess.file_exists("user://kalari_save.cfg"):
 			DirAccess.remove_absolute("user://kalari_save.cfg")
+	elif b == "PerfButton":
+		if game and game.get("perf") != null and game.perf.has_method("toggle"):
+			var msg: String = game.perf.toggle()
+			say(msg)
+			var pb := get_node_or_null("Root/SettingsPanel/PerfButton") as Button
+			if pb and game.perf.get("_on") != null:
+				pb.text = "Perf: on" if bool(game.perf.get("_on")) else "Perf: off"
 		get_tree().reload_current_scene()
 
 func _on_tab_selected(i: int) -> void:

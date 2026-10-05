@@ -69,6 +69,7 @@ offset = Vector3(0, 7, 10)
 position = Vector3(28, 8, 10)
 current = true
 fov = 55.0
+far = 70.0
 
 [node name="Ground" type="CSGBox3D" parent="."]
 material = ExtResource("2")

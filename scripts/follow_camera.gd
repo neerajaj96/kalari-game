@@ -51,12 +51,18 @@ func _process(delta: float) -> void:
 			bz1 = 28.0
 		goal.x = clampf(goal.x, -bx, bx)
 		goal.z = clampf(goal.z, bz0, bz1)
-		# Wall-clip guard: pull the eye to the first obstruction so close-range
-		# inspection never sinks into mandapa walls/roofs. Player capsule skipped
-		# (ray starts inside it, hit_from_inside=false).
-		var pq := PhysicsRayQueryParameters3D.create(
-			p.global_position + Vector3(0, 1.5, 0), goal + Vector3(0, 0.5, 0))
+		# Wall-clip guard: two rays (chest + roofline) pull the eye to the first
+		# obstruction so close-range inspection never sinks into mandapa
+		# walls/roofs. Player capsule skipped (rays start inside it).
+		var head := p.global_position + Vector3(0, 1.5, 0)
+		var pq := PhysicsRayQueryParameters3D.create(head, goal + Vector3(0, 0.5, 0))
+		pq.hit_from_inside = false
 		var phit := get_world_3d().direct_space_state.intersect_ray(pq)
+		var rq := PhysicsRayQueryParameters3D.create(head + Vector3(0, 1.2, 0), goal + Vector3(0, 2.2, 0))
+		rq.hit_from_inside = false
+		var rhit := get_world_3d().direct_space_state.intersect_ray(rq)
+		if not rhit.is_empty() and (phit.is_empty() or head.distance_to(rhit["position"] as Vector3) < head.distance_to(phit["position"] as Vector3)):
+			phit = rhit
 		if not phit.is_empty():
 			var hp: Vector3 = phit["position"]
 			var back: Vector3 = (goal + Vector3(0, 0.5, 0) - hp).normalized()

@@ -78,7 +78,7 @@ func _apply_hero_materials() -> void:
 		return
 	var flag_mat = load("res://shaders/flag_red.tres")
 	if flag_mat != null:
-		_paint_match(_built, "ParitaFlag_", flag_mat)
+		_paint_match(_built, "ParitaFlag", flag_mat)
 	var water_mat = load("res://shaders/water_fx.tres")
 	if water_mat != null:
 		_paint_match(_built, "KulamWater", water_mat)
@@ -89,6 +89,8 @@ func _paint_match(n: Node, prefix: String, mat: Material) -> void:
 			n.set("material_override", mat)
 		elif n is CSGShape3D:
 			n.set("material", mat)
+		elif n is MultiMeshInstance3D:
+			n.set("material_override", mat)
 	for c in n.get_children():
 		_paint_match(c, prefix, mat)
 
