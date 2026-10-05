@@ -318,8 +318,13 @@ func _on_settings_button(b: String) -> void:
 			var msg: String = game.perf.toggle()
 			say(msg)
 			var pb := get_node_or_null("Root/SettingsPanel/PerfButton") as Button
-			if pb and game.perf.get("_on") != null:
-				pb.text = "Perf: on" if bool(game.perf.get("_on")) else "Perf: off"
+			if pb:
+				if game.perf.get("bench"):
+					pb.text = "Perf: bench"
+				elif game.perf.get("_on") != null and bool(game.perf.get("_on")):
+					pb.text = "Perf: on"
+				else:
+					pb.text = "Perf: off"
 		get_tree().reload_current_scene()
 
 func _on_tab_selected(i: int) -> void:
