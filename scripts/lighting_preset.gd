@@ -150,7 +150,7 @@ func _apply_frame() -> void:
 
 func _apply_wetness(w: float) -> void:
 	# Dry day: rough bright earth. Monsoon: dark wet soil, specular sky response.
-	for path in ["res://materials/mud.tres", "res://materials/ground_green.tres", "res://materials/laterite.tres"]:
+	for path in ["res://materials/mud.tres", "res://materials/ground_green.tres", "res://materials/laterite.tres", "res://materials/laterite_srikovil.tres"]:
 		if not _wet_mats.has(path):
 			var m := load(path) as StandardMaterial3D
 			if m == null:

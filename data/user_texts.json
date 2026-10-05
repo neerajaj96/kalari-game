@@ -1,4 +1,14 @@
 {
   "how": "Paste Kularnava / Tantrasamuchaya excerpts here as tab objects. Ancient Sanskrit verses are public domain and go verbatim; modern commentary gets summarized only. Tabs merge after meru_tabs in-game automatically.",
-  "tabs": []
+  "tabs": [
+    {
+      "id": "user_srikovil",
+      "name_en": "Sreekovil: the womb-house",
+      "name_ml": "ശ്രീകോവിൽ",
+      "what": "Kerala square sanctum (caturasra plan): laterite walls on a stone adhishthana plinth, timber band course, copper crown above. The deity's womb-house faces east.",
+      "how_in_game": "Raise its walls, roof and kalasha in the temple plot phases; ring the bell at the sanctum door; guard its lamps through the storm-repair phase.",
+      "philosophy": "The outermost gate leads stepwise inward; the center is small, dark and still.",
+      "sources": ["Kerala sreekovil convention"]
+    }
+  ]
 }

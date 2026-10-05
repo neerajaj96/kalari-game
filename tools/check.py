@@ -563,6 +563,21 @@ for _tres in sorted(glob.glob(BASE + "/materials/*.tres") + glob.glob(BASE + "/s
     if not _used:
         warns.append(f"unreferenced material '{_rel}' (delete or wire it)")
 
+# --- 8x. Srikovil articulation: pilasters/bands/panels/door set + forked wetness ---
+for rn in ["SrikovilPilasterNE", "SrikovilPilasterSE", "SrikovilPilasterNW", "SrikovilPilasterSW",
+        "SrikovilBandLow", "SrikovilBandHigh", "SrikovilPanelN", "SrikovilPanelS",
+        "DoorJambL", "DoorJambR", "DoorLintel", "DoorSeam"]:
+    if rn not in _vts:
+        errs.append(f"village: Srikovil '{rn}' missing")
+_lp2 = open(BASE + "/scripts/lighting_preset.gd").read()
+if "laterite_srikovil.tres" not in _lp2:
+    errs.append("wetness: forked 'laterite_srikovil.tres' not in storm list")
+_ut = json.load(open(BASE + "/data/user_texts.json"))
+for _tkey in ["user_srikovil"]:
+    _hit = [t for t in _ut.get("tabs", []) if t.get("id") == _tkey]
+    if not _hit:
+        errs.append(f"tabs: '{_tkey}' lore entry missing")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)

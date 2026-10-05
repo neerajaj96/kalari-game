@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/enemy.tscn" id="1"]
 [ext_resource type="Material" path="res://materials/ground_green.tres" id="2"]
@@ -21,6 +21,8 @@
 [ext_resource type="PackedScene" path="res://scenes/cart.tscn" id="20"]
 [ext_resource type="PackedScene" path="res://scenes/boat.tscn" id="21"]
 [ext_resource type="Script" path="res://scripts/lamp_flicker.gd" id="22"]
+[ext_resource type="Material" path="res://materials/laterite_srikovil.tres" id="23"]
+[ext_resource type="Material" path="res://materials/shrine_yellow.tres" id="24"]
 
 [sub_resource type="Environment" id="env"]
 background_mode = 1
@@ -103,7 +105,7 @@ size = Vector3(4.2, 0.6, 4.2)
 position = Vector3(0, 0.3, 0)
 
 [node name="Srikovil" type="CSGBox3D" parent="TempleComplex"]
-material = ExtResource("8")
+material = ExtResource("23")
 use_collision = true
 size = Vector3(3.2, 2.6, 3.2)
 position = Vector3(0, 1.9, 0)
@@ -163,6 +165,78 @@ material = ExtResource("5")
 use_collision = true
 size = Vector3(0.2, 0.3, 0.2)
 position = Vector3(0.9, 1.6, 0)
+
+[node name="SrikovilPilasterNE" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("23")
+use_collision = true
+size = Vector3(0.25, 2.6, 0.25)
+position = Vector3(1.6, 1.9, -1.6)
+
+[node name="SrikovilPilasterSE" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("23")
+use_collision = true
+size = Vector3(0.25, 2.6, 0.25)
+position = Vector3(1.6, 1.9, 1.6)
+
+[node name="SrikovilPilasterNW" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("23")
+use_collision = true
+size = Vector3(0.25, 2.6, 0.25)
+position = Vector3(-1.6, 1.9, -1.6)
+
+[node name="SrikovilPilasterSW" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("23")
+use_collision = true
+size = Vector3(0.25, 2.6, 0.25)
+position = Vector3(-1.6, 1.9, 1.6)
+
+[node name="SrikovilBandLow" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("23")
+use_collision = true
+size = Vector3(3.3, 0.12, 3.3)
+position = Vector3(0, 1.2, 0)
+
+[node name="SrikovilBandHigh" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("23")
+use_collision = true
+size = Vector3(3.3, 0.12, 3.3)
+position = Vector3(0, 2.6, 0)
+
+[node name="SrikovilPanelN" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("23")
+use_collision = true
+size = Vector3(1.6, 1.2, 0.08)
+position = Vector3(0, 1.9, -1.68)
+
+[node name="SrikovilPanelS" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("23")
+use_collision = true
+size = Vector3(1.6, 1.2, 0.08)
+position = Vector3(0, 1.9, 1.68)
+
+[node name="DoorJambL" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+use_collision = true
+size = Vector3(0.18, 2.0, 0.18)
+position = Vector3(1.66, 1.5, -0.62)
+
+[node name="DoorJambR" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+use_collision = true
+size = Vector3(0.18, 2.0, 0.18)
+position = Vector3(1.66, 1.5, 0.62)
+
+[node name="DoorLintel" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("9")
+use_collision = true
+size = Vector3(0.2, 0.25, 1.6)
+position = Vector3(1.66, 2.55, 0)
+
+[node name="DoorSeam" type="CSGBox3D" parent="TempleComplex"]
+material = ExtResource("24")
+use_collision = true
+size = Vector3(0.06, 0.08, 1.2)
+position = Vector3(1.7, 2.66, 0)
 
 [node name="SanctumBarrier" type="StaticBody3D" parent="TempleComplex"]
 position = Vector3(2.0, 1.0, 0)
