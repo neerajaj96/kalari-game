@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3]
+[gd_scene load_steps=39 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1"]
 [ext_resource type="Material" path="res://materials/skin.tres" id="2"]
@@ -13,6 +13,7 @@
 [ext_resource type="Material" path="res://materials/eye_white.tres" id="11"]
 [ext_resource type="Material" path="res://materials/eye_dark.tres" id="12"]
 [ext_resource type="Material" path="res://materials/hair_dark.tres" id="13"]
+[ext_resource type="Script" path="res://scripts/avatar_rig.gd" id="14"]
 
 [sub_resource type="CapsuleShape3D" id="cap"]
 radius = 0.4
@@ -297,6 +298,9 @@ position = Vector3(0, -0.38, -0.04)
 
 [node name="Vadivu" type="Node" parent="."]
 script = ExtResource("6")
+
+[node name="Rig" type="Node" parent="."]
+script = ExtResource("14")
 
 [node name="WeaponPivot" type="Node3D" parent="."]
 position = Vector3(0.45, 1.2, 0)

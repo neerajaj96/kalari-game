@@ -495,6 +495,25 @@ for token in ["SCALING_3D_MODE_BILINEAR", "scaling_3d_scale = 0.8"]:
     if token not in _gd4:
         errs.append(f"director: P9 '{token}' missing")
 
+# --- 8y. P4 rig prep (structural): fallback host, full state map, no hard GLB deps ---
+_rig = open(BASE + "/scripts/avatar_rig.gd").read() if os.path.exists(BASE + "/scripts/avatar_rig.gd") else ""
+if "class_name AvatarRig" not in _rig:
+    errs.append("rig: class missing")
+for token in ["FileAccess.file_exists", "AnimationTree", "AnimationNodeStateMachine",
+        "idle", "strike", "block", "dodge", "hit", "death", "attack_1.glb"]:
+    if token not in _rig:
+        errs.append(f"rig: P4 '{token}' missing")
+for f in sorted(glob.glob(BASE + "/scripts/player.gd") + glob.glob(BASE + "/scripts/enemy_ai.gd")):
+    if 'preload("res://art/' in open(f).read():
+        errs.append(f"{f}: hard GLB preload (rig must stay fallback-first)")
+_pts = open(BASE + "/scenes/player.tscn").read()
+for token in ['script = ExtResource("14")', "avatar_rig.gd", '[node name="Rig"']:
+    if token not in _pts:
+        errs.append(f"player: P4 Rig wiring '{token}' missing")
+for d in ["art/characters/player/.gitkeep", "art/animations/.gitkeep"]:
+    if not os.path.exists(BASE + "/" + d):
+        errs.append(f"P4 art scaffold '{d}' missing")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)
