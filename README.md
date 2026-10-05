@@ -5,9 +5,9 @@ Sources: Chirakkal T. Sreedharan Nair (Arappukkai) + Meru Tantra Vol 1 (8 prakas
 
 ## What this APK is
 - `42x21ft kuzhi-kalari` school (Poothara 5-tier, Gurukkal NPC, lamp flicker) + Kerala village (Pancha-prakara temple complex, market, backwater, hermitage).
-- Combat: 5 moves, vadivu poses, kettukari/cheruvadi with swing, hit-stop, lunge, marma back-stabs, dust + spark VFX, follow camera with shake.
+- Combat: 5 moves, vadivu poses, kettukari/cheruvadi with swing, slash-arc flash, hit-stop (0.08s marma), lunge, marma back-stabs, dust + spark VFX, dodge ribbon, combat FOV kicks, follow camera with shake.
 - Systems: kalari ranks 1-3 (+4-6 locked), 5 nitya sevas, breath sadhana (kalari/temple/forest), 7-phase temple plot, 18+ symbolic Marga track (default OFF), 14-tab encyclopedia (+ user-text slots).
-- Godot 4.5-stable, Compatibility renderer, arm64-v8a, debug signed.
+- Godot 4.6.3-stable, Forward+ (desktop) / Mobile (Android) renderer, arm64-v8a, debug signed.
 
 ## Build APK from Termux (no local SDK needed)
 ```sh

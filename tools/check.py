@@ -37,6 +37,8 @@ for f, src in TSCN.items():
     for ref in set(re.findall(r'ExtResource\("([^"]+)"', src)):
         if ref not in declared:
             errs.append(f"{f}: ExtResource(\"{ref}\") has no ext_resource declaration")
+    for _u in sorted(declared - set(re.findall(r'ExtResource\("([^"]+)"', src))):
+        errs.append(f"{f}: ext_resource id \"{_u}\" declared but never used")
 
 # --- 1b. every CSG must collide (infinite-fall guard) + floor snap ---
 for f, src in TSCN.items():
@@ -530,6 +532,25 @@ for token in ['script = ExtResource("9")', "art/characters/gurukkal/"]:
         errs.append(f"gurukkal: P4 elder Rig wiring '{token}' missing")
 if not os.path.exists(BASE + "/art/characters/gurukkal/.gitkeep"):
     errs.append("P4 art scaffold 'art/characters/gurukkal/.gitkeep' missing")
+
+# --- 8z. script res paths: literals + consts must exist (rig-gated art exempt) ---
+for _gf in sorted(glob.glob(BASE + "/scripts/*.gd")):
+    for _ln in open(_gf).read().splitlines():
+        if "rig_path" in _ln or "RIG_PATH" in _ln:
+            continue
+        for _pm in re.finditer(r'"(res://[^"]+)"', _ln):
+            if not os.path.exists(BASE + "/" + _pm.group(1)[6:]):
+                errs.append(f"{_gf}: script res path missing '{_pm.group(1)}'")
+
+# --- 8n. HUD buttons: negative offsets require edge anchors (not default 0,0) ---
+_hts_n = open(BASE + "/scenes/ui/hud.tscn").read()
+for _bm in re.finditer(r'\[node name="(\w+)" type="Button"[^\]]*\](?:\n(?!\[node ).*)*', _hts_n):
+    _bnm, _bb = _bm.group(1), _bm.group(0)
+    _neg = any(float(_mt.group(1)) < 0 for _mt in re.finditer(r"offset_(?:left|top) = (-?[\d.]+)", _bb))
+    _anch = ("anchor_top = 1.0" in _bb or "anchor_left = 1.0" in _bb
+        or "anchor_right = 1.0" in _bb or "anchor_bottom = 1.0" in _bb)
+    if _neg and not _anch:
+        errs.append(f"hud: Button '{_bnm}' negative offset on default anchors (off-screen)")
 
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()

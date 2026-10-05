@@ -1,7 +1,6 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemy_ai.gd" id="1"]
-[ext_resource type="Material" path="res://materials/skin.tres" id="2"]
 [ext_resource type="Material" path="res://materials/sash_red.tres" id="3"]
 [ext_resource type="Script" path="res://scripts/vadivu_pose.gd" id="4"]
 [ext_resource type="Material" path="res://shaders/toon_skin.tres" id="5"]
