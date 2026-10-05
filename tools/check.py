@@ -26,10 +26,13 @@ for f, src in TSCN.items():
     sub = len(re.findall(r"\[sub_resource", src))
     if m and int(m.group(1)) not in (ext + sub, ext + sub + 1):
         errs.append(f"{f}: load_steps {m.group(1)} vs ext {ext}+sub {sub}")
-    for rm in re.finditer(r'res://[^"]+', src):
-        p = rm.group(0)
-        if not os.path.exists(BASE + "/" + p[6:]):
-            errs.append(f"{f}: missing {p}")
+    for line in src.splitlines():
+        if "rig_path" in line:
+            continue # fallback-gated art path (8y covers presence/scaffold)
+        for rm in re.finditer(r'res://[^"]+', line):
+            p = rm.group(0)
+            if not os.path.exists(BASE + "/" + p[6:]):
+                errs.append(f"{f}: missing {p}")
     declared = set(re.findall(r'\[ext_resource[^\]]*id="([^"]+)"', src))
     for ref in set(re.findall(r'ExtResource\("([^"]+)"', src)):
         if ref not in declared:
@@ -513,6 +516,14 @@ for token in ['script = ExtResource("14")', "avatar_rig.gd", '[node name="Rig"']
 for d in ["art/characters/player/.gitkeep", "art/animations/.gitkeep"]:
     if not os.path.exists(BASE + "/" + d):
         errs.append(f"P4 art scaffold '{d}' missing")
+if "@export var rig_path" not in _rig:
+    errs.append("rig: 'rig_path' must be @export (per-character override)")
+_en = open(BASE + "/scenes/enemy.tscn").read()
+for token in ['script = ExtResource("10")', "art/characters/bandit/"]:
+    if token not in _en:
+        errs.append(f"enemy: P4 bandit Rig wiring '{token}' missing")
+if not os.path.exists(BASE + "/art/characters/bandit/.gitkeep"):
+    errs.append("P4 art scaffold 'art/characters/bandit/.gitkeep' missing")
 
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()

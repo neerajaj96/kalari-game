@@ -7,7 +7,7 @@ extends Node
 # owns displacement (Aswa lunge + move_and_slide).
 class_name AvatarRig
 
-const RIG_PATH := "res://art/characters/player/regular_male.glb"
+@export var rig_path := "res://art/characters/player/regular_male.glb"
 const ANIM_DIR := "res://art/animations/"
 # CombatState S ints: IDLE 0, STANCE 1, STRIKE 2, BLOCK 3, DODGE 4, HIT 5, DOWN 6.
 const ANIMS := {
@@ -27,9 +27,9 @@ var _tree: AnimationTree
 var _last_state := -1
 
 func _ready() -> void:
-	if not FileAccess.file_exists(RIG_PATH):
+	if not FileAccess.file_exists(rig_path):
 		return # fallback era: primitives carry the frame.
-	var ps: PackedScene = load(RIG_PATH)
+	var ps: PackedScene = load(rig_path)
 	if ps == null:
 		return
 	var p := get_parent()

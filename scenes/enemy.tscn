@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemy_ai.gd" id="1"]
 [ext_resource type="Material" path="res://materials/skin.tres" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="Material" path="res://materials/eye_dark.tres" id="7"]
 [ext_resource type="Material" path="res://materials/hair_dark.tres" id="8"]
 [ext_resource type="Material" path="res://shaders/toon_brute.tres" id="9"]
+[ext_resource type="Script" path="res://scripts/avatar_rig.gd" id="10"]
 
 [sub_resource type="CapsuleShape3D" id="cap"]
 radius = 0.45
@@ -256,3 +257,7 @@ position = Vector3(0, -0.38, -0.04)
 
 [node name="Vadivu" type="Node" parent="."]
 script = ExtResource("4")
+
+[node name="Rig" type="Node" parent="."]
+script = ExtResource("10")
+rig_path = "res://art/characters/bandit/brute_male.glb"
