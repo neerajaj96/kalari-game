@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://godot/ksetra_demo.gd" id="1"]
 [ext_resource type="Material" path="res://materials/ground_green.tres" id="2"]
@@ -18,6 +18,9 @@ fog_density = 0.005
 glow_enabled = true
 glow_intensity = 0.4
 glow_bloom = 0.05
+
+[sub_resource type="BoxMesh" id="rainmesh"]
+size = Vector3(0.03, 0.25, 0.03)
 
 [node name="Ksetra" type="Node3D"]
 script = ExtResource("1")
@@ -51,6 +54,23 @@ material = ExtResource("2")
 use_collision = true
 size = Vector3(60.0, 0.2, 60.0)
 position = Vector3(0, -0.1, 0)
+
+[node name="Rain" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 150
+lifetime = 1.2
+emission_shape = 3
+emission_box_extents = Vector3(15, 1, 4)
+direction = Vector3(0, -1, 0)
+spread = 5.0
+gravity = Vector3(0, -18, 0)
+initial_velocity_min = 8.0
+initial_velocity_max = 12.0
+scale_amount_min = 0.02
+scale_amount_max = 0.05
+color = Color(0.7, 0.8, 0.9, 0.7)
+draw_pass_1 = SubResource("rainmesh")
+position = Vector3(0, 8, 0)
 
 [node name="ProvenanceUI" type="CanvasLayer" parent="."]
 

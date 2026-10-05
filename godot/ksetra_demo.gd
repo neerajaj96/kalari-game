@@ -62,6 +62,7 @@ func _build_slice(i: int) -> void:
 	_say(str(meta.get("name", "?")) + " (K = toggle slice. Drag orbit, wheel zoom, click member.)")
 
 var _crowd: Array = []
+var _monsoon := false
 
 func _on_slot(slot_id: String) -> void:
 	# Crowd responds to the ritual clock: lamp slots gather attention, all note the hour.
@@ -136,6 +137,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		if (event as InputEventKey).keycode == KEY_X:
 			# Defilement drill (SESHA-P6V01): sthana-shuddhi then pratima-shuddhi, remedy cycles.
 			_say("Defilement reported. Prayaschitta at once: sthana-shuddhi, then pratima-shuddhi. Remedies cycle: khanana, harana, daha, purana, go-nivasana.")
+			return
+		if (event as InputEventKey).keycode == KEY_R:
+			_monsoon = not _monsoon
+			var daynight := get_node_or_null("DayNight")
+			if daynight and daynight.has_method("set_storm"):
+				daynight.set_storm(1.0 if _monsoon else 0.0)
+			var rain = get_node_or_null("Rain") as CPUParticles3D
+			if rain:
+				rain.emitting = _monsoon
+			_say("Monsoon ON — wet stone, dark sky" if _monsoon else "Clear sky")
 			return
 		if (event as InputEventKey).keycode == KEY_F:
 			# Seva fetch: restock the current slot's offering (mirrors market FETCH loop).
