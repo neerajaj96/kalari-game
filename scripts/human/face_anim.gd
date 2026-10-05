@@ -95,6 +95,8 @@ func _tick_expr(delta: float) -> void:
 	var jaw_open := 0.0
 	var brow := Vector3.ZERO
 	var brow_pos := Vector3.ZERO
+	var cheek := Vector3.ZERO
+	var cheek_pos := Vector3.ZERO
 	match _expr:
 		"focus":
 			brow = Vector3(0.12, 0, 0)
@@ -104,17 +106,23 @@ func _tick_expr(delta: float) -> void:
 			brow = Vector3(0.0, 0, -0.18)
 			brow_pos = Vector3(0, -0.005, -0.003)
 			jaw_open = 0.06 + micro
+			cheek = Vector3(0, 0, 0.12)
+			cheek_pos = Vector3(0, 0.004, -0.004)
 		"fear":
 			brow = Vector3(-0.22, 0, 0)
 			brow_pos = Vector3(0, 0.005, 0.0)
 			jaw_open = 0.10
+			cheek_pos = Vector3(0, -0.002, 0.0)
 		"pain", "effort":
 			brow = Vector3(0.18, 0, 0.10)
 			jaw_open = 0.16 + _pain_flash * 0.12
+			cheek = Vector3(0.10, 0, 0)
+			cheek_pos = Vector3(0, 0.005, -0.005)
 		"surprise":
 			brow = Vector3(-0.28, 0, 0)
 			brow_pos = Vector3(0, 0.007, 0.0)
 			jaw_open = 0.18
+			cheek_pos = Vector3(0, -0.003, 0.0)
 		"recovery":
 			brow = Vector3(0.05, 0, 0)
 			jaw_open = 0.08
@@ -127,3 +135,5 @@ func _tick_expr(delta: float) -> void:
 		_sk.set_bone_pose_rotation(ji, Quaternion(Basis(Vector3(1, 0, 0), jaw_open * 0.9) * rest.basis))
 	_bone_pose("brow_L", brow + Vector3(micro * 0.3, 0, 0), brow_pos)
 	_bone_pose("brow_R", Vector3(brow.x, brow.y, -brow.z) + Vector3(-micro * 0.3, 0, 0), brow_pos)
+	_bone_pose("cheek_L", cheek + Vector3(0, micro * 0.2, 0), cheek_pos)
+	_bone_pose("cheek_R", Vector3(cheek.x, cheek.y, -cheek.z) + Vector3(0, -micro * 0.2, 0), cheek_pos)

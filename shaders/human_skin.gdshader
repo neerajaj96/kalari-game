@@ -18,6 +18,7 @@ uniform float melanin = 0.62;
 uniform float age_wrinkle = 0.2;
 uniform float scar_amount = 0.0;
 uniform float mottle = 0.3;
+uniform float stubble = 0.0;
 uniform vec2 uv_scale = vec2(6.0, 6.0);
 
 float hash21(vec2 p) {
@@ -60,10 +61,15 @@ void fragment() {
 	// Scar lightening streaks.
 	float scar = smoothstep(0.75, 0.95, vnoise(vec2(uv.x * 0.5, uv.y * 3.0))) * scar_amount;
 	alb = mix(alb, vec3(0.75, 0.6, 0.5), scar * 0.5);
+	// Stubble shadow on jaw/upper-lip (head UV v ~0.65-0.95, all around).
+	float jaw_zone = smoothstep(0.55, 0.75, UV.y) * (1.0 - smoothstep(0.96, 1.0, UV.y));
+	float stub_n = vnoise(uv * 9.0);
+	alb = mix(alb, alb * vec3(0.72, 0.70, 0.70), jaw_zone * stubble * (0.45 + stub_n * 0.55));
 	ALBEDO = alb;
-	// Roughness: T-zone/oily vs dry + pores + age.
+	// Roughness: T-zone/oily vs dry + pores + age + stubble.
 	float rough = roughness_base + (fine - 0.5) * roughness_var;
 	rough += (pores - 0.5) * 0.12 * pore_strength;
+	rough += jaw_zone * stubble * 0.18;
 	rough = clamp(rough, 0.25, 0.9);
 	ROUGHNESS = rough;
 	SPECULAR = 0.45;

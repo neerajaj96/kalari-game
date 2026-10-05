@@ -43,10 +43,14 @@ for f in glob.glob(HUMAN + "/*.gd"):
 
 # 3. Anatomy: head/eyes/teeth/hands/feet/hair/brow builders present.
 sculpt = open(os.path.join(HUMAN, "body_sculpt.gd")).read()
-for fn in ["build_torso", "build_head", "build_upper_arm", "build_forearm",
-           "build_thigh", "build_shin", "build_hand", "build_foot",
-           "build_eyeball", "build_teeth_strip", "build_hair", "build_beard",
-           "build_eyebrow", "build_ear", "build_lips"]:
+for fn in ["build_torso", "build_head", "build_neck", "build_upper_arm", "build_forearm",
+           "build_thigh", "build_shin", "build_hand", "build_fingernails",
+           "build_foot", "build_toenails",
+           "build_eyeball", "build_iris_disc", "build_pupil_disc",
+           "build_eyelid_rim", "build_caruncle",
+           "build_teeth_strip", "build_mouth_cavity",
+           "build_hair", "build_beard",
+           "build_eyebrow", "build_ear", "build_lips", "build_joint_ball"]:
     if fn not in sculpt:
         errs.append(f"body_sculpt: '{fn}' missing")
 if "CapsuleMesh" in sculpt or "SphereMesh" in sculpt or "BoxMesh" in sculpt:

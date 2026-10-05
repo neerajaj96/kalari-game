@@ -29,6 +29,14 @@ static func skin_material(dna: HumanDNA) -> ShaderMaterial:
 	sm.set_shader_parameter("wrap_light", 0.45)
 	sm.set_shader_parameter("pore_strength", 0.4)
 	sm.set_shader_parameter("wrinkle_strength", 0.55)
+	var stub := 0.0
+	if dna.beard_style == 1:
+		stub = 0.55
+	elif dna.beard_style == 0 and not dna.is_female:
+		stub = 0.22
+	elif dna.beard_style == 2:
+		stub = 0.35
+	sm.set_shader_parameter("stubble", clampf(stub, 0.0, 1.0))
 	_cache[k] = sm
 	return sm
 
@@ -61,6 +69,37 @@ static func pupil_material() -> StandardMaterial3D:
 	m.albedo_color = Color(0.02, 0.015, 0.015, 1.0)
 	m.roughness = 0.08
 	_cache["pupil"] = m
+	return m
+
+static func cornea_material() -> StandardMaterial3D:
+	if _cache.has("cornea"):
+		return _cache["cornea"]
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(0.95, 0.96, 0.98, 1.0)
+	m.roughness = 0.05
+	m.metallic_specular = 0.9
+	_cache["cornea"] = m
+	return m
+
+static func caruncle_material(dna: HumanDNA) -> StandardMaterial3D:
+	var k := "caruncle"
+	if _cache.has(k):
+		return _cache[k]
+	var skin := BodySculpt.skin_tone(dna)
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(clampf(skin.r * 0.75, 0.0, 1.0), clampf(skin.g * 0.42, 0.0, 1.0), clampf(skin.b * 0.40, 0.0, 1.0), 1.0)
+	m.roughness = 0.45
+	_cache[k] = m
+	return m
+
+static func nail_material() -> StandardMaterial3D:
+	if _cache.has("nail"):
+		return _cache["nail"]
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(0.78, 0.62, 0.52, 1.0)
+	m.roughness = 0.32
+	m.metallic_specular = 0.4
+	_cache["nail"] = m
 	return m
 
 static func teeth_material() -> StandardMaterial3D:

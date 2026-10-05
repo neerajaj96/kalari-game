@@ -60,6 +60,7 @@ static func build(parent: Node, dna: HumanDNA) -> Node3D:
 	_build_lod_into(sk, dna, 0, hero_sets)
 	_build_lod_into(sk, dna, 1, mid_sets)
 	_build_lod_into(sk, dna, 2, far_sets)
+	_add_joint_caps(sk, dna, hero_sets)
 	var lod := HumanLOD.new()
 	lod.name = "HumanLOD"
 	body.add_child(lod)
@@ -68,6 +69,34 @@ static func build(parent: Node, dna: HumanDNA) -> Node3D:
 	_hide_primitives(parent)
 	body.set_meta("dna_seed", dna.seed)
 	return body
+
+static func _add_joint_caps(sk: Skeleton3D, dna: HumanDNA, hero_sets: Array) -> void:
+	# Soft-tissue balls at major joints (Hero only): hide rigid seams during
+	# bends. Sculpted lathe balls with skin material, following bone midpoints.
+	var skin_mat: Material = HumanMaterials.skin_material(dna)
+	var joints := [
+		["upperarm_L", "forearm_L", 0.95, 0.062],
+		["upperarm_R", "forearm_R", 0.95, 0.062],
+		["forearm_L", "hand_L", 0.9, 0.048],
+		["forearm_R", "hand_R", 0.9, 0.048],
+		["thigh_L", "shin_L", 0.95, 0.085],
+		["thigh_R", "shin_R", 0.95, 0.085],
+		["shin_L", "foot_L", 0.9, 0.058],
+		["shin_R", "foot_R", 0.9, 0.058],
+		["clav_L", "upperarm_L", 0.7, 0.068],
+		["clav_R", "upperarm_R", 0.7, 0.068],
+	]
+	for j in joints:
+		var cap := JointCap.new()
+		cap.name = "JointCap_%s_%s" % [j[0], j[1]]
+		cap.setup(sk, j[0], j[1], j[2], j[3])
+		sk.add_child(cap)
+		var mi := MeshInstance3D.new()
+		mi.name = "CapMesh"
+		mi.mesh = BodySculpt.build_joint_ball(float(j[3]), 0)
+		mi.material_override = skin_mat
+		cap.add_child(mi)
+		hero_sets.append(cap)
 
 static func bone_global_rest(sk: Skeleton3D, bone: String) -> Vector3:
 	var i := sk.find_bone(bone)
@@ -93,16 +122,25 @@ static func _build_lod_into(sk: Skeleton3D, dna: HumanDNA, lod: int, out_sets: A
 	# bone-local surfaces (limbs/eyes/hair) attach with identity.
 	_add_seg(sk, "chest", _cached_mesh("torso", dna, lod, func() -> ArrayMesh: return BodySculpt.build_torso(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, true)
 	_add_seg(sk, "head", _cached_mesh("head", dna, lod, func() -> ArrayMesh: return BodySculpt.build_head(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, true)
+	_add_seg(sk, "neck", _cached_mesh("neck", dna, lod, func() -> ArrayMesh: return BodySculpt.build_neck(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, true)
 	var eye_mesh: ArrayMesh = _cached_mesh("eyeball", dna, lod, func() -> ArrayMesh: return BodySculpt.build_eyeball(lod))
-	_add_seg(sk, "eye_L", eye_mesh, HumanMaterials.eye_white_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.002)), lod, out_sets, false)
-	_add_seg(sk, "eye_R", eye_mesh, HumanMaterials.eye_white_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.002)), lod, out_sets, false)
-	var iris_mesh: ArrayMesh = _cached_mesh("iris", dna, lod, func() -> ArrayMesh: return BodySculpt.build_eyeball(lod))
-	_add_seg(sk, "eye_L", iris_mesh, HumanMaterials.iris_material(dna), _iris_xform(), lod, out_sets, false)
-	_add_seg(sk, "eye_R", iris_mesh, HumanMaterials.iris_material(dna), _iris_xform(), lod, out_sets, false)
-	var pupil_mesh: ArrayMesh = _cached_mesh("pupil", dna, lod, func() -> ArrayMesh: return BodySculpt.build_eyeball(lod))
-	_add_seg(sk, "eye_L", pupil_mesh, HumanMaterials.pupil_material(), _pupil_xform(), lod, out_sets, false)
-	_add_seg(sk, "eye_R", pupil_mesh, HumanMaterials.pupil_material(), _pupil_xform(), lod, out_sets, false)
+	_add_seg(sk, "eye_L", eye_mesh, HumanMaterials.cornea_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.002)), lod, out_sets, false)
+	_add_seg(sk, "eye_R", eye_mesh, HumanMaterials.cornea_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.002)), lod, out_sets, false)
+	var iris_mesh: ArrayMesh = _cached_mesh("iris_disc", dna, lod, func() -> ArrayMesh: return BodySculpt.build_iris_disc())
+	_add_seg(sk, "eye_L", iris_mesh, HumanMaterials.iris_material(dna), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0115)), lod, out_sets, false)
+	_add_seg(sk, "eye_R", iris_mesh, HumanMaterials.iris_material(dna), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0115)), lod, out_sets, false)
+	var pupil_mesh: ArrayMesh = _cached_mesh("pupil_disc", dna, lod, func() -> ArrayMesh: return BodySculpt.build_pupil_disc())
+	_add_seg(sk, "eye_L", pupil_mesh, HumanMaterials.pupil_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0118)), lod, out_sets, false)
+	_add_seg(sk, "eye_R", pupil_mesh, HumanMaterials.pupil_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0118)), lod, out_sets, false)
+	if lod == 0:
+		_add_seg(sk, "lid_upper_L", BodySculpt.build_eyelid_rim(true, lod), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
+		_add_seg(sk, "lid_upper_R", BodySculpt.build_eyelid_rim(true, lod), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
+		_add_seg(sk, "lid_lower_L", BodySculpt.build_eyelid_rim(false, lod), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
+		_add_seg(sk, "lid_lower_R", BodySculpt.build_eyelid_rim(false, lod), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
+		_add_seg(sk, "eye_L", BodySculpt.build_caruncle(), HumanMaterials.caruncle_material(dna), Transform3D(Basis.IDENTITY, Vector3(-0.011, -0.001, -0.010)), lod, out_sets, false)
+		_add_seg(sk, "eye_R", BodySculpt.build_caruncle(), HumanMaterials.caruncle_material(dna), Transform3D(Basis.IDENTITY, Vector3(0.011, -0.001, -0.010)), lod, out_sets, false)
 	_add_seg(sk, "jaw", BodySculpt.build_teeth_strip(), HumanMaterials.teeth_material(), Transform3D(Basis.IDENTITY, Vector3(0, -0.01, -0.055)), lod, out_sets, false)
+	_add_seg(sk, "jaw", BodySculpt.build_mouth_cavity(), HumanMaterials.mouth_inner_material(), Transform3D.IDENTITY, lod, out_sets, false)
 	if lod < 2:
 		_add_seg(sk, "brow_L", BodySculpt.build_eyebrow(dna, -1.0, lod), HumanMaterials.hair_material(dna), Transform3D.IDENTITY, lod, out_sets, false)
 		_add_seg(sk, "brow_R", BodySculpt.build_eyebrow(dna, 1.0, lod), HumanMaterials.hair_material(dna), Transform3D.IDENTITY, lod, out_sets, false)
@@ -124,12 +162,18 @@ static func _build_lod_into(sk: Skeleton3D, dna: HumanDNA, lod: int, out_sets: A
 	_add_seg(sk, "forearm_R", _cached_mesh("farm", dna, lod, func() -> ArrayMesh: return BodySculpt.build_forearm(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 	_add_seg(sk, "hand_L", _cached_mesh("hand", dna, lod, func() -> ArrayMesh: return BodySculpt.build_hand(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 	_add_seg(sk, "hand_R", _cached_mesh("hand", dna, lod, func() -> ArrayMesh: return BodySculpt.build_hand(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
+	if lod == 0:
+		_add_seg(sk, "hand_L", BodySculpt.build_fingernails(), HumanMaterials.nail_material(), Transform3D.IDENTITY, lod, out_sets, false)
+		_add_seg(sk, "hand_R", BodySculpt.build_fingernails(), HumanMaterials.nail_material(), Transform3D.IDENTITY, lod, out_sets, false)
 	_add_seg(sk, "thigh_L", _cached_mesh("thigh", dna, lod, func() -> ArrayMesh: return BodySculpt.build_thigh(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 	_add_seg(sk, "thigh_R", _cached_mesh("thigh", dna, lod, func() -> ArrayMesh: return BodySculpt.build_thigh(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 	_add_seg(sk, "shin_L", _cached_mesh("shin", dna, lod, func() -> ArrayMesh: return BodySculpt.build_shin(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 	_add_seg(sk, "shin_R", _cached_mesh("shin", dna, lod, func() -> ArrayMesh: return BodySculpt.build_shin(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 	_add_seg(sk, "foot_L", _cached_mesh("foot", dna, lod, func() -> ArrayMesh: return BodySculpt.build_foot(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 	_add_seg(sk, "foot_R", _cached_mesh("foot", dna, lod, func() -> ArrayMesh: return BodySculpt.build_foot(dna, lod)), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
+	if lod == 0:
+		_add_seg(sk, "foot_L", BodySculpt.build_toenails(dna), HumanMaterials.nail_material(), Transform3D.IDENTITY, lod, out_sets, false)
+		_add_seg(sk, "foot_R", BodySculpt.build_toenails(dna), HumanMaterials.nail_material(), Transform3D.IDENTITY, lod, out_sets, false)
 	_add_garments(sk, dna, lod, cloth_mat, accent_mat, out_sets)
 
 static func _add_garments(sk: Skeleton3D, dna: HumanDNA, lod: int, cloth_mat: Material, accent_mat: Material, out_sets: Array) -> void:
@@ -137,6 +181,11 @@ static func _add_garments(sk: Skeleton3D, dna: HumanDNA, lod: int, cloth_mat: Ma
 	if wrap != null:
 		_add_seg(sk, "pelvis", wrap, cloth_mat if dna.garment_set != 2 else accent_mat, Transform3D.IDENTITY, lod, out_sets, true)
 	_add_seg(sk, "pelvis", GarmentBuilder.build_belt(dna, lod), HumanMaterials.leather_material(), Transform3D.IDENTITY, lod, out_sets, true)
+	if dna.garment_set == 0:
+		_add_seg(sk, "pelvis", GarmentBuilder.build_waist_knot(dna), cloth_mat, Transform3D.IDENTITY, lod, out_sets, true)
+		if lod < 2:
+			_add_seg(sk, "thigh_L", GarmentBuilder.build_thigh_wrap_single(lod), cloth_mat, Transform3D.IDENTITY, lod, out_sets, false)
+			_add_seg(sk, "thigh_R", GarmentBuilder.build_thigh_wrap_single(lod), cloth_mat, Transform3D.IDENTITY, lod, out_sets, false)
 	match dna.garment_set:
 		0:
 			_add_seg(sk, "chest", GarmentBuilder.build_chest_sash(dna, lod), accent_mat, Transform3D.IDENTITY, lod, out_sets, true)
