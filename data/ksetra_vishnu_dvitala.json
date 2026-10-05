@@ -1,0 +1,712 @@
+{
+  "meta": {
+    "name": "Vishnu Dvitala Ksetra (slice v1)",
+    "deity": "Vishnu (standing; shankha/chakra/gada/padma)",
+    "facing": "east",
+    "yoni": "vrisha",
+    "version": "1",
+    "notes": [
+      "East-facing square dvitala (chathura-vimana, Guruvayur-like massing).",
+      "Yoni pairing: east-facing prasada carries vrisha-yoni and vrisha-yoni idol (TS P2V2 passage; Vimarshini/Vivarana in anchor).",
+      "Garbha proportion OPEN: chosen 1/2 of uttara-vistara as conventional nirantara; TS 9-method derivation to be pinned at next corpus pass."
+    ]
+  },
+  "units": {
+    "hasta_angula": 24,
+    "angula_m": 0.03,
+    "note": "hasta=24 angulas; angula=3cm per Unni ad TS II.1 (TS-P2V1-measure)."
+  },
+  "prasada": {
+    "plan": "square",
+    "tala": 2,
+    "uttara_hasta": 12,
+    "uttara_note": "Within TS II.1 range padonatrikara(2.75) .. 15 hastas, 8-angula steps (TS-P2V1-measure). 12 hastas = 288 angulas = step index (288-66)/8.",
+    "garbha_hasta": 6,
+    "garbha_status": "SOURCED mode 9 (ardha = half of whole house; TS-P2V18B-garbha9); other 8 modes kept as alternatives",
+    "levels": [
+      {
+        "id": "upapitha",
+        "kind": "plinth_secondary",
+        "h_hasta": 0.5,
+        "provenance": [
+          "TS-P2V1-measure"
+        ]
+      },
+      {
+        "id": "adhisthana",
+        "kind": "basement",
+        "h_hasta": 1.5,
+        "provenance": [
+          "TS-P2V1-measure",
+          "TS-P2V16B-nishkrama"
+        ],
+        "mouldings": [
+          "paduka",
+          "jagati",
+          "kumuda",
+          "gala",
+          "pati",
+          "vedi"
+        ],
+        "material": "granite",
+        "nishkrama": "jagati=1.0h, kumuda=same, rest {0.75,0.5,0.25}h all sides; paduka off jagati line"
+      },
+      {
+        "id": "pada_t1",
+        "kind": "wall_tala1",
+        "h_hasta": 3.0,
+        "provenance": [
+          "TS-P2V1-measure",
+          "TS-P2V17B-garbhawall",
+          "TS-P2V19B-walls",
+          "TS-P2V23B-kudyastambha",
+          "TS-P2V26B-bhittivibhaga",
+          "TS-P2V36B-ghanabhitti",
+          "TS-P2V37B-vedika"
+        ],
+        "material": "laterite",
+        "pilasters": "12 kudya-stambhas (4 corners + 2 per face, equal spacing)",
+        "door": "east_main",
+        "ghanadvaras": [
+          "north",
+          "south",
+          "west"
+        ],
+        "walls": "inner+outer bhitti with middle nadi on levelled slab course",
+        "wall_rule": "outer=perimeter/8, inner=garbha/8, nadi all around; small-shrine merged option (flag off in slice)",
+        "ghanadvara": "solid false doors on non-main faces",
+        "material_note": "solid stone/brick base-to-beam (laterite = Kerala hard-stone analogue); vedika datum 1/8|1/7|1/6 pillar height"
+      },
+      {
+        "id": "prastara_t1",
+        "kind": "entablature",
+        "h_hasta": 1.5,
+        "provenance": [
+          "TS-P2V1-measure"
+        ],
+        "mouldings9": [
+          "kalluttara",
+          "vajana",
+          "bhutamala",
+          "vajana2",
+          "kapota",
+          "alinga",
+          "pati",
+          "vajana3",
+          "antari"
+        ]
+      },
+      {
+        "id": "hara_t1",
+        "kind": "parapet_aedicules",
+        "h_hasta": 1.0,
+        "provenance": [
+          "TS-P2V1-measure",
+          "TS-P2V60B-tala2",
+          "TS-P2V38B-ornament",
+          "TS-P2V56B-talantara"
+        ],
+        "aedicules": [
+          "kuta",
+          "sala",
+          "panjara"
+        ],
+        "tala2_program": "corner kuta + cardinal sala + nasi pairs + E/S/W/N murtis + roof mahanasis",
+        "grade_note": "mid-grade shorthand per V38B size grades (panjaras/gavakshas/nasis program)"
+      },
+      {
+        "id": "pada_t2",
+        "kind": "wall_tala2",
+        "h_hasta": 2.0,
+        "provenance": [
+          "TS-P2V1-measure",
+          "TS-P2V61B-upper-tala"
+        ],
+        "material": "laterite",
+        "junction_note": "thinner wall + plate/beam + united rafters at half-pillar overlap (assembly approximated by stacked massing)"
+      },
+      {
+        "id": "prastara_t2",
+        "kind": "entablature2",
+        "h_hasta": 1.0,
+        "provenance": [
+          "TS-P2V1-measure"
+        ]
+      },
+      {
+        "id": "griva_shikhara",
+        "kind": "timber_pyramidal_roof",
+        "h_hasta": 3.0,
+        "provenance": [
+          "TS-P2V1-measure",
+          "TS-P2V48B-rafters"
+        ],
+        "material": "timber_frame+tile",
+        "note": "Kerala sloping roof to prastara; stone-griva recess absent (INTERPRETATION-arch.lit)",
+        "timber_note": "solid pyramid stands in for rafter-to-apex assembly + ridge fillet (recorded approximation)"
+      },
+      {
+        "id": "stupi_kalasha",
+        "kind": "finial",
+        "h_hasta": 0.75,
+        "provenance": [
+          "TS-P2V1-measure",
+          "TS-P2V50B-finial"
+        ],
+        "material": "copper_gilt",
+        "finial_note": "slice uses 1 stupi; rule allows 2-3 pot-belly lotus-bud finials"
+      }
+    ],
+    "provenance": [
+      "TS-P2V1-measure",
+      "TS-P2V18B-garbha9",
+      "TS-P2V2-yoni",
+      "TS-P2V33B-sopana",
+      "TS-P2V34B-ghanareplica"
+    ]
+  },
+  "complex": {
+    "nodes": [
+      {
+        "id": "sopana",
+        "kind": "steps",
+        "rel": {
+          "front_of": "prasada.east"
+        },
+        "params": {
+          "material": "granite",
+          "flights": 1
+        },
+        "provenance": [
+          "TS-P2V1-measure"
+        ]
+      },
+      {
+        "id": "pranala",
+        "kind": "drain",
+        "rel": {
+          "on": "prasada.north"
+        },
+        "params": {
+          "section": "circular",
+          "material": "stone"
+        },
+        "provenance": [
+          "TS-P2V1-measure"
+        ]
+      },
+      {
+        "id": "dvarapala_L/R",
+        "kind": "guardians",
+        "rel": {
+          "flank": "prasada.east_door"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "mukhmandapa",
+        "kind": "porch",
+        "rel": {
+          "front_of": "prasada.east"
+        },
+        "provenance": [
+          "TS-P3V1-material"
+        ]
+      },
+      {
+        "id": "namaskara_mandapa",
+        "kind": "prostration_hall",
+        "rel": {
+          "between": [
+            "prasada.east",
+            "agrasabha"
+          ]
+        },
+        "params": {
+          "plan": "square",
+          "detached": true
+        },
+        "provenance": [
+          "TS-P3V1-material"
+        ]
+      },
+      {
+        "id": "akatte_balivattam",
+        "kind": "prakara1_inner",
+        "rel": {
+          "rings": "prasada"
+        },
+        "provenance": [
+          "TS-P2V2-yoni",
+          "TS-P2V75B-antarmandala"
+        ]
+      },
+      {
+        "id": "balivattam_8",
+        "kind": "bali_stones_ashta",
+        "rel": {
+          "on": "pradakshina_path"
+        },
+        "params": {
+          "names": [
+            "Ishan",
+            "Indra",
+            "Agni",
+            "Yama",
+            "Nirriti",
+            "Varuna",
+            "Vayu",
+            "Soma"
+          ]
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "nalambalam",
+        "kind": "prakara2_cloister",
+        "rel": {
+          "rings": "akatte_balivattam"
+        },
+        "params": {
+          "valambalam": true,
+          "stores": true
+        },
+        "provenance": [
+          "TS-P3V1-material",
+          "TS-P2V78B-antahara"
+        ]
+      },
+      {
+        "id": "thidappalli",
+        "kind": "kitchen",
+        "rel": {
+          "at": "nalambalam.NE"
+        },
+        "params": {
+          "agni_quarter": true,
+          "restricted": "authorised_priests_only"
+        },
+        "provenance": [
+          "TS-P3V1-material"
+        ]
+      },
+      {
+        "id": "vilakkumadam",
+        "kind": "prakara3_lamp_palisade",
+        "rel": {
+          "rings": "nalambalam"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "agra_mandapa",
+        "kind": "front_hall",
+        "rel": {
+          "at": "sivelipura.east"
+        },
+        "provenance": [
+          "TS-P2V2-yoni",
+          "TS-P2V79B-sabha"
+        ]
+      },
+      {
+        "id": "valia_balikkal",
+        "kind": "principal_bali",
+        "rel": {
+          "in": "agra_mandapa",
+          "faces": "deity"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "dwaja",
+        "kind": "flagstaff",
+        "rel": {
+          "on": "pradakshina_axis.east"
+        },
+        "params": {
+          "sides": 8,
+          "material": "areca+metal_kavacha",
+          "points": "north",
+          "kundalini": "mooladhara_to_sahasrara"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "deepa_stambha",
+        "kind": "lamppost",
+        "rel": {
+          "near": "dwaja"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "sivelipura",
+        "kind": "prakara4_outer_court",
+        "rel": {
+          "rings": "vilakkumadam"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "koothambalam",
+        "kind": "theatre",
+        "rel": {
+          "at": "complex.NW_or_right_of_deity",
+          "faces": "deity"
+        },
+        "params": {
+          "plan": "rectangular",
+          "no_iron_nails": true
+        },
+        "provenance": [
+          "TS-P3V1-material"
+        ]
+      },
+      {
+        "id": "parivara_shrines",
+        "kind": "subsidiary_cells",
+        "rel": {
+          "in": "sivelipura"
+        },
+        "params": {
+          "hindu": true
+        },
+        "provenance": [
+          "TS-P1V3-structure",
+          "TS-P2V138B-subsidiary"
+        ]
+      },
+      {
+        "id": "maryada_wall",
+        "kind": "prakara5_outer_wall",
+        "rel": {
+          "rings": "sivelipura"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "gopura_east",
+        "kind": "gateway",
+        "rel": {
+          "in": "maryada_wall.east"
+        },
+        "params": {
+          "storeys": 2,
+          "kottupura": true
+        },
+        "provenance": [
+          "TS-P2V2-yoni",
+          "TS-P2V79B-sabha"
+        ]
+      },
+      {
+        "id": "well_NE",
+        "kind": "well",
+        "rel": {
+          "in": "chuttambalam.NE"
+        },
+        "provenance": [
+          "TS-P3V1-material",
+          "TS-P1V39B-supadma"
+        ]
+      },
+      {
+        "id": "kulam",
+        "kind": "tank",
+        "rel": {
+          "near": "complex"
+        },
+        "params": {
+          "aarattu_kadavu": true
+        },
+        "provenance": [
+          "TS-P3V1-material",
+          "TS-P1V39B-supadma"
+        ]
+      },
+      {
+        "id": "ootupura",
+        "kind": "dining_hall",
+        "rel": {
+          "in": "complex"
+        },
+        "provenance": [
+          "TS-P3V1-material"
+        ]
+      },
+      {
+        "id": "kavu",
+        "kind": "grove",
+        "rel": {
+          "at": "complex.edge"
+        },
+        "provenance": [
+          "TS-P3V1-material",
+          "TS-P1V39B-supadma"
+        ]
+      },
+      {
+        "id": "tala2_murtis",
+        "kind": "directional_figures",
+        "rel": {
+          "on": "pada_t2.faces"
+        },
+        "params": {
+          "east": "Brahma",
+          "south": "Dakshinamurti",
+          "west": "Narasimha",
+          "north": "Krishna",
+          "media": [
+            "wood",
+            "stone"
+          ]
+        },
+        "provenance": [
+          "TS-P2V60B-tala2"
+        ]
+      }
+    ]
+  },
+  "constraints": [
+    {
+      "id": "K-YONI-PAIR",
+      "check": "prasada.yoni == idol.yoni AND (facing==east -> yoni==vrisha) AND (facing==west -> yoni==dhvaja)",
+      "provenance": [
+        "TS-P2V2-yoni"
+      ]
+    },
+    {
+      "id": "K-RANGE-UTTARA",
+      "check": "2.75 <= uttara_hasta <= 15 (+angula); steps of 8 angulas between types",
+      "provenance": [
+        "TS-P2V1-measure"
+      ]
+    },
+    {
+      "id": "K-ANGULA",
+      "check": "hasta==24*angula; angula==0.03m",
+      "provenance": [
+        "TS-P2V1-measure"
+      ]
+    },
+    {
+      "id": "K-TANTRI-ONLY",
+      "check": "roles Tantri/Melshanti may enter garbhagriha; sevaka serves from namaskara-mandapa",
+      "provenance": [
+        "OBSERVED-tantri-only",
+        "TS-P1V04B-yajamana"
+      ]
+    },
+    {
+      "id": "K-GURU-FIRST",
+      "check": "acharya (guruvara) varana precedes construction/worship program; yajamana eligible by varna-ashrama duties + honest wealth (TS-P1V04B)",
+      "provenance": [
+        "TS-P1V3-structure",
+        "TS-P1V04B-yajamana"
+      ]
+    }
+  ],
+  "nitya_seed": {
+    "note": "Kalari nitya.json 5 slots ported; TS-timing rules attach calendar windows at M3.",
+    "slots": [
+      "usha",
+      "pantheeradi",
+      "ucha",
+      "deeparadhana",
+      "athazha"
+    ]
+  },
+  "provenance_index": {
+    "TS-P2V1-measure": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 1,
+      "layer": "TRANSLATION"
+    },
+    "TS-P2V2-yoni": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 2,
+      "layer": "PRIMARY+passage"
+    },
+    "TS-P3V1-material": {
+      "work": "Tantrasamuccaya",
+      "patala": 3,
+      "verse": 1,
+      "layer": "TRANSLATION"
+    },
+    "TS-P1V3-structure": {
+      "work": "Tantrasamuccaya",
+      "patala": 1,
+      "verse": 3,
+      "layer": "TRANSLATION"
+    },
+    "TS-P2V16B-nishkrama": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 16,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "TS-P2V17B-garbhawall": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 17,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "TS-P2V18B-garbha9": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 18,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "TS-P2V19B-walls": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 19,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "TS-P2V52B-alpa8": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 52,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "TS-P2V60B-tala2": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 60,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "TS-P1V04B-yajamana": {
+      "work": "Tantrasamuccaya",
+      "patala": 1,
+      "verse": 4,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "OBSERVED-tantri-only": {
+      "work": "ObservedPractice",
+      "patala": 0,
+      "verse": 0,
+      "layer": "OBSERVED"
+    },
+    "TS-P2V23B-kudyastambha": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 23,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "TS-P2V26B-bhittivibhaga": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 26,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V33B-sopana": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 33,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V34B-ghanareplica": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 34,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V38B-ornament": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 38,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "TS-P2V36B-ghanabhitti": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 36,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V37B-vedika": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 37,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V48B-rafters": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 48,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V50B-finial": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 50,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V56B-talantara": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 56,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V61B-upper-tala": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 61,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V75B-antarmandala": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 75,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V78B-antahara": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 78,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V79B-sabha": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 79,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V138B-subsidiary": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 138,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V136B-fixpit": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 136,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P1V39B-supadma": {
+      "work": "Tantrasamuccaya",
+      "patala": 1,
+      "verse": 39,
+      "layer": "TRANSLATION(hand-reviewed)"
+    }
+  }
+}

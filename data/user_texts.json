@@ -8,7 +8,42 @@
       "what": "Kerala square sanctum (caturasra plan): laterite walls on a stone adhishthana plinth, timber band course, copper crown above. The deity's womb-house faces east.",
       "how_in_game": "Raise its walls, roof and kalasha in the temple plot phases; ring the bell at the sanctum door; guard its lamps through the storm-repair phase.",
       "philosophy": "The outermost gate leads stepwise inward; the center is small, dark and still.",
-      "sources": ["Kerala sreekovil convention"]
+      "sources": [
+        "Kerala sreekovil convention"
+      ]
+    },
+    {
+      "id": "ksetra_dvitala",
+      "name_en": "Dvitala: the two-storey Vishnu shrine",
+      "name_ml": "ദ്വിതല ശ്രീകോവിൽ",
+      "what": "East-facing square chathura-vimana in two talas: granite adhisthana mouldings, laterite pada with pilasters, 9-band prastara, hara aedicules (kuta/sala/panjara), upper tala, timber pyramidal roof and gilt copper stupi-kalasha. Scale runs padonatrikara (2.75 hastas) to 15 hastas in 8-angula steps; 1 hasta = 24 angulas.",
+      "how_in_game": "Generated from spec/vishnu-dvitala.v1.json by ksetra_builder.gd; every member carries its rule provenance, inspectable via ProvenanceLookup.",
+      "philosophy": "Height is measured order: base, wall and crown each know their share.",
+      "sources": [
+        "Tantrasamuccaya Patala II v1 (Unni transl.), Vimarshini/Vivarana anchor"
+      ]
+    },
+    {
+      "id": "ksetra_yoni",
+      "name_en": "Yoni: facing and formula must agree",
+      "name_ml": "യോനി",
+      "what": "Temples from Ishana to Yama quarters take dhvaja-yoni and face west; the remaining quarters take go (vrisha)-yoni and face east. The installed idol's yoni must equal the prasada's yoni: east-facing Vishnu here is vrisha with vrisha idol.",
+      "how_in_game": "Enforced fail-closed by KsetraSpecLoader (K-YONI-PAIR); a mismatched spec refuses to build.",
+      "philosophy": "Door and deity share one orientation formula; neither is placed alone.",
+      "sources": [
+        "Tantrasamuccaya Patala II v2 + commentaries (passage anchor)"
+      ]
+    },
+    {
+      "id": "ksetra_provenance",
+      "name_en": "Provenance: object back to verse",
+      "name_ml": "പ്രമാണം",
+      "what": "Every generated member keeps rule ids: GAME OBJECT -> RULE -> KNOWLEDGE ENTITY -> SOURCE (work, patala, verse, layer). 269 rules gated; contradictions preserved, never merged.",
+      "how_in_game": "ProvenanceLookup.chain_for() renders the chain for any built node; 23/23 spec nodes resolve in-engine.",
+      "philosophy": "Never invent a rule; what cannot be sourced is marked SOURCE_REQUIRED, PARTIAL or OPEN.",
+      "sources": [
+        "ksetra-engine kg/rules (269), contradictions.yaml (5)"
+      ]
     }
   ]
 }

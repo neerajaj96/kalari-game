@@ -1,0 +1,515 @@
+{
+  "meta": {
+    "name": "Shiva Ekatala Circular Ksetra (slice v1, generator stress)",
+    "deity": "Shiva (linga, 4 hastas, Brahmin set)",
+    "facing": "west",
+    "yoni": "dhvaja",
+    "version": "1",
+    "notes": [
+      "Stresses the OTHER yoni branch (west+dhvaja) and the CIRCULAR plan branch (cylinder walls, conical timber roof).",
+      "Linga 4 hastas from the 14-type varna table (TS-P2V119B-linga14); tripartite shaping (caturasra/astasra/vritta) to be curated next from Shivalinga-lakshana verses.",
+      "Round Shaiva nala 21 pratima-angulas, top reduced 1/7 (TS-P2V118B-nala).",
+      "Circular garbha diameter method: OPEN (uses ardha-of-width analogue pending TS circular-measure curation)."
+    ]
+  },
+  "units": {
+    "hasta_angula": 24,
+    "angula_m": 0.03,
+    "note": "hasta=24 angulas; angula=3cm per Unni ad TS II.1 (TS-P2V1-measure)."
+  },
+  "prasada": {
+    "plan": "circular",
+    "tala": 1,
+    "uttara_hasta": 8,
+    "uttara_note": "Within TS II.1 range 2.75..15 hastas, 8-angula steps (TS-P2V1-measure). 8 hastas chosen for compact ekatala.",
+    "garbha_hasta": 4,
+    "garbha_status": "OPEN-circular-analogue (diameter 1/2 of width; confirm against TS circular-measure verses)",
+    "levels": [
+      {
+        "id": "upapitha",
+        "kind": "plinth_secondary",
+        "h_hasta": 0.5,
+        "provenance": [
+          "TS-P2V1-measure"
+        ]
+      },
+      {
+        "id": "adhisthana",
+        "kind": "basement",
+        "h_hasta": 1.5,
+        "provenance": [
+          "TS-P2V1-measure",
+          "TS-P2V16B-nishkrama"
+        ],
+        "mouldings": [
+          "paduka",
+          "jagati",
+          "kumuda",
+          "gala",
+          "pati",
+          "vedi"
+        ],
+        "material": "granite"
+      },
+      {
+        "id": "pada_t1",
+        "kind": "wall_tala1",
+        "h_hasta": 3.0,
+        "provenance": [
+          "TS-P2V1-measure",
+          "TS-P2V17B-garbhawall",
+          "TS-P2V26B-bhittivibhaga",
+          "TS-P2V36B-ghanabhitti",
+          "TS-P2V37B-vedika"
+        ],
+        "material": "laterite",
+        "pilasters": true,
+        "door": "west_main",
+        "ghanadvaras": [
+          "east",
+          "north",
+          "south"
+        ],
+        "ghanadvara": "solid false doors on non-main faces",
+        "material_note": "solid stone/brick base-to-beam (laterite = Kerala hard-stone analogue); vedika datum 1/8|1/7|1/6 pillar height"
+      },
+      {
+        "id": "prastara_t1",
+        "kind": "entablature",
+        "h_hasta": 1.5,
+        "provenance": [
+          "TS-P2V1-measure"
+        ]
+      },
+      {
+        "id": "griva_shikhara",
+        "kind": "timber_conical_roof",
+        "h_hasta": 3.5,
+        "provenance": [
+          "TS-P2V1-measure",
+          "TS-P2V48B-rafters"
+        ],
+        "material": "timber_frame+tile",
+        "note": "Circular conical roof to prastara; stone-griva recess absent (INTERPRETATION-arch.lit)",
+        "timber_note": "solid pyramid stands in for rafter-to-apex assembly + ridge fillet (recorded approximation)"
+      },
+      {
+        "id": "stupi_kalasha",
+        "kind": "finial",
+        "h_hasta": 0.75,
+        "provenance": [
+          "TS-P2V1-measure",
+          "TS-P2V50B-finial"
+        ],
+        "material": "copper_gilt",
+        "finial_note": "slice uses 1 stupi; rule allows 2-3 pot-belly lotus-bud finials"
+      },
+      {
+        "id": "linga",
+        "kind": "murti",
+        "h_hasta": 4.0,
+        "provenance": [
+          "TS-P2V119B-linga14",
+          "TS-P2V121B-bimbaheight",
+          "TS-P2V122B-tripartite"
+        ],
+        "form": "linga_4h_brahmin_set",
+        "construction": "equal thirds square/octagonal/circular (V122B); height from garbha paridhi /5|9|2 (V121B)"
+      },
+      {
+        "id": "pitha_nala",
+        "kind": "pedestal_drain",
+        "h_hasta": 1.0,
+        "provenance": [
+          "TS-P2V118B-nala",
+          "TS-P2V134B-altardrain",
+          "TS-P2V135B-altarpit"
+        ],
+        "params": {
+          "shape": "round_shaiva",
+          "breadth_angula": 21,
+          "top_reduction": "1/7"
+        },
+        "drain_note": "twin side drains + socket 2x/1.5x stem"
+      }
+    ],
+    "provenance": [
+      "TS-P2V1-measure",
+      "TS-P2V2-yoni",
+      "TS-P2V33B-sopana",
+      "TS-P2V34B-ghanareplica"
+    ]
+  },
+  "complex": {
+    "nodes": [
+      {
+        "id": "sopana",
+        "kind": "steps",
+        "rel": {
+          "front_of": "prasada.west"
+        },
+        "params": {
+          "material": "granite"
+        },
+        "provenance": [
+          "TS-P2V1-measure"
+        ]
+      },
+      {
+        "id": "pranala",
+        "kind": "drain",
+        "rel": {
+          "on": "prasada.north"
+        },
+        "params": {
+          "section": "circular"
+        },
+        "provenance": [
+          "TS-P2V118B-nala"
+        ]
+      },
+      {
+        "id": "mukhmandapa",
+        "kind": "porch",
+        "rel": {
+          "front_of": "prasada.west"
+        },
+        "provenance": [
+          "TS-P3V1-material"
+        ]
+      },
+      {
+        "id": "namaskara_mandapa",
+        "kind": "prostration_hall",
+        "rel": {
+          "between": [
+            "prasada.west",
+            "agrasabha"
+          ]
+        },
+        "provenance": [
+          "TS-P3V1-material"
+        ]
+      },
+      {
+        "id": "akatte_balivattam",
+        "kind": "prakara1_inner",
+        "rel": {
+          "rings": "prasada"
+        },
+        "provenance": [
+          "TS-P2V2-yoni",
+          "TS-P2V75B-antarmandala"
+        ]
+      },
+      {
+        "id": "balivattam_8",
+        "kind": "bali_stones_ashta",
+        "rel": {
+          "on": "pradakshina_path"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "nalambalam",
+        "kind": "prakara2_cloister",
+        "rel": {
+          "rings": "akatte_balivattam"
+        },
+        "provenance": [
+          "TS-P3V1-material",
+          "TS-P2V78B-antahara"
+        ]
+      },
+      {
+        "id": "thidappalli",
+        "kind": "kitchen",
+        "rel": {
+          "at": "nalambalam.NE"
+        },
+        "provenance": [
+          "TS-P3V1-material"
+        ]
+      },
+      {
+        "id": "vilakkumadam",
+        "kind": "prakara3_lamp_palisade",
+        "rel": {
+          "rings": "nalambalam"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "agra_mandapa",
+        "kind": "front_hall",
+        "rel": {
+          "at": "sivelipura.west"
+        },
+        "provenance": [
+          "TS-P2V2-yoni",
+          "TS-P2V79B-sabha"
+        ]
+      },
+      {
+        "id": "valia_balikkal",
+        "kind": "principal_bali",
+        "rel": {
+          "in": "agra_mandapa"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "dwaja",
+        "kind": "flagstaff",
+        "rel": {
+          "on": "pradakshina_axis.west"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "sivelipura",
+        "kind": "prakara4_outer_court",
+        "rel": {
+          "rings": "vilakkumadam"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "maryada_wall",
+        "kind": "prakara5_outer_wall",
+        "rel": {
+          "rings": "sivelipura"
+        },
+        "provenance": [
+          "TS-P2V2-yoni"
+        ]
+      },
+      {
+        "id": "gopura_west",
+        "kind": "gateway",
+        "rel": {
+          "in": "maryada_wall.west"
+        },
+        "provenance": [
+          "TS-P2V2-yoni",
+          "TS-P2V79B-sabha"
+        ]
+      },
+      {
+        "id": "well_NE",
+        "kind": "well",
+        "rel": {
+          "in": "chuttambalam.NE"
+        },
+        "provenance": [
+          "TS-P3V1-material",
+          "TS-P1V39B-supadma"
+        ]
+      },
+      {
+        "id": "kulam",
+        "kind": "tank",
+        "rel": {
+          "near": "complex"
+        },
+        "provenance": [
+          "TS-P3V1-material",
+          "TS-P1V39B-supadma"
+        ]
+      }
+    ]
+  },
+  "constraints": [
+    {
+      "id": "K-YONI-PAIR",
+      "check": "prasada.yoni == idol.yoni AND (facing==east -> yoni==vrisha) AND (facing==west -> yoni==dhvaja)",
+      "provenance": [
+        "TS-P2V2-yoni"
+      ]
+    },
+    {
+      "id": "K-RANGE-UTTARA",
+      "check": "2.75 <= uttara_hasta <= 15 (+angula); steps of 8 angulas between types",
+      "provenance": [
+        "TS-P2V1-measure"
+      ]
+    },
+    {
+      "id": "K-ANGULA",
+      "check": "hasta==24*angula; angula==0.03m",
+      "provenance": [
+        "TS-P2V1-measure"
+      ]
+    },
+    {
+      "id": "K-LINGA-SET",
+      "check": "linga length in varna table (14 types, quarter-hasta steps)",
+      "provenance": [
+        "TS-P2V119B-linga14"
+      ]
+    },
+    {
+      "id": "K-NALA-SHAIVA",
+      "check": "round nala stem 20/21/22 angulas with 1/8|1/7|1/6 top reduction",
+      "provenance": [
+        "TS-P2V118B-nala"
+      ]
+    }
+  ],
+  "provenance_index": {
+    "TS-P2V1-measure": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 1,
+      "layer": "TRANSLATION"
+    },
+    "TS-P2V2-yoni": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 2,
+      "layer": "PRIMARY+passage"
+    },
+    "TS-P3V1-material": {
+      "work": "Tantrasamuccaya",
+      "patala": 3,
+      "verse": 1,
+      "layer": "TRANSLATION"
+    },
+    "TS-P2V119B-linga14": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 119,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "TS-P2V118B-nala": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 118,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "OBSERVED-tantri-only": {
+      "work": "ObservedPractice",
+      "patala": 0,
+      "verse": 0,
+      "layer": "OBSERVED"
+    },
+    "TS-P2V26B-bhittivibhaga": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 26,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V33B-sopana": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 33,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V34B-ghanareplica": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 34,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V38B-ornament": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 38,
+      "layer": "PRIMARY(hand-reviewed)"
+    },
+    "TS-P2V36B-ghanabhitti": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 36,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V37B-vedika": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 37,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V48B-rafters": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 48,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V50B-finial": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 50,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V75B-antarmandala": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 75,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V78B-antahara": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 78,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V79B-sabha": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 79,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V121B-bimbaheight": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 121,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V122B-tripartite": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 122,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V134B-altardrain": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 134,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V135B-altarpit": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 135,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V138B-subsidiary": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 138,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P2V136B-fixpit": {
+      "work": "Tantrasamuccaya",
+      "patala": 2,
+      "verse": 136,
+      "layer": "TRANSLATION(hand-reviewed)"
+    },
+    "TS-P1V39B-supadma": {
+      "work": "Tantrasamuccaya",
+      "patala": 1,
+      "verse": 39,
+      "layer": "TRANSLATION(hand-reviewed)"
+    }
+  }
+}
