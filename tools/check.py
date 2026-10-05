@@ -552,6 +552,17 @@ for _bm in re.finditer(r'\[node name="(\w+)" type="Button"[^\]]*\](?:\n(?!\[node
     if _neg and not _anch:
         errs.append(f"hud: Button '{_bnm}' negative offset on default anchors (off-screen)")
 
+# Orphaned materials are dead weight in the APK (warn only: spares allowed).
+for _tres in sorted(glob.glob(BASE + "/materials/*.tres") + glob.glob(BASE + "/shaders/*.tres")):
+    _rel = os.path.relpath(_tres, BASE)
+    _used = False
+    for _hay in list(glob.glob(BASE + "/scenes/**/*.tscn", recursive=True)) + glob.glob(BASE + "/scripts/*.gd"):
+        if _rel in open(_hay).read():
+            _used = True
+            break
+    if not _used:
+        warns.append(f"unreferenced material '{_rel}' (delete or wire it)")
+
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()
 m = re.search(r"^GODOT_VERSION=(\S+)", env, re.M)
