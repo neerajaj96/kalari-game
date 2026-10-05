@@ -78,6 +78,12 @@ func _on_slot(slot_id: String) -> void:
 			d.set("slot_note", str(notes.get(slot_id, "")))
 			if slot_id in ["deeparadhana", "ucha"] and d.get("pause_t") != null:
 				d.set("pause_t", 5.0)  # darshana beat for grand slots
+	# Lamp program: night slots burn brighter (deeparadhana/athazha 1.1, else 0.7).
+	var lamp_base := 1.1 if slot_id in ["deeparadhana", "athazha"] else 0.7
+	for lamp_name in ["LampE", "LampW", "LampN"]:
+		var lamp = get_node_or_null(lamp_name)
+		if lamp and lamp.get("base") != null:
+			lamp.set("base", lamp_base)
 
 func _spawn_devotees(ring_r: float) -> void:
 	# Ambient pradakshina crowd (6 sevakas); cleared and re-seeded per slice.
