@@ -58,6 +58,9 @@ func _respawn_to_spawn() -> void:
 		if "School" in str(w.current.name) and w.get("school_spawn") != null:
 			position = w.school_spawn
 			return
+		if "Ksetra" in str(w.current.name) and w.get("ksetra_spawn") != null:
+			position = w.ksetra_spawn
+			return
 		if w.get("village_spawn") != null:
 			position = w.village_spawn
 			return

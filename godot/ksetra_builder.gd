@@ -104,25 +104,163 @@ func _cyl(parent: Node, nm: String, mat: Material, radius: float, height: float,
 	parent.add_child(c)
 	return c
 
-func _mat(color: Color, rough := 0.8, metal := 0.0, emission := 0.0) -> StandardMaterial3D:
+func _lathe(parent: Node, nm: String, mat: Material, radius: float, h: float,
+		profile: Array, pos: Vector3, prov: Array, segs := 12) -> MeshInstance3D:
+	# Lathed vessel/finial/figure: profile = Array[Vector2] radius-fraction x height-fraction,
+	# revolved around Y. No collision (dressing/hero overlay); provenance-tagged.
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var pts: Array[Vector2] = [Vector2(0.0, 0.0)]
+	for p in profile:
+		pts.append(Vector2(float(p.x) * radius, float(p.y) * h))
+	for i in range(pts.size() - 1):
+		for s in range(segs):
+			var a0 := TAU * float(s) / segs
+			var a1 := TAU * float(s + 1) / segs
+			var p00 := Vector3(cos(a0) * pts[i].x, pts[i].y, sin(a0) * pts[i].x)
+			var p01 := Vector3(cos(a1) * pts[i].x, pts[i].y, sin(a1) * pts[i].x)
+			var p10 := Vector3(cos(a0) * pts[i + 1].x, pts[i + 1].y, sin(a0) * pts[i + 1].x)
+			var p11 := Vector3(cos(a1) * pts[i + 1].x, pts[i + 1].y, sin(a1) * pts[i + 1].x)
+			_tri(st, p00, p11, p01)
+			_tri(st, p00, p10, p11)
+	st.generate_normals()
+	var mi := MeshInstance3D.new()
+	mi.name = nm
+	mi.mesh = st.commit()
+	mi.material_override = mat
+	mi.position = pos
+	mi.set_meta("provenance", prov)
+	parent.add_child(mi)
+	return mi
+
+func _ball(parent: Node, nm: String, mat: Material, radius: float, h: float,
+		pos: Vector3, prov: Array) -> MeshInstance3D:
+	# SphereMesh head/knob/fruit overlay. No collision; provenance-tagged.
+	var mi := MeshInstance3D.new()
+	mi.name = nm
+	var sm := SphereMesh.new()
+	sm.radius = radius
+	sm.height = h
+	sm.radial_segments = 12
+	sm.rings = 8
+	mi.mesh = sm
+	mi.material_override = mat
+	mi.position = pos
+	mi.set_meta("provenance", prov)
+	parent.add_child(mi)
+	return mi
+
+func _eave_pyramid(parent: Node, nm: String, mat: Material, w: float, d: float, h: float,
+		pos: Vector3, prov: Array, lip := 0.3) -> MeshInstance3D:
+	# Tiled-slope pyramid with overhang lip + eave skirt (no see-through gap).
+	# Same construction contract as _pyramid: overlay only, no collision.
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var hw := w / 2.0 + lip
+	var hd := d / 2.0 + lip
+	var apex := Vector3(0, h, 0)
+	var corners := [Vector3(-hw, 0, -hd), Vector3(hw, 0, -hd),
+		Vector3(hw, 0, hd), Vector3(-hw, 0, hd)]
+	for i in range(4):
+		_tri(st, corners[i], apex, corners[(i + 1) % 4])
+	for i in range(4):
+		var a: Vector3 = corners[i]
+		var b: Vector3 = corners[(i + 1) % 4]
+		_tri(st, Vector3(a.x, -0.12, a.z), Vector3(a.x, 0, a.z), Vector3(b.x, 0, b.z))
+		_tri(st, Vector3(a.x, -0.12, a.z), Vector3(b.x, 0, b.z), Vector3(b.x, -0.12, b.z))
+	st.generate_normals()
+	var mi := MeshInstance3D.new()
+	mi.name = nm
+	mi.mesh = st.commit()
+	mi.material_override = mat
+	mi.position = pos
+	mi.set_meta("provenance", prov)
+	parent.add_child(mi)
+	return mi
+
+func _mat(color: Color, rough := 0.8, metal := 0.0, emission := 0.0, detail := "") -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	m.albedo_color = color
 	m.roughness = rough
 	m.metallic = metal
+	if detail == "stone" or detail == "grain":
+		# Procedural craft microdetail (never canon): grayscale speckle/grain
+		# albedo + heightmap relief, generated once and shared. No binary assets.
+		m.albedo_texture = _detail_albedo(detail)
+		m.heightmap_enabled = true
+		m.heightmap_texture = _detail_height(detail)
+		m.heightmap_scale = 0.02
 	if emission > 0.0:
 		m.emission_enabled = true
 		m.emission = color
 		m.emission_energy_multiplier = emission
 	return m
 
+static var _detail_cache := {}
+
+static func _value_noise(gx: int, gy: int, seed: int) -> float:
+	# Deterministic lattice hash in [0,1).
+	var h := gx * 374761393 + gy * 668265263 + seed * 144665
+	h = (h ^ (h >> 13)) * 1274126177
+	h = h ^ (h >> 16)
+	return float(h & 0x7fffffff) / float(0x7fffffff)
+
+static func _noise_at(x: float, y: float, cells: int, seed: int) -> float:
+	var xi: int = int(floor(x))
+	var yi: int = int(floor(y))
+	var xf: float = x - floor(x)
+	var yf: float = y - floor(y)
+	var u: float = xf * xf * (3.0 - 2.0 * xf)
+	var v: float = yf * yf * (3.0 - 2.0 * yf)
+	var a := _value_noise(posmod(xi, cells), posmod(yi, cells), seed)
+	var b := _value_noise(posmod(xi + 1, cells), posmod(yi, cells), seed)
+	var c := _value_noise(posmod(xi, cells), posmod(yi + 1, cells), seed)
+	var d := _value_noise(posmod(xi + 1, cells), posmod(yi + 1, cells), seed)
+	return lerpf(lerpf(a, b, u), lerpf(c, d, u), v)
+
+static func _detail_images(kind: String) -> Array:
+	if _detail_cache.has(kind):
+		return _detail_cache[kind]
+	var seed := 1234 if kind == "stone" else 987
+	var cells := 8 if kind == "stone" else 6
+	var alb := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	var hgt: Array = []
+	for yy in range(65):
+		hgt.append([])
+		for xx in range(65):
+			var fx := float(xx) / 64.0 * cells
+			var fy := float(yy) / 64.0 * cells
+			var n := _noise_at(fx, fy, cells, seed)
+			n = n * 0.65 + _noise_at(fx * 2.7, fy * 2.7, cells * 2, seed + 7) * 0.35
+			if kind == "grain":
+				n = n * 0.6 + (0.5 + 0.5 * sin(fy * 6.28 + n * 9.0)) * 0.4
+			hgt[yy].append(n)
+			if xx < 64 and yy < 64:
+				var g := 0.9 + n * 0.1
+				alb.set_pixel(xx, yy, Color(g, g, g, 1.0))
+	var hgt_img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	for yy in range(64):
+		for xx in range(64):
+			var hv: float = hgt[yy][xx]
+			hgt_img.set_pixel(xx, yy, Color(hv, hv, hv, 1.0))
+	var out := [ImageTexture.create_from_image(alb), ImageTexture.create_from_image(hgt_img)]
+	_detail_cache[kind] = out
+	return out
+
+static func _detail_albedo(kind: String) -> ImageTexture:
+	return _detail_images(kind)[0]
+
+static func _detail_height(kind: String) -> ImageTexture:
+	return _detail_images(kind)[1]
+
 func _build_all() -> void:
 	var pr: Dictionary = spec["prasada"]
 	var gh := _m(float(pr["garbha_hasta"]))
 	var uh := _m(float(pr["uttara_hasta"]))
 	var prov_pr: Array = pr.get("provenance", [])
-	var granite := _mat(Color(0.42, 0.43, 0.46), 0.8, 0.1)
-	var laterite := _mat(Color(0.48, 0.22, 0.13), 0.8)
-	var timber := _mat(Color(0.38, 0.24, 0.13), 0.7)
+	var granite := _mat(Color(0.42, 0.43, 0.46), 0.8, 0.1, 0.0, "stone")
+	var laterite := _mat(Color(0.48, 0.22, 0.13), 0.8, 0.0, 0.0, "stone")
+	var timber := _mat(Color(0.38, 0.24, 0.13), 0.7, 0.0, 0.0, "grain")
 	var copper := _mat(Color(0.78, 0.48, 0.22), 0.3, 0.85)
 	var cream := _mat(Color(0.93, 0.87, 0.76), 0.85)
 	var leaf := _mat(Color(0.13, 0.42, 0.16), 0.85)
@@ -160,7 +298,7 @@ func _build_all() -> void:
 	_box(root, "PadaT1_N", laterite, Vector3(gh, h1, wt), Vector3(0, y + h1 / 2.0, -gh / 2.0 + wt / 2.0), wall_prov)
 	_box(root, "PadaT1_S", laterite, Vector3(gh, h1, wt), Vector3(0, y + h1 / 2.0, gh / 2.0 - wt / 2.0), wall_prov)
 	_box(root, "PadaT1_W", laterite, Vector3(wt, h1, gh - 2.0 * wt), Vector3(-gh / 2.0 + wt / 2.0, y + h1 / 2.0, 0), wall_prov)
-	var dw := gh / 4.0
+	var dw := gh / 3.0
 	var dh := h1 * 0.85
 	var segw := (gh - 2.0 * wt - dw) / 2.0
 	_box(root, "PadaT1_E_N", laterite, Vector3(wt, h1, segw),
@@ -175,15 +313,43 @@ func _build_all() -> void:
 	var bimba_prov: Array = ["TS-P2V121B-bimbaheight", "TS-P2V123B-bimbawidth", "TS-P2V109B-diadem", "TS-P2V117B-padmapitha"]
 	_box(root, "Pitha", granite, Vector3(1.0, 0.4, 1.0), Vector3(0, y + 0.2, 0), bimba_prov)
 	_cyl(root, "PadmaCapital", cream, 0.42, 0.15, Vector3(0, y + 0.47, 0), bimba_prov, false)
-	_box(root, "BimbaBody", granite, Vector3(0.5, 1.1, 0.35), Vector3(0, y + 1.1, 0), bimba_prov, false)
-	_box(root, "BimbaHead", granite, Vector3(0.28, 0.3, 0.28), Vector3(0, y + 1.8, 0), bimba_prov, false)
-	_box(root, "BimbaDiadem", copper, Vector3(0.34, 0.22, 0.34), Vector3(0, y + 2.0, 0), bimba_prov, false)
-	_box(root, "BimbaArmL", granite, Vector3(0.14, 0.7, 0.14), Vector3(-0.36, y + 1.15, 0), bimba_prov, false)
-	_box(root, "BimbaArmR", granite, Vector3(0.14, 0.7, 0.14), Vector3(0.36, y + 1.15, 0), bimba_prov, false)
-	# dvarapalas flanking the east door (spec dvarapala_L/R, TS-P2V2-yoni)
+	# hero Vishnu (stylized massing, no invented face): tapered lathe body,
+	# sphere head, lathe diadem, four stub arms with four emblems
+	# (shankha/chakra/gada/padma per meta iconography).
+	_lathe(root, "BimbaBody", granite, 0.28, 1.1,
+		[Vector2(1.0, 0.0), Vector2(0.72, 1.0)], Vector3(0, y + 0.55, 0), bimba_prov)
+	_ball(root, "BimbaHead", granite, 0.16, 0.32, Vector3(0, y + 1.8, 0), bimba_prov)
+	_lathe(root, "BimbaDiadem", copper, 0.2, 0.22,
+		[Vector2(1.0, 0.0), Vector2(0.85, 1.0)], Vector3(0, y + 1.89, 0), bimba_prov)
+	_box(root, "BimbaArmL1", granite, Vector3(0.14, 0.7, 0.14), Vector3(-0.36, y + 1.15, 0.1), bimba_prov, false)
+	_box(root, "BimbaArmR1", granite, Vector3(0.14, 0.7, 0.14), Vector3(0.36, y + 1.15, 0.1), bimba_prov, false)
+	_box(root, "BimbaArmL2", granite, Vector3(0.14, 0.7, 0.14), Vector3(-0.36, y + 1.15, -0.12), bimba_prov, false)
+	_box(root, "BimbaArmR2", granite, Vector3(0.14, 0.7, 0.14), Vector3(0.36, y + 1.15, -0.12), bimba_prov, false)
+	_ball(root, "EmblemShankha", cream, 0.07, 0.14, Vector3(-0.36, y + 0.78, 0.15), bimba_prov)
+	_cyl(root, "EmblemChakra", copper, 0.09, 0.03, Vector3(0.36, y + 0.78, 0.15), bimba_prov, false)
+	_cyl(root, "EmblemGada", copper, 0.05, 0.3, Vector3(-0.36, y + 0.85, -0.12), bimba_prov, false)
+	_lathe(root, "EmblemPadma", cream, 0.08, 0.16,
+		[Vector2(0.4, 0.0), Vector2(1.0, 0.6), Vector2(0.0, 1.0)], Vector3(0.36, y + 0.78, -0.12), bimba_prov)
+	# dvarapala figures flanking the east door (spec dvarapala_L/R, TS-P2V2-yoni)
 	var dvara_prov: Array = ["TS-P2V2-yoni"]
-	_box(root, "DvarapalaL", granite, Vector3(0.35, 1.4, 0.35), Vector3(gh / 2.0 + 0.35, y + 0.7, -0.85), dvara_prov)
-	_box(root, "DvarapalaR", granite, Vector3(0.35, 1.4, 0.35), Vector3(gh / 2.0 + 0.35, y + 0.7, 0.85), dvara_prov)
+	for dsgn in [-1.0, 1.0]:
+		var dnm := "DvarapalaL" if dsgn < 0.0 else "DvarapalaR"
+		_box(root, dnm + "_Body", granite, Vector3(0.3, 1.1, 0.3), Vector3(gh / 2.0 + 0.35, y + 0.55, dsgn * 1.0), dvara_prov)
+		_ball(root, dnm + "_Head", granite, 0.13, 0.26, Vector3(gh / 2.0 + 0.35, y + 1.23, dsgn * 1.0), dvara_prov)
+		_box(root, dnm + "_Diadem", copper, Vector3(0.3, 0.12, 0.3), Vector3(gh / 2.0 + 0.35, y + 1.42, dsgn * 1.0), dvara_prov)
+	# sanctum barrier: solid StaticBody across the door gap (K-TANTRI-ONLY —
+	# Tantri/Melshanti cross; sevaka serves from namaskara-mandapa).
+	# The trigger teaching lives in-scene (SanctumTrigger Area); builder owns collision only.
+	var barrier := StaticBody3D.new()
+	barrier.name = "SanctumBarrier"
+	var bcol := CollisionShape3D.new()
+	var bshape := BoxShape3D.new()
+	bshape.size = Vector3(0.3, dh, dw + 0.06)
+	bcol.shape = bshape
+	barrier.position = Vector3(gh / 2.0, y + dh / 2.0, 0)
+	barrier.set_meta("provenance", ["OBSERVED-tantri-only", "TS-P1V04B-yajamana"])
+	barrier.add_child(bcol)
+	root.add_child(barrier)
 	# ghanadvaras: solid false doors on non-main faces (TS-P2V26B-bhittivibhaga)
 	var ghana_prov: Array = prov_pr + ["TS-P2V26B-bhittivibhaga"] if not prov_pr.has("TS-P2V26B-bhittivibhaga") else prov_pr
 	_box(root, "Ghanadvara_N", laterite, Vector3(0.88, 1.75, 0.1),
@@ -233,33 +399,55 @@ func _build_all() -> void:
 	var murti_prov: Array = (prov_pr + ["TS-P2V60B-tala2"]) if not prov_pr.has("TS-P2V60B-tala2") else prov_pr
 	var hw2 := gh * 0.72 / 2.0 + 0.08
 	var murti_y := y + h2 / 2.0
+	# directional niche figures: slab relief + head knob (stylized, canon-safe)
 	_box(root, "Murti_Brahma_E", laterite, Vector3(0.16, 0.9, 0.5), Vector3(hw2, murti_y, 0), murti_prov)
+	_ball(root, "Murti_Brahma_E_Head", laterite, 0.1, 0.2, Vector3(hw2 + 0.08, murti_y + 0.3, 0), murti_prov)
 	_box(root, "Murti_Dakshinamurti_S", laterite, Vector3(0.5, 0.9, 0.16), Vector3(0, murti_y, hw2), murti_prov)
+	_ball(root, "Murti_Dakshinamurti_S_Head", laterite, 0.1, 0.2, Vector3(0, murti_y + 0.3, hw2 + 0.08), murti_prov)
 	_box(root, "Murti_Narasimha_W", laterite, Vector3(0.16, 0.9, 0.5), Vector3(-hw2, murti_y, 0), murti_prov)
+	_ball(root, "Murti_Narasimha_W_Head", laterite, 0.1, 0.2, Vector3(-hw2 - 0.08, murti_y + 0.3, 0), murti_prov)
 	_box(root, "Murti_Krishna_N", laterite, Vector3(0.5, 0.9, 0.16), Vector3(0, murti_y, -hw2), murti_prov)
+	_ball(root, "Murti_Krishna_N_Head", laterite, 0.1, 0.2, Vector3(0, murti_y + 0.3, -hw2 - 0.08), murti_prov)
 	y += h2
 	_box(root, "PrastaraT2", laterite, Vector3(gh * 0.72 + 0.4, _m(1.0), gh * 0.72 + 0.4),
 		Vector3(0, y + _m(1.0) / 2.0, 0), prov_pr)
 	y += _m(1.0)
-	# --- timber pyramidal roof + copper kalasha ---
-	_pyramid(root, "ShikharaRoof", timber, gh + 1.6, gh + 1.6, _m(3.0), Vector3(0, y, 0), prov_pr)
+	# --- timber pyramidal roof with tiled eave + copper lotus-bud kalasha ---
+	_eave_pyramid(root, "ShikharaRoof", timber, gh + 1.6, gh + 1.6, _m(3.0), Vector3(0, y, 0), prov_pr)
 	y += _m(3.0)
-	_box(root, "StupiKalasha", copper, Vector3(0.3, _m(0.75), 0.3), Vector3(0, y + _m(0.75) / 2.0, 0), prov_pr)
+	_lathe(root, "StupiKalasha", copper, 0.28, _m(0.75),
+		[Vector2(0.5, 0.02), Vector2(0.85, 0.12), Vector2(0.6, 0.3), Vector2(0.9, 0.5),
+		Vector2(0.55, 0.68), Vector2(0.25, 0.82), Vector2(0.12, 0.92), Vector2(0.0, 1.0)],
+		Vector3(0, y, 0), prov_pr)
 
 	# --- east axis: sopana steps, mukhamandapa, namaskara, balikkal, dwaja ---
 	var ex := gh / 2.0
-	# sopana: three granite steps rising to the door (TS-P2V33B-sopana)
+	# sopana: five granite steps rising westward onto the adhishthana
+	# (TS-P2V33B-sopana; 0.2 rises) + invisible walk ramp beneath (26 deg,
+	# within floor_max_angle: the fighter has no jump, so steps are visual
+	# provenance and the ramp carries motion; hidden CSG keeps collision).
 	var sopana_prov: Array = prov_pr + ["TS-P2V33B-sopana"] if not prov_pr.has("TS-P2V33B-sopana") else prov_pr
-	_box(root, "Sopana1", granite, Vector3(0.6, 0.15, 2.0), Vector3(ex + 0.5, 0.075, 0), sopana_prov)
-	_box(root, "Sopana2", granite, Vector3(0.6, 0.3, 2.0), Vector3(ex + 1.0, 0.15, 0), sopana_prov)
-	_box(root, "Sopana3", granite, Vector3(0.6, 0.45, 2.0), Vector3(ex + 1.5, 0.225, 0), sopana_prov)
+	for si in range(5):
+		var stop := 0.2 + float(si) * 0.2
+		_box(root, "Sopana%d" % (si + 1), granite, Vector3(0.4, stop, 1.4),
+			Vector3(ex + 2.14 - float(si) * 0.4, stop / 2.0, 0), sopana_prov)
+	var ramp := CSGBox3D.new()
+	ramp.name = "SopanaRamp"
+	ramp.material = granite
+	ramp.size = Vector3(2.5, 0.15, 1.4)
+	ramp.position = Vector3(3.6, 0.47, 0)
+	ramp.rotation.z = -0.455
+	ramp.use_collision = true
+	ramp.visible = false
+	ramp.set_meta("provenance", sopana_prov)
+	root.add_child(ramp)
 	# mukhamandapa: 4 pillars + slab + pyramid
 	var mx := ex + 3.0
 	for px in [mx - 1.0, mx + 1.0]:
 		for pz in [-1.0, 1.0]:
 			_pillar(root, "MukhaPillar", timber, Vector3(px, 0, pz), 0.25, 2.2, prov_pr)
 	_box(root, "MukhaSlab", timber, Vector3(3.0, 0.25, 3.0), Vector3(mx, 2.3, 0), door_prov)
-	_pyramid(root, "MukhaRoof", timber, 3.6, 3.6, 1.0, Vector3(mx, 2.42, 0), prov_pr)
+	_eave_pyramid(root, "MukhaRoof", timber, 3.6, 3.6, 1.0, Vector3(mx, 2.42, 0), prov_pr)
 	# namaskara mandapa (detached square)
 	var nx := ex + 6.5
 	for px in [nx - 1.1, nx + 1.1]:
@@ -267,7 +455,7 @@ func _build_all() -> void:
 			_pillar(root, "NamaskaraPillar", timber, Vector3(px, 0, pz), 0.28, 2.4, prov_pr)
 	_box(root, "NamaskaraSlab", granite, Vector3(3.0, 0.4, 3.0), Vector3(nx, 0.2, 0), prov_pr)
 	_box(root, "NamaskaraRoofBase", timber, Vector3(3.4, 0.25, 3.4), Vector3(nx, 2.5, 0), prov_pr)
-	_pyramid(root, "NamaskaraRoof", timber, 4.0, 4.0, 1.1, Vector3(nx, 2.62, 0), prov_pr)
+	_eave_pyramid(root, "NamaskaraRoof", timber, 4.0, 4.0, 1.1, Vector3(nx, 2.62, 0), prov_pr)
 	# valia balikkal + 8 bali stones along pradakshina
 	_box(root, "ValiaBalikkal", granite, Vector3(0.8, 1.2, 0.8), Vector3(nx + 3.0, 0.6, 0), prov_pr)
 	var bali_names := ["Ishan", "Indra", "Agni", "Yama", "Nirriti", "Varuna", "Vayu", "Soma"]
@@ -280,15 +468,22 @@ func _build_all() -> void:
 	_cyl(root, "DwajaPole", timber, 0.18, 6.0, Vector3(nx + 5.0, 3.0, 0), prov_pr).sides = 8
 	_box(root, "DwajaTop", copper, Vector3(0.5, 0.5, 0.5), Vector3(nx + 5.0, 6.2, 0), prov_pr)
 	_box(root, "DeepaStambha", granite, Vector3(0.3, 3.0, 0.3), Vector3(nx + 6.5, 1.5, 1.5), prov_pr)
-	# rishabha vahana at the dwaja base (SESHA-P9V02: bull for the deity)
+	# rishabha vahana at the dwaja base (SESHA-P9V02: bull for the deity;
+	# recumbent massing: body + head + hump + horns, canon-safe)
 	var dhvaja_prov: Array = prov_pr + ["SESHA-P9V02-dhvajavahana", "SESHA-P9V03-dhvasthapana"]
 	_box(root, "RishabhaBase", granite, Vector3(1.0, 0.3, 0.6), Vector3(nx + 5.0, 0.15, 1.4), dhvaja_prov)
-	_box(root, "Rishabha", cream, Vector3(0.8, 0.6, 0.4), Vector3(nx + 5.0, 0.6, 1.4), dhvaja_prov)
+	_box(root, "RishabhaBody", cream, Vector3(0.8, 0.5, 0.4), Vector3(nx + 5.0, 0.55, 1.4), dhvaja_prov)
+	_box(root, "RishabhaHead", cream, Vector3(0.3, 0.35, 0.3), Vector3(nx + 5.4, 0.65, 1.4), dhvaja_prov)
+	_box(root, "RishabhaHump", cream, Vector3(0.25, 0.2, 0.3), Vector3(nx + 4.85, 0.85, 1.4), dhvaja_prov)
+	_box(root, "RishabhaHornL", copper, Vector3(0.05, 0.2, 0.05), Vector3(nx + 5.4, 0.9, 1.3), dhvaja_prov)
+	_box(root, "RishabhaHornR", copper, Vector3(0.05, 0.2, 0.05), Vector3(nx + 5.4, 0.9, 1.5), dhvaja_prov)
 
 	# --- flagship v2 micro-objects (all provenance-tagged, dressing LOD) ---
 	# foundation deposit set at the adhishthana north-east base (buried program shown exposed)
 	var deposit_prov: Array = ["TS-P1V74B-nidhipot", "TS-P1V77B-kurmashila", "TS-P1V79B-silverlotus", "TS-P1V81B-bricks"]
-	_cyl(root, "NidhiKumbha", copper, 0.22, 0.35, Vector3(ex + 0.4, 0.18, -1.6), deposit_prov, false)
+	_lathe(root, "NidhiKumbha", copper, 0.22, 0.35,
+		[Vector2(0.6, 0.02), Vector2(0.9, 0.2), Vector2(0.5, 0.5), Vector2(0.7, 0.7),
+		Vector2(0.2, 0.85), Vector2(0.0, 1.0)], Vector3(ex + 0.4, 0.0, -1.6), deposit_prov)
 	_box(root, "KurmaShila", granite, Vector3(0.5, 0.12, 0.5), Vector3(ex + 0.4, 0.41, -1.6), deposit_prov, false)
 	_box(root, "SilverLotus", cream, Vector3(0.3, 0.08, 0.3), Vector3(ex + 0.4, 0.5, -2.1), deposit_prov, false)
 	_box(root, "DepositBricks", laterite, Vector3(0.6, 0.25, 0.6), Vector3(ex + 0.4, 0.12, -2.6), deposit_prov, false)
@@ -306,8 +501,10 @@ func _build_all() -> void:
 	# brahma-kalasha vessel row by the thidappalli (SESHA-P4V02/V04 + V41B fills)
 	var kalasha_prov: Array = ["SESHA-P4V02-brahmakalasha", "SESHA-P4V04-parikalasha", "SESHA-P7V41B-kalashafill"]
 	for ki in range(5):
-		_cyl(root, "BrahmaKalasha_%d" % ki, copper, 0.15, 0.4,
-			Vector3(4.5 + float(ki) * 0.5, 0.2, -4.5), kalasha_prov, false)
+		_lathe(root, "BrahmaKalasha_%d" % ki, copper, 0.15, 0.4,
+			[Vector2(0.6, 0.02), Vector2(0.9, 0.2), Vector2(0.5, 0.5), Vector2(0.7, 0.7),
+			Vector2(0.2, 0.85), Vector2(0.0, 1.0)],
+			Vector3(4.5 + float(ki) * 0.5, 0.0, -4.5), kalasha_prov)
 	# kshetrapala guardian stone NE (SESHA-P8V04 ten-direction retinue)
 	_box(root, "Kshetrapala", granite, Vector3(0.6, 1.0, 0.6), Vector3(9.0, 0.5, -9.0),
 		["SESHA-P5V02-savanatraya", "SESHA-P5V07-balikrama", "SESHA-P8V04-kshetrapala"], true, 30.0)
@@ -331,11 +528,12 @@ func _build_all() -> void:
 		Vector3((uh + 6.0) / 2.0 - 1.0, 1.0, -((uh + 6.0) / 2.0 - 1.0)), prov_pr)
 	_build_ring(root, "Vilakkumadam", uh + 10.0, 1.2, timber, prov_pr)
 	_build_ring(root, "MaryadaWall", uh + 18.0, 1.5, laterite, prov_pr)
-	# east gopura (2 storeys + roof)
+	# east gopura: jambs with 3m axis gap (walkable) + upper storey + roof
 	var gx := (uh + 18.0) / 2.0
-	_box(root, "GopuraBase", cream, Vector3(2.0, 3.0, 5.0), Vector3(gx, 1.5, 0), prov_pr)
+	_box(root, "GopuraJambL", cream, Vector3(2.0, 3.0, 1.0), Vector3(gx, 1.5, -2.0), prov_pr)
+	_box(root, "GopuraJambR", cream, Vector3(2.0, 3.0, 1.0), Vector3(gx, 1.5, 2.0), prov_pr)
 	_box(root, "GopuraTop", cream, Vector3(2.4, 2.0, 5.6), Vector3(gx, 4.0, 0), prov_pr)
-	_pyramid(root, "GopuraRoof", timber, 3.0, 6.2, 1.4, Vector3(gx, 5.0, 0), prov_pr)
+	_eave_pyramid(root, "GopuraRoof", timber, 3.0, 6.2, 1.4, Vector3(gx, 5.0, 0), prov_pr, 0.4)
 	# koothambalam NW: plinth + pillars + roof
 	_build_hall(root, "Koothambalam", Vector3(-(uh / 2.0 + 6.0), 0, -(uh / 2.0 + 4.0)), timber, cream, prov_pr)
 	# ootupura + well NE + kulam + kavu
@@ -344,12 +542,23 @@ func _build_all() -> void:
 		Vector3((uh + 6.0) / 2.0 - 1.0, 0.5, (uh + 6.0) / 2.0 - 1.0), prov_pr)
 	_box(root, "KulamWater", water_mat, Vector3(6.0, 0.1, 6.0),
 		Vector3(-(uh / 2.0 + 9.0), 0.05, uh / 2.0 + 9.0), prov_pr, false)
-	# kavu trees (dressing LOD)
+	# stepped tank curb ring (TS-P1V39B-supadma water architecture; 0.2 rises)
+	var kcx := -(uh / 2.0 + 9.0)
+	var kcz := uh / 2.0 + 9.0
+	_box(root, "KulamCurbN", granite, Vector3(6.6, 0.2, 0.3), Vector3(kcx, 0.1, kcz - 3.15), prov_pr)
+	_box(root, "KulamCurbS", granite, Vector3(6.6, 0.2, 0.3), Vector3(kcx, 0.1, kcz + 3.15), prov_pr)
+	_box(root, "KulamCurbE", granite, Vector3(0.3, 0.2, 6.6), Vector3(kcx + 3.15, 0.1, kcz), prov_pr)
+	_box(root, "KulamCurbW", granite, Vector3(0.3, 0.2, 6.6), Vector3(kcx - 3.15, 0.1, kcz), prov_pr)
+	# kavu trees (dressing LOD) + naaga stones at the grove edge
 	for i in range(6):
 		var tx := -(uh / 2.0 + 11.0) + float(i % 3) * 2.0
 		var tz := -(uh / 2.0 + 11.0) + float(i / 3) * 2.0
 		_box(root, "KavuTrunk_%d" % i, timber, Vector3(0.35, 4.0, 0.35), Vector3(tx, 2.0, tz), prov_pr, false, 40.0)
 		_box(root, "KavuCrown_%d" % i, leaf, Vector3(2.4, 0.6, 2.4), Vector3(tx, 4.2, tz), prov_pr, false, 40.0)
+	var kavu_prov: Array = ["TS-P3V1-material", "TS-P1V39B-supadma"]
+	for ni in range(3):
+		_box(root, "NaagaStone_%d" % ni, granite, Vector3(0.4, 0.5, 0.2),
+			Vector3(-14.5 - float(ni) * 0.5, 0.25, -13.8 - float(ni) * 0.4), kavu_prov, false, 40.0)
 
 func _build_ring(parent: Node, nm: String, half: float, h: float, mat: Material, prov: Array, gate_side := 1.0) -> void:
 	# gate_side +1: gate on east wall; -1: gate on west wall (3 m opening at axis).
@@ -424,11 +633,13 @@ func _build_circular_ksetra(root: Node, gh: float, uh: float, west: bool,
 		_cyl(root, "PrastaraT1_%d" % (i + 1), laterite, gh / 2.0 + 0.25 - 0.01 * i, ph1,
 			Vector3(0, y + ph1 / 2.0, 0), prov_pr)
 	y += _m(1.5)
-	# conical timber roof + kalasha
+	# conical timber roof + lathe lotus-bud kalasha
 	_cone(root, "ShikharaRoof", timber, gh / 2.0 + 0.8, _m(3.5), Vector3(0, y, 0), prov_pr)
 	y += _m(3.5)
-	_box(root, "StupiKalasha", copper, Vector3(0.3, _m(0.75), 0.3),
-		Vector3(0, y + _m(0.75) / 2.0, 0), prov_pr)
+	_lathe(root, "StupiKalasha", copper, 0.28, _m(0.75),
+		[Vector2(0.5, 0.02), Vector2(0.85, 0.12), Vector2(0.6, 0.3), Vector2(0.9, 0.5),
+		Vector2(0.55, 0.68), Vector2(0.25, 0.82), Vector2(0.12, 0.92), Vector2(0.0, 1.0)],
+		Vector3(0, y, 0), prov_pr)
 	# linga tripartite on pitha + round nala stem to north (TS-P2V122B: equal
 	# thirds square/octagonal/circular; TS-P2V119B 4-hasta set).
 	var linga_h := _m(4.0)
@@ -445,18 +656,30 @@ func _build_circular_ksetra(root: Node, gh: float, uh: float, west: bool,
 	# west axis: sopana, mukhamandapa, namaskara, balikkal, dwaja, deepa
 	var ex := sgn * gh / 2.0
 	_box(root, "Sopana", granite, Vector3(1.2, 0.3, 2.0), Vector3(ex + sgn * 0.9, 0.15, 0), prov_pr)
+	# walk ramp to the adhishthana top (same contract as the square slice:
+	# steps are visual provenance, the hidden ramp carries motion).
+	var cramp := CSGBox3D.new()
+	cramp.name = "SopanaRamp"
+	cramp.material = granite
+	cramp.size = Vector3(2.5, 0.15, 1.4)
+	cramp.position = Vector3(sgn * 2.9, 0.47, 0)
+	cramp.rotation.z = -sgn * 0.455
+	cramp.use_collision = true
+	cramp.visible = false
+	cramp.set_meta("provenance", prov_pr)
+	root.add_child(cramp)
 	var mx := ex + sgn * 3.0
 	for px in [mx - 1.0, mx + 1.0]:
 		for pz in [-1.0, 1.0]:
 			_pillar(root, "MukhaPillar", timber, Vector3(px, 0, pz), 0.25, 2.2, prov_pr)
 	_box(root, "MukhaSlab", timber, Vector3(3.0, 0.25, 3.0), Vector3(mx, 2.3, 0), prov_pr)
-	_pyramid(root, "MukhaRoof", timber, 3.6, 3.6, 1.0, Vector3(mx, 2.42, 0), prov_pr)
+	_eave_pyramid(root, "MukhaRoof", timber, 3.6, 3.6, 1.0, Vector3(mx, 2.42, 0), prov_pr)
 	var nx := ex + sgn * 6.5
 	for px in [nx - 1.1, nx + 1.1]:
 		for pz in [-1.1, 1.1]:
 			_pillar(root, "NamaskaraPillar", timber, Vector3(px, 0, pz), 0.28, 2.4, prov_pr)
 	_box(root, "NamaskaraSlab", granite, Vector3(3.0, 0.4, 3.0), Vector3(nx, 0.2, 0), prov_pr)
-	_pyramid(root, "NamaskaraRoof", timber, 4.0, 4.0, 1.1, Vector3(nx, 2.62, 0), prov_pr)
+	_eave_pyramid(root, "NamaskaraRoof", timber, 4.0, 4.0, 1.1, Vector3(nx, 2.62, 0), prov_pr)
 	_box(root, "ValiaBalikkal", granite, Vector3(0.8, 1.2, 0.8), Vector3(nx + sgn * 3.0, 0.6, 0), prov_pr)
 	_box(root, "DwajaPole", timber, Vector3(0.3, 6.0, 0.3), Vector3(nx + sgn * 5.0, 3.0, 0), prov_pr)
 	_box(root, "DwajaTop", copper, Vector3(0.5, 0.5, 0.5), Vector3(nx + sgn * 5.0, 6.2, 0), prov_pr)
@@ -466,9 +689,10 @@ func _build_circular_ksetra(root: Node, gh: float, uh: float, west: bool,
 	_build_ring(root, "Vilakkumadam", uh + 10.0, 1.2, timber, prov_pr, gate)
 	_build_ring(root, "MaryadaWall", uh + 18.0, 1.5, laterite, prov_pr, gate)
 	var gx := sgn * (uh + 18.0) / 2.0
-	_box(root, "GopuraBase", cream, Vector3(2.0, 3.0, 5.0), Vector3(gx, 1.5, 0), prov_pr)
+	_box(root, "GopuraJambL", cream, Vector3(2.0, 3.0, 1.0), Vector3(gx, 1.5, -2.0), prov_pr)
+	_box(root, "GopuraJambR", cream, Vector3(2.0, 3.0, 1.0), Vector3(gx, 1.5, 2.0), prov_pr)
 	_box(root, "GopuraTop", cream, Vector3(2.4, 2.0, 5.6), Vector3(gx, 4.0, 0), prov_pr)
-	_pyramid(root, "GopuraRoof", timber, 3.0, 6.2, 1.4, Vector3(gx, 5.0, 0), prov_pr)
+	_eave_pyramid(root, "GopuraRoof", timber, 3.0, 6.2, 1.4, Vector3(gx, 5.0, 0), prov_pr, 0.4)
 	_box(root, "Thidappalli", cream, Vector3(3.0, 2.0, 3.0),
 		Vector3((uh + 6.0) / 2.0 - 1.0, 1.0, -((uh + 6.0) / 2.0 - 1.0)), prov_pr)
 	_box(root, "WellNE", granite, Vector3(1.6, 1.0, 1.6),
@@ -488,4 +712,4 @@ func _build_hall(parent: Node, nm: String, at: Vector3, wood: Material, base_mat
 		for oz in [-1.5, 1.5]:
 			_pillar(parent, nm + "_Pillar", wood, at + Vector3(ox, 0.4, oz), 0.25, 2.3, prov)
 	_box(parent, nm + "_Roof", wood, Vector3(5.6, 0.25, 4.6), at + Vector3(0, 2.8, 0), prov)
-	_pyramid(parent, nm + "_Top", wood, 6.0, 5.0, 1.0, at + Vector3(0, 2.92, 0), prov)
+	_eave_pyramid(parent, nm + "_Top", wood, 6.0, 5.0, 1.0, at + Vector3(0, 2.92, 0), prov)

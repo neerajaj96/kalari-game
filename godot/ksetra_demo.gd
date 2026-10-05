@@ -19,9 +19,13 @@ var _prov = RefCounted.new()
 var _slices := ["res://data/ksetra_vishnu_dvitala.json", "res://data/ksetra_shiva_ekatala.json"]
 var _slice_i := 0
 var _built: Node3D = null
+# Player-follow mode: when the world player + follow camera are present
+# (kalari traversal), the orbit rig stands down — follow camera owns the view.
+var _player_mode := false
 
 func _ready() -> void:
 	_cam = get_node_or_null("Camera") as Camera3D
+	_player_mode = _cam != null and _cam.has_method("add_shake")
 	_label = get_node_or_null("ProvenanceUI/ProvenanceLabel") as Label
 	var inv := Node.new()
 	inv.set_script(Inv)
@@ -51,6 +55,7 @@ func _build_slice(i: int) -> void:
 		_say("BUILD FAIL: " + str(b.errors))
 		return
 	_built = b
+	_apply_hero_materials()
 	var f := FileAccess.open(_slices[_slice_i], FileAccess.READ)
 	var spec: Dictionary = JSON.parse_string(f.get_as_text())
 	_prov.set_script(Prov)
@@ -58,12 +63,34 @@ func _build_slice(i: int) -> void:
 		_say("Provenance index missing.")
 		return
 	var meta: Dictionary = spec.get("meta", {})
-	_spawn_devotees(float(spec.get("prasada", {}).get("uttara_hasta", 12.0)) * 0.72 + 2.5)
+	# Devotee ring clears namaskara pillars and valia balikkal (r=10.4).
+	_spawn_devotees(float(spec.get("prasada", {}).get("uttara_hasta", 12.0)) * 0.65 + 2.6)
 	_spawn_role_figures()
 	_say(str(meta.get("name", "?")) + " (K slice. A adhivasa B bali D dhvaja S shuddhi F fetch X drill R rain. Drag orbit, wheel zoom, click member.)")
 
 var _crowd: Array = []
 var _monsoon := false
+
+func _apply_hero_materials() -> void:
+	# Kalari-side craft dressing, null-guarded so engine headless proofs stay
+	# canonical: lokapala flags wave, kulam water flows. Never canon, only craft.
+	if _built == null:
+		return
+	var flag_mat = load("res://shaders/flag_red.tres")
+	if flag_mat != null:
+		_paint_match(_built, "ParitaFlag_", flag_mat)
+	var water_mat = load("res://shaders/water_fx.tres")
+	if water_mat != null:
+		_paint_match(_built, "KulamWater", water_mat)
+
+func _paint_match(n: Node, prefix: String, mat: Material) -> void:
+	if str(n.name).begins_with(prefix):
+		if n is MeshInstance3D:
+			n.set("material_override", mat)
+		elif n is CSGShape3D:
+			n.set("material", mat)
+	for c in n.get_children():
+		_paint_match(c, prefix, mat)
 
 func _on_slot(slot_id: String) -> void:
 	# Crowd responds to the ritual clock: lamp slots gather attention, all note the hour.
@@ -80,11 +107,16 @@ func _on_slot(slot_id: String) -> void:
 			if slot_id in ["deeparadhana", "ucha"] and d.get("pause_t") != null:
 				d.set("pause_t", 5.0)  # darshana beat for grand slots
 	# Lamp program: night slots burn brighter (deeparadhana/athazha 1.1, else 0.7).
+	# Deeparadhana also rings the temple bell where the world audio lives (kalari).
 	var lamp_base := 1.1 if slot_id in ["deeparadhana", "athazha"] else 0.7
 	for lamp_name in ["LampE", "LampW", "LampN"]:
 		var lamp = get_node_or_null(lamp_name)
 		if lamp and lamp.get("base") != null:
 			lamp.set("base", lamp_base)
+	if slot_id == "deeparadhana":
+		var game := get_tree().get_first_node_in_group("game")
+		if game != null and game.get("audio") != null and game.audio.has_method("bell"):
+			game.audio.bell()
 
 func _spawn_devotees(ring_r: float) -> void:
 	# Ambient pradakshina crowd (6 sevakas); cleared and re-seeded per slice.
@@ -121,13 +153,17 @@ func _spawn_role_figures() -> void:
 	# Marar musician in the courtyard. Provenance: roles.v1.json + TS-P1V04B.
 	# Cleared and re-seeded per slice (positions suit both slices).
 	for c in get_children():
-		if c is MeshInstance3D and (str(c.name) == "Tantri" or str(c.name) == "Marar"):
+		if c is MeshInstance3D and (str(c.name) == "Tantri" or str(c.name) == "Marar" or str(c.name).begins_with("Bearer")):
 			c.queue_free()
 	var specs := [
 		{"nm": "Tantri", "pos": Vector3(3.6, 0.9, -1.6), "tint": Color(0.95, 0.75, 0.35),
 			"prov": ["TS-P1V04B-yajamana"], "note": "Tantri: garbhagriha only."},
 		{"nm": "Marar", "pos": Vector3(12.5, 0.9, -2.5), "tint": Color(0.85, 0.85, 0.9),
 			"prov": ["TS-P4V101B-upachara"], "note": "Marar: edakka at sopanam."},
+		{"nm": "BearerE", "pos": Vector3(12.5, 0.9, 2.5), "tint": Color(0.9, 0.88, 0.8),
+			"prov": ["TS-P1V04B-yajamana"], "note": "Sevaka: offerings to the door."},
+		{"nm": "BearerW", "pos": Vector3(7.0, 0.9, 3.0), "tint": Color(0.88, 0.86, 0.78),
+			"prov": ["TS-P1V04B-yajamana"], "note": "Sevaka: guard at namaskara."},
 	]
 	for s in specs:
 		var body := MeshInstance3D.new()
@@ -151,7 +187,7 @@ func _spawn_role_figures() -> void:
 		body.add_child(tag)
 
 func _process(_delta: float) -> void:
-	if _cam == null:
+	if _cam == null or _player_mode:
 		return
 	var off := Vector3(cos(_pitch) * cos(_yaw), sin(_pitch), cos(_pitch) * sin(_yaw)) * _dist
 	_cam.global_position = _target + off
@@ -184,6 +220,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			var sched_d := get_node_or_null("KsetraScheduler")
 			if sched_d and sched_d.has_method("start_dhvaja"):
 				_say("Dhvaja program begun: " + str(sched_d.start_dhvaja()))
+				# Kodiyettu conch where the world audio lives (kalari).
+				var game_d := get_tree().get_first_node_in_group("game")
+				if game_d != null and game_d.get("audio") != null and game_d.audio.has_method("overture"):
+					game_d.audio.overture()
 			return
 		if (event as InputEventKey).keycode == KEY_S:
 			var sched_s := get_node_or_null("KsetraScheduler")
@@ -215,10 +255,16 @@ func _unhandled_input(event: InputEvent) -> void:
 				_say("Fetched 3 " + item + ". " + (inv.summary() if inv.has_method("summary") else ""))
 			return
 	if event is InputEventMouseMotion and (event as InputEventMouseMotion).button_mask & MOUSE_BUTTON_MASK_LEFT:
+		if _player_mode:
+			return  # follow camera owns drag in traversal mode; click-pick below still works
 		_yaw -= (event as InputEventMouseMotion).relative.x * 0.008
 		_pitch = clampf(_pitch + (event as InputEventMouseMotion).relative.y * 0.008, 0.15, 1.3)
 	elif event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
+		if _player_mode:
+			if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
+				_pick(mb.position)
+			return
 		if mb.button_index == MOUSE_BUTTON_WHEEL_UP and mb.pressed:
 			_dist = clampf(_dist - 1.5, 8.0, 60.0)
 		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN and mb.pressed:

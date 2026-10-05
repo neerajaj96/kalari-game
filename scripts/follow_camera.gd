@@ -40,9 +40,17 @@ func _process(delta: float) -> void:
 		_combat = lerpf(_combat, want_combat, minf(1.0, 3.0 * delta))
 		eye = Vector3(offset.x, lerpf(offset.y, offset.y - 1.0, _combat), offset.z)
 		var goal: Vector3 = p.global_position + eye
-		# Clamp to village bounds (pit sits inside them) so we never show void.
-		goal.x = clampf(goal.x, -13.0, 13.0)
-		goal.z = clampf(goal.z, -12.0, 14.0)
+		# Clamp to the active world so we never show void (village default, ksetra wide).
+		var bx := 13.0
+		var bz0 := -12.0
+		var bz1 := 14.0
+		var w := get_tree().get_first_node_in_group("world")
+		if w != null and w.get("current") != null and "Ksetra" in str(w.current.name):
+			bx = 28.0
+			bz0 = -28.0
+			bz1 = 28.0
+		goal.x = clampf(goal.x, -bx, bx)
+		goal.z = clampf(goal.z, bz0, bz1)
 		global_position = global_position.lerp(goal, minf(1.0, follow_speed * delta))
 	base_fov = lerpf(55.0, 62.0, _combat)
 	trauma = maxf(0.0, trauma - delta * 1.6)

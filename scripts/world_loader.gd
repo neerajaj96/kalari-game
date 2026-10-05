@@ -15,7 +15,7 @@ var ksetra_path := KSETRA
 # Spawn points verified over solid floor in each scene.
 var school_spawn := Vector3(0, 1, 0)
 var village_spawn := Vector3(0, 1, 4)
-var ksetra_spawn := Vector3(18, 1, 0)
+var ksetra_spawn := Vector3(28, 1, 0)
 
 func _ready() -> void:
 	_resolve_zones()
