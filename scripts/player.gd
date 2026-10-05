@@ -3,6 +3,7 @@ extends CharacterBody3D
 # Vadivu: block = Simha turtle, dodge = Sarpa slip.
 
 const CombatState = preload("res://scripts/combat_state.gd")
+const HumanFactory = preload("res://scripts/human/human_factory.gd")
 
 @export var speed := 4.5
 @export var turn_speed := 10.0
@@ -140,6 +141,7 @@ func set_rank(r: int) -> void:
 	if r == _rank_shown:
 		return
 	_rank_shown = r
+	HumanFactory.update_rank_accent(self, r)
 	var sash := get_node_or_null("RankSash") as MeshInstance3D
 	if sash == null:
 		return

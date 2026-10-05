@@ -4,6 +4,9 @@ extends CharacterBody3D
 # apply_hit only frightens. School world spawns none (sacred training space).
 
 const CombatState = preload("res://scripts/combat_state.gd")
+const HumanDNA = preload("res://scripts/human/human_dna.gd")
+const HumanFactory = preload("res://scripts/human/human_factory.gd")
+# Wired cinematic PBR assets: shaders/human_skin.gdshader, shaders/cloth_weave.gdshader, shaders/hair_strand.gdshader
 
 @export var speed := 2.0
 @export var flee_speed := 4.2
@@ -39,6 +42,7 @@ var _talk_cd := 0.0
 var _reply := ""
 var _reply_t := 0.0
 var _storm_told := false
+var _cinematic: Node3D = null
 
 func start_reply(line: String) -> void:
 	_reply = line
@@ -50,6 +54,29 @@ func _ready() -> void:
 	add_child(combat)
 	combat.state = CombatState.S.STANCE
 	wait_t = randf_range(0.0, 2.0)
+	_build_cinematic()
+
+func _build_cinematic() -> void:
+	# Deterministic per-villager identity from instance id (stable per spawn).
+	var variant := abs(int(get_instance_id()) % 8)
+	var dna: Resource = HumanDNA.villager_dna(variant)
+	_cinematic = HumanFactory.build(self, dna)
+
+func _process(delta: float) -> void:
+	if _cinematic != null and is_instance_valid(_cinematic):
+		var planar := Vector2(velocity.x, velocity.z).length()
+		var local := Vector3.ZERO
+		if planar > 0.01:
+			local = global_transform.basis.inverse() * velocity
+		var st := int(combat.state) if combat != null else 1
+		# Fleeing villagers show fear; idlers stay neutral.
+		HumanFactory.drive(_cinematic, delta, st, planar, local)
+		var face := _cinematic.get_node_or_null("FaceAnim")
+		if face != null and face.has_method("set_expression"):
+			if flee_t > 0.0:
+				face.set_expression("fear")
+			elif _reply != "":
+				face.set_expression("surprise")
 
 func apply_hit(_dmg: float, _marma: bool = false) -> void:
 	# Struck: scream, flee, never fight back. (Heat consequences in OW3.)
