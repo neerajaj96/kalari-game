@@ -524,6 +524,12 @@ for token in ['script = ExtResource("10")', "art/characters/bandit/"]:
         errs.append(f"enemy: P4 bandit Rig wiring '{token}' missing")
 if not os.path.exists(BASE + "/art/characters/bandit/.gitkeep"):
     errs.append("P4 art scaffold 'art/characters/bandit/.gitkeep' missing")
+_gu = open(BASE + "/scenes/gurukkal.tscn").read()
+for token in ['script = ExtResource("9")', "art/characters/gurukkal/"]:
+    if token not in _gu:
+        errs.append(f"gurukkal: P4 elder Rig wiring '{token}' missing")
+if not os.path.exists(BASE + "/art/characters/gurukkal/.gitkeep"):
+    errs.append("P4 art scaffold 'art/characters/gurukkal/.gitkeep' missing")
 
 # --- 9. version triple ---
 env = open(BASE + "/.env").read()

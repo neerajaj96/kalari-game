@@ -20,7 +20,7 @@ const STATE_NODES := {
 	4: "dodge", 5: "hit", 6: "death",
 }
 # Primitive roots hidden when the rig takes over (guards skip any missing).
-const PRIMITIVES := ["Body", "Head", "ArmL", "ArmR", "LegL", "LegR", "FootL", "FootR"]
+const PRIMITIVES := ["Body", "Head", "ArmL", "ArmR", "LegL", "LegR", "FootL", "FootR", "Beard", "Angavastram"]
 
 var active := false
 var _tree: AnimationTree
@@ -69,7 +69,11 @@ func _process(_delta: float) -> void:
 	if not active:
 		return
 	var p = get_parent()
-	if p == null or p.get("combat") == null:
+	if p == null:
+		return
+	if p.get("combat") == null:
+		_tree.travel("idle") # non-combat characters rest in idle.
+		active = false # one-shot; no state to track.
 		return
 	var st: int = p.combat.state
 	if st == _last_state:

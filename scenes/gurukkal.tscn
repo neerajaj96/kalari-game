@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=23 format=3]
 
 [ext_resource type="Material" path="res://materials/cloth_white.tres" id="1"]
 [ext_resource type="Material" path="res://materials/skin.tres" id="2"]
@@ -8,6 +8,7 @@
 [ext_resource type="Material" path="res://shaders/toon_skin.tres" id="6"]
 [ext_resource type="Material" path="res://materials/eye_white.tres" id="7"]
 [ext_resource type="Material" path="res://materials/eye_dark.tres" id="8"]
+[ext_resource type="Script" path="res://scripts/avatar_rig.gd" id="9"]
 
 [sub_resource type="CapsuleMesh" id="body"]
 radius = 0.4
@@ -163,3 +164,7 @@ material_override = ExtResource("6")
 mesh = SubResource("limbarm")
 position = Vector3(0.15, 0.22, -0.37)
 rotation = Vector3(0, 0, -1.35)
+
+[node name="Rig" type="Node" parent="."]
+script = ExtResource("9")
+rig_path = "res://art/characters/gurukkal/elder_male.glb"
