@@ -33,6 +33,7 @@ func _ready() -> void:
 	add_child(sched)
 	sched.inventory = inv
 	sched.slot_opened.connect(func(id: String) -> void: _say("Nitya slot open: " + id + ". " + inv.summary()))
+	sched.slot_opened.connect(_on_slot)
 	sched.rite_stepped.connect(func(id: String) -> void: _say("Adhivasa rite: " + id + ". " + inv.summary()))
 	sched.step_waiting.connect(func(id: String, why: String) -> void: _say("Waiting: " + id + " — " + why + ". " + inv.summary()))
 	_build_slice(0)
@@ -60,8 +61,26 @@ func _build_slice(i: int) -> void:
 	_spawn_devotees(float(spec.get("prasada", {}).get("uttara_hasta", 12.0)) * 0.72 + 2.5)
 	_say(str(meta.get("name", "?")) + " (K = toggle slice. Drag orbit, wheel zoom, click member.)")
 
+var _crowd: Array = []
+
+func _on_slot(slot_id: String) -> void:
+	# Crowd responds to the ritual clock: lamp slots gather attention, all note the hour.
+	var notes := {
+		"deeparadhana": "Deeparadhana — lamps lit.",
+		"ucha": "Ucha — midday offerings.",
+		"athazha": "Athazha — night rest.",
+		"usha": "Usha — dawn worship.",
+		"pantheeradi": "Pantheeradi — morning rite.",
+	}
+	for d in _crowd:
+		if is_instance_valid(d):
+			d.set("slot_note", str(notes.get(slot_id, "")))
+			if slot_id in ["deeparadhana", "ucha"] and d.get("pause_t") != null:
+				d.set("pause_t", 5.0)  # darshana beat for grand slots
+
 func _spawn_devotees(ring_r: float) -> void:
 	# Ambient pradakshina crowd (6 sevakas); cleared and re-seeded per slice.
+	_crowd.clear()
 	for c in get_children():
 		if c is CharacterBody3D and c.has_method("_physics_process") and c.get_script() == Devotee:
 			c.queue_free()
@@ -87,6 +106,7 @@ func _spawn_devotees(ring_r: float) -> void:
 		d.angle = TAU * float(i) / 6.0
 		d.global_position = Vector3(cos(d.angle) * ring_r, 0.1, sin(d.angle) * ring_r)
 		d.set_meta("provenance", ["TS-P2V2-yoni"])
+		_crowd.append(d)
 
 func _process(_delta: float) -> void:
 	if _cam == null:

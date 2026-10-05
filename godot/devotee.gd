@@ -9,6 +9,15 @@ var angle := 0.0
 var speed := 0.5  # rad/s unhurried circuit
 var pause_t := 0.0
 var stone_every := PI / 4.0  # 8 balikkal stations
+var greet_cd := 0.0
+var slot_note := ""  # set by demo from scheduler slot (darshana context)
+
+var GREETS := [
+	"Vanakkam.",
+	"Vishnu's flag flies high today.",
+	"The lamps will be lit soon.",
+	"Walk softly near the balikkal.",
+]
 
 func _physics_process(delta: float) -> void:
 	if pause_t > 0.0:
@@ -34,3 +43,32 @@ func _physics_process(delta: float) -> void:
 	var station := fmod(angle, stone_every)
 	if station < speed * delta * 1.5:
 		pause_t = 2.0
+	greet_cd = maxf(0.0, greet_cd - delta)
+	_greet()
+
+func _greet() -> void:
+	if greet_cd > 0.0:
+		return
+	var player = get_tree().get_first_node_in_group("player")
+	if player == null or not is_instance_valid(player):
+		return
+	var to: Vector3 = player.global_position - global_position
+	to.y = 0.0
+	if to.length() > 2.5:
+		return
+	greet_cd = 8.0
+	var line: String = GREETS[randi() % GREETS.size()]
+	if slot_note != "":
+		line = slot_note
+	_say3d(line)
+
+func _say3d(msg: String) -> void:
+	var tag := get_node_or_null("GreetTag") as Label3D
+	if tag == null:
+		tag = Label3D.new()
+		tag.name = "GreetTag"
+		tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		tag.position = Vector3(0, 2.0, 0)
+		tag.font_size = 48
+		add_child(tag)
+	tag.text = msg
