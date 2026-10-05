@@ -36,7 +36,8 @@ func _ready() -> void:
 	for b in ["AttackButton", "BlockButton", "DodgeButton", "VillageButton",
 			"SchoolButton", "RainButton", "RitualButton", "SadhanaButton",
 			"BreatheButton", "TabsButton", "PlotButton", "MargaButton",
-			"SaveButton", "MuteButton", "DrillButton", "SettingsButton"]:
+			"SaveButton", "MuteButton", "DrillButton", "SettingsButton",
+			"KsetraButton"]:
 		var btn := get_node_or_null("Root/" + b) as Button
 		if btn == null:
 			push_warning("HUD missing " + b)
@@ -108,6 +109,7 @@ func _on_hud_button(b: String) -> void:
 		"MuteButton": _on_mute()
 		"DrillButton": _on_drill()
 		"SettingsButton": _on_settings()
+		"KsetraButton": _on_ksetra()
 
 func bind(p, x) -> void:
 	player = p
@@ -141,6 +143,12 @@ func _on_school() -> void:
 	if w:
 		w.go_school()
 	_set_zone("Kuzhi-Kalari")
+
+func _on_ksetra() -> void:
+	var w = get_tree().get_first_node_in_group("world")
+	if w and w.has_method("go_ksetra"):
+		w.go_ksetra()
+	_set_zone("Vishnu Dvitala Ksetra")
 
 func _set_zone(name: String) -> void:
 	var zl := get_node_or_null("Root/RadarPanel/ZoneLabel") as Label

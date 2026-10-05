@@ -95,7 +95,15 @@ func _process(_delta: float) -> void:
 	_cam.global_position = _target + off
 	_cam.look_at(_target)
 
+func _hud_zone(xy: Vector2) -> bool:
+	# Left 40% belongs to the HUD joystick/movement; orbit/pick stay right.
+	return xy.x < get_viewport().get_visible_rect().size.x * 0.4
+
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion and _hud_zone((event as InputEventMouseMotion).position):
+		return
+	if event is InputEventMouseButton and _hud_zone((event as InputEventMouseButton).position):
+		return
 	if event is InputEventKey and (event as InputEventKey).pressed and not (event as InputEventKey).echo:
 		if (event as InputEventKey).keycode == KEY_K:
 			_build_slice((_slice_i + 1) % _slices.size())

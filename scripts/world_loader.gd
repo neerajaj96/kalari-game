@@ -6,13 +6,16 @@ const FoliageManager = preload("res://scripts/foliage_manager.gd")
 
 const SCHOOL := "res://scenes/school.tscn"
 const VILLAGE := "res://scenes/village.tscn"
+const KSETRA := "res://scenes/ksetra.tscn"
 
 var current: Node = null
 var school_path := SCHOOL
 var village_path := VILLAGE
+var ksetra_path := KSETRA
 # Spawn points verified over solid floor in each scene.
 var school_spawn := Vector3(0, 1, 0)
 var village_spawn := Vector3(0, 1, 4)
+var ksetra_spawn := Vector3(18, 1, 0)
 
 func _ready() -> void:
 	_resolve_zones()
@@ -31,6 +34,8 @@ func _resolve_zones() -> void:
 			school_path = str(z["scene"])
 		elif z.get("id") == "village_chirakkal" and z.get("scene", "") != "":
 			village_path = str(z["scene"])
+		elif z.get("id") == "ksetra_vishnu" and z.get("scene", "") != "":
+			ksetra_path = str(z["scene"])
 
 func load_world(path: String) -> void:
 	if current != null:
@@ -158,6 +163,8 @@ func _place_player() -> void:	# Player persists across worlds; seat it on this w
 		return
 	if current != null and "School" in str(current.name):
 		p.position = school_spawn
+	elif current != null and "Ksetra" in str(current.name):
+		p.position = ksetra_spawn
 	else:
 		p.position = village_spawn
 	p.velocity = Vector3.ZERO
@@ -167,6 +174,9 @@ func go_school() -> void:
 
 func go_village() -> void:
 	load_world(village_path)
+
+func go_ksetra() -> void:
+	load_world(ksetra_path)
 
 func _detail_swap(world: Node) -> void:
 	# Showcase nodes get generated-mesh visuals; the hidden CSG original
