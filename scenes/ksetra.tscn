@@ -1,8 +1,11 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://godot/ksetra_demo.gd" id="1"]
 [ext_resource type="Material" path="res://materials/ground_green.tres" id="2"]
 [ext_resource type="Script" path="res://scripts/lighting_preset.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/lamp_flicker.gd" id="4"]
+[ext_resource type="Material" path="res://materials/shrine_yellow.tres" id="5"]
+[ext_resource type="Material" path="res://materials/granite.tres" id="6"]
 
 [sub_resource type="Environment" id="env"]
 background_mode = 1
@@ -71,6 +74,66 @@ scale_amount_max = 0.05
 color = Color(0.7, 0.8, 0.9, 0.7)
 draw_pass_1 = SubResource("rainmesh")
 position = Vector3(0, 8, 0)
+
+[node name="LampE" type="OmniLight3D" parent="."]
+script = ExtResource("4")
+position = Vector3(14.0, 2.4, 0)
+light_color = Color(1, 0.72, 0.38, 1)
+light_energy = 0.7
+omni_range = 6.0
+base = 0.7
+
+[node name="LampEPost" type="CSGBox3D" parent="."]
+material = ExtResource("6")
+use_collision = true
+size = Vector3(0.25, 2.2, 0.25)
+position = Vector3(14.0, 1.1, 0)
+
+[node name="LampEGlow" type="CSGBox3D" parent="."]
+material = ExtResource("5")
+use_collision = true
+size = Vector3(0.4, 0.3, 0.4)
+position = Vector3(14.0, 2.3, 0)
+
+[node name="LampW" type="OmniLight3D" parent="."]
+script = ExtResource("4")
+position = Vector3(-11.0, 2.4, 0)
+light_color = Color(1, 0.72, 0.38, 1)
+light_energy = 0.7
+omni_range = 6.0
+base = 0.7
+
+[node name="LampWPost" type="CSGBox3D" parent="."]
+material = ExtResource("6")
+use_collision = true
+size = Vector3(0.25, 2.2, 0.25)
+position = Vector3(-11.0, 1.1, 0)
+
+[node name="LampWGlow" type="CSGBox3D" parent="."]
+material = ExtResource("5")
+use_collision = true
+size = Vector3(0.4, 0.3, 0.4)
+position = Vector3(-11.0, 2.3, 0)
+
+[node name="LampN" type="OmniLight3D" parent="."]
+script = ExtResource("4")
+position = Vector3(0, 2.4, -11.0)
+light_color = Color(1, 0.72, 0.38, 1)
+light_energy = 0.7
+omni_range = 6.0
+base = 0.7
+
+[node name="LampNPost" type="CSGBox3D" parent="."]
+material = ExtResource("6")
+use_collision = true
+size = Vector3(0.25, 2.2, 0.25)
+position = Vector3(0, 1.1, -11.0)
+
+[node name="LampNGlow" type="CSGBox3D" parent="."]
+material = ExtResource("5")
+use_collision = true
+size = Vector3(0.4, 0.3, 0.4)
+position = Vector3(0, 2.3, -11.0)
 
 [node name="ProvenanceUI" type="CanvasLayer" parent="."]
 
