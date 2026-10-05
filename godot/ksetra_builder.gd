@@ -386,22 +386,37 @@ func _build_circular_ksetra(root: Node, gh: float, uh: float, west: bool,
 		_cyl(root, "Adhisthana_" + names[i], granite, r, mould_h,
 			Vector3(0, y + mould_h / 2.0, 0), prov_pr)
 		y += mould_h
-	# circular pada + cardinal pilasters + west door frame
+	# circular pada: hollow 10-segment ring (inner t = garbha/8 per TS-P2V19B)
+	# with door gap on the facing axis; linga darshana through the gap.
+	# (Prastara band above stays solid: Rudra crown rises into the roof
+	# undercroft — recorded approximation, as with the timber assembly.)
 	var h1 := _m(3.0)
-	_cyl(root, "PadaT1", laterite, gh / 2.0, h1, Vector3(0, y + h1 / 2.0, 0), prov_pr)
+	var cwt := gh / 8.0
+	var cwall_prov: Array = prov_pr + ["TS-P2V19B-walls"] if not prov_pr.has("TS-P2V19B-walls") else prov_pr
+	var door_ang := PI if west else 0.0
+	var chord := 2.0 * (gh / 2.0) * sin(PI / 10.0) + 0.06
+	for k in range(10):
+		var ang := TAU * float(k) / 10.0
+		if absf(wrapf(ang - door_ang, -PI, PI)) < PI / 10.0:
+			continue  # door gap on the facing axis
+		var seg := _box(root, "PadaRing_%d" % k, laterite, Vector3(chord, h1, cwt),
+			Vector3(cos(ang) * gh / 2.0, y + h1 / 2.0, sin(ang) * gh / 2.0), cwall_prov)
+		seg.rotation.y = -ang
 	for k in range(8):
 		var ang := TAU * float(k) / 8.0
+		if absf(wrapf(ang - door_ang, -PI, PI)) < PI / 9.0:
+			continue  # keep the door gap clear of pilasters
 		_box(root, "PilasterT1_%d" % k, laterite, Vector3(0.25, h1, 0.25),
 			Vector3(cos(ang) * gh / 2.0, y + h1 / 2.0, sin(ang) * gh / 2.0), prov_pr)
 	_box(root, "DoorFrame", timber, Vector3(0.2, 2.0, 1.4),
-		Vector3(sgn * (gh / 2.0 + 0.05), y + 1.0, 0), door_prov)
+		Vector3(sgn * (gh / 2.0 + cwt / 2.0 + 0.05), y + 1.0, 0), door_prov)
 	var ghana_prov: Array = prov_pr + ["TS-P2V26B-bhittivibhaga"] if not prov_pr.has("TS-P2V26B-bhittivibhaga") else prov_pr
 	_box(root, "Ghanadvara_E", laterite, Vector3(0.1, 1.75, 0.88),
-		Vector3(gh / 2.0 + 0.02, y + h1 * 0.45, 0), ghana_prov)
+		Vector3(gh / 2.0 + cwt / 2.0 + 0.02, y + h1 * 0.45, 0), ghana_prov)
 	_box(root, "Ghanadvara_N", laterite, Vector3(0.88, 1.75, 0.1),
-		Vector3(0, y + h1 * 0.45, -gh / 2.0 - 0.02), ghana_prov)
+		Vector3(0, y + h1 * 0.45, -gh / 2.0 - cwt / 2.0 - 0.02), ghana_prov)
 	_box(root, "Ghanadvara_S", laterite, Vector3(0.88, 1.75, 0.1),
-		Vector3(0, y + h1 * 0.45, gh / 2.0 + 0.02), ghana_prov)
+		Vector3(0, y + h1 * 0.45, gh / 2.0 + cwt / 2.0 + 0.02), ghana_prov)
 	y += h1
 	# prastara: 9 thin cylinders
 	var ph1 := _m(1.5) / 9.0

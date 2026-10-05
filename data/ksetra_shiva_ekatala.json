@@ -58,13 +58,16 @@
         "provenance": [
           "TS-P2V1-measure",
           "TS-P2V17B-garbhawall",
+          "TS-P2V19B-walls",
           "TS-P2V26B-bhittivibhaga",
           "TS-P2V36B-ghanabhitti",
           "TS-P2V37B-vedika"
         ],
         "material": "laterite",
+        "walls": "hollow 10-segment ring with facing-axis door gap; inner t = garbha/8",
         "pilasters": true,
         "door": "west_main",
+        "linga_note": "tripartite linga visible through the door gap; Rudra crown rises into the roof undercroft (recorded approximation)",
         "ghanadvaras": [
           "east",
           "north",
