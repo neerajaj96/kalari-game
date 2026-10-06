@@ -104,8 +104,8 @@ static func build_shoulder_drape(dna: HumanDNA, lod: int) -> ArrayMesh:
 			# Drape curve: chest-hugging top, free-hanging bottom + fold ripple.
 			var ripple0 := sin(fx0 * 12.0 + fy0 * 4.0) * 0.012 * fy0
 			var ripple1 := sin(fx1 * 12.0 + fy1 * 4.0) * 0.012 * fy1
-			var pz0 := -0.190 - fy0 * 0.035 + ripple0
-			var pz1 := -0.190 - fy1 * 0.035 + ripple1
+			var pz0 := lerpf(-0.06, -0.24, fy0) + ripple0
+			var pz1 := lerpf(-0.06, -0.24, fy1) + ripple1
 			var ao := 1.0 - absf(ripple0) * 8.0
 			var c := Color(ao, ao, ao, 1.0)
 			st.set_color(c)
