@@ -101,13 +101,17 @@ func _overture() -> void:
 
 func _input(event: InputEvent) -> void:
 	# Attack (tap/click) advances the intro; gameplay input passes through.
+	# Joystick touches (left 40% of screen) never advance: they would skip
+	# the briefing the moment the player first moves.
 	if _ov_i < 0 or _ov_i >= _ov_lines.size():
 		return
 	var adv := false
 	if event is InputEventScreenTouch and event.pressed:
-		adv = true
+		if event.position.x / maxf(1.0, get_viewport().get_visible_rect().size.x) >= 0.4:
+			adv = true
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		adv = true
+		if event.position.x / maxf(1.0, get_viewport().get_visible_rect().size.x) >= 0.4:
+			adv = true
 	if adv:
 		_ov_i += 1
 	if _ov_i < _ov_lines.size():

@@ -25,9 +25,13 @@ func _fire(b: Node) -> void:
 	if game == null or game.get("rituals") == null or not game.rituals.has_method("on_market_zone"):
 		return
 	var msg: String = game.rituals.on_market_zone()
+	# Supply counts only on a real FETCH pickup: standing AFK in the stall
+	# (IDLE phase, empty "") must not max temple phases, nor re-fire while
+	# camping inside (phase already flipped to OFFER by the first pickup).
+	if msg == "":
+		return
 	if game.get("plot") != null and game.plot.has_method("on_supply"):
 		game.plot.on_supply()
-	if msg != "":
-		var hud = get_tree().get_first_node_in_group("hud")
-		if hud and hud.has_method("say"):
-			hud.say(msg)
+	var hud = get_tree().get_first_node_in_group("hud")
+	if hud and hud.has_method("say"):
+		hud.say(msg)

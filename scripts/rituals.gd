@@ -64,6 +64,8 @@ func _complete() -> String:
 		up = game.xp_rank.add_xp(int(c.get("xp", 40)))
 		if up and game.get("hud") != null and game.xp_rank.has_method("title"):
 			game.hud.say("Rank up! %s" % game.xp_rank.title())
+		if up and game.get("audio") != null and game.audio.has_method("fanfare"):
+			game.audio.fanfare()
 	phase = "IDLE"
 	idx += 1
 	var game2 = get_tree().get_first_node_in_group("game")
