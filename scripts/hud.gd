@@ -19,6 +19,7 @@ var _tabs: Array = []
 var _last_hp := 100.0
 var _flash := 0.0
 var _st_flash := 0.0
+var _last_heat := -1
 var _last_hp_text := ""
 var _last_xp_text := ""
 var _boot_warned := false
@@ -458,7 +459,9 @@ func _process(_delta: float) -> void:
 		var game0 = get_tree().get_first_node_in_group("game")
 		if game0 and game0.get("heat") != null and game0.heat.get("heat") != null:
 			var h: int = game0.heat.heat
-			heat_label.text = "Heat " + "●".repeat(h) + "○".repeat(3 - h) if h > 0 else ""
+			if h != _last_heat:
+				_last_heat = h
+				heat_label.text = "Heat " + "●".repeat(h) + "○".repeat(3 - h) if h > 0 else ""
 	if _flash > 0.0:
 		_flash = maxf(0.0, _flash - _delta * 1.8)
 		vignette.color = Color(0.6, 0, 0, _flash * 0.6)
