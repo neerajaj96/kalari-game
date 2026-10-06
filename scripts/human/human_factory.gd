@@ -28,10 +28,6 @@ static func _cached_mesh(kind: String, dna: HumanDNA, lod: int, builder: Callabl
 		_mesh_cache[k] = m
 	return m
 
-static func _iris_xform() -> Transform3D:
-	var b := Basis.from_scale(Vector3(0.45, 0.45, 0.3))
-	return Transform3D(b, Vector3(0, 0, -0.0085))
-
 # Main entry. parent = character root (CharacterBody3D/StaticBody3D).
 # Returns the CinematicBody node, or null on failure (caller keeps fallback).
 static func build(parent: Node, dna: HumanDNA) -> Node3D:
@@ -114,10 +110,6 @@ static func bone_global_rest(sk: Skeleton3D, bone: String) -> Vector3:
 	for bi in chain:
 		acc = acc * (sk.get_bone_rest(bi) as Transform3D)
 	return acc.origin
-
-static func _pupil_xform() -> Transform3D:
-	var b := Basis.from_scale(Vector3(0.22, 0.22, 0.18))
-	return Transform3D(b, Vector3(0, 0, -0.0115))
 
 static func _build_lod_into(sk: Skeleton3D, dna: HumanDNA, lod: int, out_sets: Array) -> void:
 	var skin_mat: Material = HumanMaterials.skin_material(dna)

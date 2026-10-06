@@ -9,9 +9,6 @@ static var _cache: Dictionary = {}
 static func clear_cache() -> void:
 	_cache.clear()
 
-static func _key(dna: HumanDNA, kind: String) -> String:
-	return "%s_%d_%d" % [kind, dna.seed, dna.garment_set]
-
 static func skin_material(dna: HumanDNA) -> ShaderMaterial:
 	var k := "skin_%d_%d_%d_%d_%d_%d" % [int(dna.melanin * 20.0), int(dna.wrinkle * 10.0), int(dna.scar_amount * 10.0), int(dna.skin_mottle * 10.0), int(dna.skin_warm * 10.0), dna.beard_style]
 	if _cache.has(k):
