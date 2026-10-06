@@ -145,6 +145,17 @@ func _put(bytes: PackedByteArray, i: int, v: float) -> void:
 	var c := int(clampf(v, -1.0, 1.0) * 32767.0)
 	bytes.encode_s16(i * 2, c)
 
+func _loop_seam(bytes: PackedByteArray) -> void:
+	# Loop beds click when tail != head: ramp the last 0.3s toward the opening
+	# sample so LOOP_FORWARD wraps silently (drone sines are already exact).
+	var n := int(bytes.size() / 2)
+	var fade := mini(int(0.3 * RATE), n / 2)
+	var head0 := float(bytes.decode_s16(0))
+	for i in range(fade):
+		var k := float(i + 1) / float(fade)
+		var tail := float(bytes.decode_s16((n - fade + i) * 2))
+		bytes.encode_s16((n - fade + i) * 2, int(lerpf(tail, head0, k)))
+
 func _murmur() -> AudioStreamWAV:
 	# crowd wash: wandering brown noise
 	var s := _mk(4.0)
@@ -155,6 +166,7 @@ func _murmur() -> AudioStreamWAV:
 		last = (last + 0.02 * (randf() * 2.0 - 1.0)) / 1.02
 		var wander := 0.5 + 0.5 * sin(t * 0.9) * sin(t * 0.37 + 1.0)
 		_put(bytes, i, last * 3.0 * (0.4 + 0.6 * wander))
+	_loop_seam(bytes)
 	s.data = bytes
 	return s
 
@@ -178,6 +190,7 @@ func _lap() -> AudioStreamWAV:
 		var t := float(i) / RATE
 		last = (last + 0.05 * (randf() * 2.0 - 1.0)) / 1.05
 		_put(bytes, i, last * 2.0 * (0.3 + 0.7 * (0.5 + 0.5 * sin(TAU * 0.2 * t))))
+	_loop_seam(bytes)
 	s.data = bytes
 	return s
 
@@ -189,6 +202,7 @@ func _wash() -> AudioStreamWAV:
 	for i in range(3 * RATE):
 		last = last * 0.94 + (randf() * 2.0 - 1.0) * 0.06
 		_put(bytes, i, last * 8.0)
+	_loop_seam(bytes)
 	s.data = bytes
 	return s
 
@@ -201,6 +215,7 @@ func _insects() -> AudioStreamWAV:
 		var gate := 1.0 if fmod(t, 0.9) < 0.24 else 0.0
 		var chirp := sin(TAU * 4200.0 * t) * gate
 		_put(bytes, i, chirp * 0.12)
+	_loop_seam(bytes)
 	s.data = bytes
 	return s
 
