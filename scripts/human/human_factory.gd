@@ -154,7 +154,8 @@ static func _build_lod_into(sk: Skeleton3D, dna: HumanDNA, lod: int, out_sets: A
 		_add_seg(sk, "head", BodySculpt.build_ear(dna, 1.0, lod), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 		var lip_mat: Material = HumanMaterials.lip_material(dna)
 		_add_seg(sk, "head", BodySculpt.build_lips(dna, true), lip_mat, Transform3D(Basis.IDENTITY, Vector3(0, -0.062, -0.098)), lod, out_sets, false)
-		_add_seg(sk, "jaw", BodySculpt.build_lips(dna, false), lip_mat, Transform3D(Basis.IDENTITY, Vector3(0, 0.008, -0.045)), lod, out_sets, false)
+		_add_seg(sk, "jaw", BodySculpt.build_lips(dna, false), lip_mat, Transform3D(Basis.IDENTITY, Vector3(0, -0.012, -0.045)), lod, out_sets, false)
+		_add_seg(sk, "head", BodySculpt.build_teeth_strip(), HumanMaterials.teeth_material(), Transform3D(Basis.IDENTITY, Vector3(0, -0.058, -0.098)), lod, out_sets, false)
 	# Bandit headband (Hero + Mid).
 	if dna.garment_set == 2 and lod < 2:
 		_add_seg(sk, "head", GarmentBuilder.build_headband(dna, lod), accent_mat, Transform3D.IDENTITY, lod, out_sets, true)

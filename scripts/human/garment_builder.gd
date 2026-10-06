@@ -254,10 +254,8 @@ static func build_earrings_headlocal(dna: HumanDNA) -> ArrayMesh:
 		return null
 	var parts: Array = []
 	for side in [-1.0, 1.0]:
-		# Head bone global ~ (0, head_y, -0.01); earring char pos (side*0.098, h*0.935).
-		# Head-local = char - head_global.
-		var head_y := dna.stature * 0.94
-		parts.append(_offset_mesh(_torus(0.012, 0.0035, 8, 6), Vector3(side * 0.098, dna.stature * 0.935 - head_y, 0.005)))
+		# Head-local: lobe sits at y≈-0.042 (see build_ear), just behind the jaw corner.
+		parts.append(_offset_mesh(_torus(0.012, 0.0035, 8, 6), Vector3(side * 0.098, -0.042, 0.005)))
 	if parts.is_empty():
 		return null
 	var out: ArrayMesh = parts[0]
@@ -274,7 +272,7 @@ static func build_bangles_armlocal(dna: HumanDNA, side: float) -> ArrayMesh:
 static func build_anklet_footlocal(dna: HumanDNA) -> ArrayMesh:
 	if not (dna.jewellery & 8):
 		return null
-	return _offset_mesh(_torus(0.045, 0.005, 10, 6), Vector3(0, 0.06, -0.02))
+	return _offset_mesh(_torus(0.034, 0.005, 10, 6), Vector3(0, 0.06, -0.02))
 
 static func build_chest_jewellery(dna: HumanDNA) -> ArrayMesh:
 	var parts: Array = []

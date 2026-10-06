@@ -451,14 +451,14 @@ static func build_hand(dna: HumanDNA, lod: int) -> ArrayMesh:
 	return out
 
 static func build_fingernails() -> ArrayMesh:
-	# Hand-local nail plates for 4 fingers + thumb.
+	# Hand-local nail plates for the 4 fingers (thumb nail omitted: the
+	# rotated thumb frame seats it unreliably without a runtime check).
 	var parts: Array = []
 	var xs := [-0.030, -0.010, 0.010, 0.030]
 	var fl := [0.075, 0.085, 0.078, 0.060]
 	var fw := [0.011, 0.012, 0.011, 0.009]
 	for f in range(4):
 		parts.append(_offset(build_fingernail(fw[f] * 0.55), Vector3(xs[f], -0.10 - fl[f] + 0.012, -fw[f] - 0.004)))
-	parts.append(_offset(build_fingernail(0.007), Vector3(-0.062, -0.075, -0.012)))
 	var out: ArrayMesh = parts[0]
 	for i in range(1, parts.size()):
 		out = _merge(out, parts[i])
