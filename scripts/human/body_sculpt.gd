@@ -578,6 +578,21 @@ static func build_caruncle() -> ArrayMesh:
 	st.generate_normals()
 	return st.commit()
 
+static func build_cheek_pad() -> ArrayMesh:
+	# Cheek-local lift pad: small dome riding the cheek bones so anger/effort
+	# nasolabial motion reads on the surface instead of moving air.
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var segs := 10
+	var r := 0.018
+	for s in range(segs):
+		var a0 := TAU * float(s) / float(segs)
+		var a1 := TAU * float(s + 1) / float(segs)
+		var dome := 0.004
+		_tri_c(st, Vector3.ZERO + Vector3(0, 0, dome), Vector3(cos(a1) * r, sin(a1) * r, 0.0), Vector3(cos(a0) * r, sin(a0) * r, 0.0), Color(1, 1, 1, 1), Color(0.95, 0.95, 0.95, 1), Color(0.95, 0.95, 0.95, 1))
+	st.generate_normals()
+	return st.commit()
+
 static func build_teeth_strip() -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)

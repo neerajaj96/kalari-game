@@ -61,7 +61,7 @@ func _check_geometry() -> int:
 		BodySculpt.build_foot(dna, 0), BodySculpt.build_hair(dna, 0),
 		BodySculpt.build_eyeball(0), BodySculpt.build_iris_disc(),
 		BodySculpt.build_eyelid_rim(true, 0), BodySculpt.build_ear(dna, 1.0, 0),
-		BodySculpt.build_lips(dna, true), BodySculpt.build_teeth_strip(),
+		BodySculpt.build_lips(dna, true), BodySculpt.build_cheek_pad(), BodySculpt.build_teeth_strip(),
 		GarmentBuilder.build_waist_wrap(dna, 0), GarmentBuilder.build_belt(dna, 0),
 		GarmentBuilder.build_chest_sash(dna, 0), GarmentBuilder.build_headband(dna, 0),
 	]

@@ -50,7 +50,7 @@ for fn in ["build_torso", "build_head", "build_neck", "build_upper_arm", "build_
            "build_eyelid_rim", "build_caruncle",
            "build_teeth_strip", "build_mouth_cavity",
            "build_hair", "build_beard",
-           "build_eyebrow", "build_ear", "build_lips", "build_joint_ball"]:
+           "build_eyebrow", "build_ear", "build_lips", "build_cheek_pad", "build_joint_ball"]:
     if fn not in sculpt:
         errs.append(f"body_sculpt: '{fn}' missing")
 if "CapsuleMesh" in sculpt or "SphereMesh" in sculpt or "BoxMesh" in sculpt:

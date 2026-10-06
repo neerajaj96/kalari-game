@@ -137,6 +137,8 @@ static func _build_lod_into(sk: Skeleton3D, dna: HumanDNA, lod: int, out_sets: A
 		_add_seg(sk, "lid_lower_R", BodySculpt.build_eyelid_rim(false, lod), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 		_add_seg(sk, "eye_L", BodySculpt.build_caruncle(), HumanMaterials.caruncle_material(dna), Transform3D(Basis.IDENTITY, Vector3(-0.011, -0.001, -0.010)), lod, out_sets, false)
 		_add_seg(sk, "eye_R", BodySculpt.build_caruncle(), HumanMaterials.caruncle_material(dna), Transform3D(Basis.IDENTITY, Vector3(0.011, -0.001, -0.010)), lod, out_sets, false)
+		_add_seg(sk, "cheek_L", BodySculpt.build_cheek_pad(), skin_mat, Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.022)), lod, out_sets, false)
+		_add_seg(sk, "cheek_R", BodySculpt.build_cheek_pad(), skin_mat, Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.022)), lod, out_sets, false)
 	_add_seg(sk, "jaw", BodySculpt.build_teeth_strip(), HumanMaterials.teeth_material(), Transform3D(Basis.IDENTITY, Vector3(0, -0.01, -0.055)), lod, out_sets, false)
 	_add_seg(sk, "jaw", BodySculpt.build_mouth_cavity(), HumanMaterials.mouth_inner_material(), Transform3D.IDENTITY, lod, out_sets, false)
 	if lod < 2:
