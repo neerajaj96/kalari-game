@@ -82,6 +82,17 @@ func _flash(is_marma: bool = false) -> void:
 		if is_instance_valid(targets[i]):
 			targets[i].material_override = origs[i]
 
+func _chain_visible(n: Node) -> bool:
+	# LOD toggles ancestors, not the mesh: walk up to the skeleton.
+	var c: Node = n
+	while c != null and not (c is Skeleton3D):
+		if c is BoneAttachment3D and not (c as BoneAttachment3D).visible:
+			return false
+		if c is MeshInstance3D and not (c as MeshInstance3D).visible:
+			return false
+		c = c.get_parent()
+	return true
+
 func _visible_bodies() -> Array:
 	var out: Array = []
 	var body := find_child("CinematicBody", true, false) as Node3D
@@ -91,7 +102,7 @@ func _visible_bodies() -> Array:
 			for ba in sk.get_children():
 				if ba is BoneAttachment3D and str(ba.name).begins_with("Attach_chest"):
 					for mi in ba.get_children():
-						if mi is MeshInstance3D and (mi as MeshInstance3D).visible:
+						if mi is MeshInstance3D and _chain_visible(mi):
 							out.append(mi)
 							break
 					break
