@@ -309,7 +309,8 @@ func _step() -> void:
 		want_strike = false
 		# Input buffer: presses during recovery are retried while the buffer
 		# holds, so fast mobile taps stop feeling dropped.
-		_strike_buf = 0.25
+		if combat.state != CombatState.S.DOWN:
+			_strike_buf = 0.25
 	if _strike_buf > 0.0:
 		_strike_buf = maxf(0.0, _strike_buf - delta)
 		if combat.try_strike(cur_cost):
@@ -332,12 +333,18 @@ func _step() -> void:
 		elif _strike_buf <= 0.0:
 			_deny()
 	if want_block:
-		if not combat.try_block():
+		if combat.state == CombatState.S.DOWN:
+			want_block = false
+		elif not combat.try_block():
 			_deny()
-		want_block = false
+			want_block = false
+		else:
+			want_block = false
 	if want_dodge:
 		want_dodge = false
-		if combat.try_dodge():
+		if combat.state == CombatState.S.DOWN:
+			pass
+		elif combat.try_dodge():
 			var cam = get_tree().get_first_node_in_group("main_camera")
 			if cam and cam.has_method("kick_fov"):
 				cam.kick_fov(6.0)
