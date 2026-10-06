@@ -252,8 +252,11 @@ func _physics_process(delta: float) -> void:
 			if spark:
 				spark.restart()
 			_deal_melee_delayed()
+		else:
+			_deny()
 	if want_block:
-		combat.try_block()
+		if not combat.try_block():
+			_deny()
 		want_block = false
 	if want_dodge:
 		want_dodge = false
@@ -261,6 +264,12 @@ func _physics_process(delta: float) -> void:
 			var cam = get_tree().get_first_node_in_group("main_camera")
 			if cam and cam.has_method("kick_fov"):
 				cam.kick_fov(6.0)
+			# Sarpa slip: 6 m/s dash along input (or backward when idle).
+			var dash := Vector3(move_vec.x, 0, move_vec.y)
+			if dash.length() < 0.2:
+				dash = global_transform.basis.z
+				dash.y = 0.0
+			velocity += dash.normalized() * 6.0
 			# Dodge ribbon: dust bursts opposite the slip direction.
 			var ribbon := get_node_or_null("Dust") as CPUParticles3D
 			if ribbon:
@@ -269,7 +278,15 @@ func _physics_process(delta: float) -> void:
 				if back.length() > 0.5:
 					ribbon.direction = back.normalized()
 				ribbon.restart()
+		else:
+			_deny()
 	_check_death()
+
+func _deny() -> void:
+	# Failed input (stamina/cooldown/state): short blip so presses never feel dead.
+	var game = get_tree().get_first_node_in_group("game")
+	if game != null and game.get("audio") != null and game.audio.has_method("blip"):
+		game.audio.blip("System")
 
 func _apply_bob() -> void:
 	# X-only sway: Vadivu owns all Y (crouch + base) so they never fight.
@@ -284,7 +301,13 @@ func _deal_melee_delayed() -> void:
 		_deal_melee()
 
 func _deal_melee() -> void:
-	# 2.4m frontal 90-degree arc (dot 0.7). Back-stab = marma (1.5x).
+	# Frontal 90-degree arc (dot 0.7). Reach follows the rank weapon so the
+	# 10ft kettukari out-ranges fists. Marma on side/back (dot < 0.0).
+	var reach := 2.4
+	if _rank_shown == 2:
+		reach = 3.4
+	elif _rank_shown >= 3:
+		reach = 2.9
 	var fwd := -global_transform.basis.z
 	fwd.y = 0.0
 	fwd = fwd.normalized()
@@ -295,16 +318,17 @@ func _deal_melee() -> void:
 			continue
 		var to: Vector3 = e.global_position - global_position
 		to.y = 0.0
-		if to.length() > 2.4:
+		if to.length() > reach:
 			continue
 		if fwd.dot(to.normalized()) < 0.7:
 			continue
-		# Marma if player is behind enemy (enemy facing away)
+		# Marma if player is behind or flanking the enemy.
 		var e_fwd: Vector3 = -e.global_transform.basis.z
 		e_fwd.y = 0.0
-		var behind: bool = e_fwd.normalized().dot((-to).normalized()) < -0.5
+		var facing: float = e_fwd.normalized().dot((-to).normalized())
+		var is_marma: bool = facing < 0.0
 		if e.has_method("apply_hit"):
-			e.apply_hit(cur_damage * _buff_marma, behind)
-			_hit_sound(behind)
-			if behind:
-				_say("MARMA back-stab!")
+			e.apply_hit(cur_damage * _buff_marma, is_marma)
+			_hit_sound(is_marma)
+			if is_marma:
+				_say("MARMA!" if facing < -0.5 else "MARMA flank!")

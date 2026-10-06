@@ -117,15 +117,29 @@ func _physics_process(delta: float) -> void:
 		if think_cd <= 0.0:
 			think_cd = 1.1
 			if combat.try_strike(10.0):
+				_telegraph()
 				_deal_delayed()
 		if _pending_hit:
 			_pending_hit = false
 			_land_hit()
 
+func _telegraph() -> void:
+	# Fair windup cue: brief white flash on the body so mobile players
+	# can read the incoming strike and block/dodge in time.
+	var body := get_node_or_null("Body") as MeshInstance3D
+	if body == null:
+		return
+	var orig = body.material_override
+	var wink: StandardMaterial3D = load("res://materials/cloth_white.tres")
+	body.material_override = wink
+	await get_tree().create_timer(0.18, true, false, true).timeout
+	if is_instance_valid(body) and combat.state == CombatState.S.STRIKE:
+		body.material_override = orig
+
 func _deal_delayed() -> void:
-	# 0.15s windup reads fairly, then the hit lands. Undilated timer so
-	# hitstop never stretches the telegraph; damage applied in physics.
-	await get_tree().create_timer(0.15, true, false, true).timeout
+	# 0.3s windup reads fairly on mobile, then the hit lands. Undilated timer
+	# so hitstop never stretches the telegraph; damage applied in physics.
+	await get_tree().create_timer(0.3, true, false, true).timeout
 	if not is_inside_tree() or _dead:
 		return
 	_pending_hit = true

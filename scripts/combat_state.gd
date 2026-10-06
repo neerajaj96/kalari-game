@@ -11,6 +11,7 @@ var hp: float = 100.0
 var strike_cd: float = 0.0
 var recover_cd: float = 0.0 # hold time for BLOCK/DODGE/HIT poses
 var dodge_cd: float = 0.0 # anti-turtle: dodge chains gated
+var hurt_cd: float = 0.0 # post-hit i-frames: alternating attackers can't stunlock
 
 const STAMINA_REGEN := 18.0
 var regen_mult := 1.0
@@ -47,11 +48,15 @@ func try_dodge(cost: float = 12.0, hold: float = 0.5) -> bool:
 func take_hit(dmg: float, is_marma: bool = false) -> void:
 	if state == S.DOWN:
 		return # corpses don't flinch
+	if hurt_cd > 0.0 and not is_marma:
+		return # i-frames: already reeling, extra hits don't chain
+	var guard_broke := false
 	if state == S.BLOCK:
 		if stamina >= 8.0:
 			stamina -= 8.0
 			dmg *= 0.25
-		# else: guard broken, full damage
+		else:
+			guard_broke = true # guard broken: full damage + long stagger
 	elif state == S.DODGE:
 		dmg = 0.0
 	if is_marma:
@@ -62,11 +67,13 @@ func take_hit(dmg: float, is_marma: bool = false) -> void:
 		state = S.DOWN
 	elif dmg > 0.0:
 		state = S.HIT
-		recover_cd = 0.4
+		recover_cd = 0.8 if guard_broke else 0.4
+		hurt_cd = 0.6
 
 func tick(delta: float) -> void:
 	strike_cd = maxf(0.0, strike_cd - delta)
 	dodge_cd = maxf(0.0, dodge_cd - delta)
+	hurt_cd = maxf(0.0, hurt_cd - delta)
 	recover_cd = maxf(0.0, recover_cd - delta)
 	stamina = minf(100.0, stamina + STAMINA_REGEN * regen_mult * delta)
 	if state == S.STRIKE and strike_cd <= 0.15:
