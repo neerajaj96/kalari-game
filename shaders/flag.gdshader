@@ -7,6 +7,9 @@ uniform vec4 tint : source_color = vec4(0.66, 0.2, 0.15, 1.0);
 uniform int edge_axis = 2;
 uniform float edge_min = -0.7;
 uniform float edge_span = 1.4;
+// Sign convention: edge runs 0 (fixed) to 1 (free) as coord goes
+// edge_min -> edge_min+edge_span. Negative span flips the free end
+// (parita pennants: min 0.3, span -0.6 frees the bottom edge).
 
 void vertex() {
 	float coord = VERTEX.z;
