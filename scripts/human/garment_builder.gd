@@ -267,7 +267,8 @@ static func build_bangles_armlocal(dna: HumanDNA, side: float) -> ArrayMesh:
 	if not (dna.jewellery & 4):
 		return null
 	# Forearm bone-local: wrist is ~ -0.27 below forearm origin; bangle sits there.
-	return _offset_mesh(_torus(0.032, 0.006, 10, 6), Vector3(0, -0.24, 0))
+	# Ring clears the wrist radius (~0.035) with room for the sleeve gap.
+	return _offset_mesh(_torus(0.042, 0.006, 10, 6), Vector3(0, -0.24, 0))
 
 static func build_anklet_footlocal(dna: HumanDNA) -> ArrayMesh:
 	if not (dna.jewellery & 8):
@@ -321,7 +322,9 @@ static func build_headband(dna: HumanDNA, lod: int) -> ArrayMesh:
 	st.generate_normals()
 	return st.commit()
 
-static func build_thigh_wrap_single(lod: int) -> ArrayMesh:
+static func build_thigh_wrap_single(dna: HumanDNA, lod: int) -> ArrayMesh:
+	# Thigh-local ring clearing the thigh radius on every build.
+	var r0 := lerpf(0.075, 0.105, dna.build) + 0.010
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var radial := 14 if lod == 0 else 8
@@ -334,8 +337,8 @@ static func build_thigh_wrap_single(lod: int) -> ArrayMesh:
 			var t1 := float(r + 1) / float(rows)
 			var y0 := lerpf(-0.06, -0.22, t0)
 			var y1 := lerpf(-0.06, -0.22, t1)
-			var rr0 := lerpf(0.095, 0.082, t0) + sin(a0 * 6.0) * 0.003
-			var rr1 := lerpf(0.095, 0.082, t1) + sin(a1 * 6.0) * 0.003
+			var rr0 := lerpf(r0, r0 - 0.013, t0) + sin(a0 * 6.0) * 0.003
+			var rr1 := lerpf(r0, r0 - 0.013, t1) + sin(a1 * 6.0) * 0.003
 			_quad_c(st, Vector3(cos(a0) * rr0, y0, sin(a0) * rr0), Vector3(cos(a1) * rr0, y0, sin(a1) * rr0), Vector3(cos(a1) * rr1, y1, sin(a1) * rr1), Vector3(cos(a0) * rr1, y1, sin(a0) * rr1))
 	st.generate_normals()
 	return st.commit()

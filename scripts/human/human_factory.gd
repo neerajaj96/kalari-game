@@ -188,8 +188,8 @@ static func _add_garments(sk: Skeleton3D, dna: HumanDNA, lod: int, cloth_mat: Ma
 	if dna.garment_set == 0:
 		_add_seg(sk, "pelvis", GarmentBuilder.build_waist_knot(dna), cloth_mat, Transform3D.IDENTITY, lod, out_sets, true)
 		if lod < 2:
-			_add_seg(sk, "thigh_L", GarmentBuilder.build_thigh_wrap_single(lod), cloth_mat, Transform3D.IDENTITY, lod, out_sets, false)
-			_add_seg(sk, "thigh_R", GarmentBuilder.build_thigh_wrap_single(lod), cloth_mat, Transform3D.IDENTITY, lod, out_sets, false)
+			_add_seg(sk, "thigh_L", GarmentBuilder.build_thigh_wrap_single(dna, lod), cloth_mat, Transform3D.IDENTITY, lod, out_sets, false)
+			_add_seg(sk, "thigh_R", GarmentBuilder.build_thigh_wrap_single(dna, lod), cloth_mat, Transform3D.IDENTITY, lod, out_sets, false)
 	match dna.garment_set:
 		0:
 			_add_seg(sk, "chest", GarmentBuilder.build_chest_sash(dna, lod), accent_mat, Transform3D.IDENTITY, lod, out_sets, true)
