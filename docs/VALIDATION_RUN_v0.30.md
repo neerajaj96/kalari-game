@@ -52,7 +52,27 @@ Static audits could catch NONE of H1–H8 (all passed throughout).
 - Pending once binary lands: `--editor --quit` import, class-cache assert,
   `-s hero_audit_headless.gd`, audit scene `-- --audit-quit`.
 
-## Tier 2 — PC RUNTIME: BLOCKED (no GPU)
+## Tier 2 — PC RUNTIME: PARTIAL (software GL, Compatibility)
+
+- No GPU/X in sandbox; installed `xvfb` + Mesa `swrast`/`softpipe`.
+  `llvmpipe` SIGILLs here — `GALLIUM_DRIVER=softpipe` renders correctly.
+- Command: `Xvfb :99`, then Godot `--rendering-driver opengl3` on X +
+  `LIBGL_ALWAYS_SOFTWARE=1`. Audio drivers absent (dummy fallback, fine).
+- Audit scene full 40 s cycle: ZERO script/shader errors. All 3 custom
+  shaders (skin/cloth/hair) compile on real GL.
+- 320×180 screenshots captured (`user://hero_audit_auto_*.png`): hero
+  renders (hair/wrap/limbs visible) but too small to judge anatomy.
+- Re-running at 640×360 with closer camera (1.5 m) + neutral gray ground
+  for the real close-up audit. Forward+ (device renderer) still uncovered.
+
+### Visual defects from first screenshots (all P-status pending re-shoot)
+
+| ID | Severity | Observation |
+|----|----------|-------------|
+| V1 | P0? | Head reads all-hair, no face visible — verify at 640px before grading |
+| V2 | P0? | White wrap mass dominates torso — verify proportion at 640px |
+| V3 | P1 | Audit ground was blown-out white (no material) — fixed: stage gray |
+| V4 | P1 | Anomaly: first frame dark sky, then light blue — watch in re-shoot |
 
 - Rendered run needs Vulkan/GL + display; sandbox has neither.
 - Headless dummy drivers cannot produce screenshots or lighting reads.
