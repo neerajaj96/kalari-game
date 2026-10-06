@@ -247,6 +247,8 @@ func _deal_delayed() -> void:
 func _land_hit() -> void:
 	if target == null or not is_instance_valid(target):
 		return
+	if target.get("combat") != null and int(target.combat.state) == CombatState.S.DOWN:
+		return # fallen foe: hold, don't juggle the downed body
 	var lto: Vector3 = target.global_position - global_position
 	lto.y = 0.0
 	if lto.length() > attack_range + 0.4 or not target.has_method("apply_hit"):
