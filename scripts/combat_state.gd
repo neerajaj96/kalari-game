@@ -63,11 +63,11 @@ func try_dodge(cost: float = 12.0, hold: float = 0.5) -> bool:
 	dodge_cd = 0.8
 	return true
 
-func take_hit(dmg: float, is_marma: bool = false) -> void:
+func take_hit(dmg: float, is_marma: bool = false) -> bool:
 	if state == S.DOWN:
-		return # corpses don't flinch
+		return false # corpses don't flinch
 	if hurt_cd > 0.0 and not is_marma:
-		return # i-frames: already reeling, extra hits don't chain
+		return false # i-frames: already reeling, extra hits don't chain
 	var guard_broke := false
 	if state == S.BLOCK:
 		if stamina >= 8.0:
@@ -87,6 +87,7 @@ func take_hit(dmg: float, is_marma: bool = false) -> void:
 		state = S.HIT
 		recover_cd = 0.8 if guard_broke else 0.4
 		hurt_cd = 0.6
+	return dmg > 0.0 or state == S.DOWN
 
 func tick(delta: float) -> void:
 	strike_cd = maxf(0.0, strike_cd - delta)

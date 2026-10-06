@@ -52,10 +52,11 @@ func _apply_archetype() -> void:
 
 var _dead := false
 
-func apply_hit(dmg: float, is_marma: bool = false) -> void:
+func apply_hit(dmg: float, is_marma: bool = false) -> bool:
 	if _dead:
-		return
-	combat.take_hit(dmg, is_marma)
+		return false
+	if not combat.take_hit(dmg, is_marma):
+		return false # i-frames: no flash, freeze or sound on immune frames
 	var slip := 0.6 if archetype == "swift" else 0.35
 	if combat.state != CombatState.S.DOWN and randf() < slip:
 		combat.try_dodge() # slip back, uses own stamina
@@ -63,6 +64,7 @@ func apply_hit(dmg: float, is_marma: bool = false) -> void:
 	_hitstop(is_marma)
 	if combat.state == CombatState.S.DOWN:
 		_die(is_marma)
+	return true
 
 func _flash(is_marma: bool = false) -> void:
 	# Flash the VISIBLE body: cinematic segments when the rig built them,

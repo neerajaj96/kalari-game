@@ -78,10 +78,11 @@ func _process(delta: float) -> void:
 			elif _reply != "":
 				face.set_expression("surprise")
 
-func apply_hit(_dmg: float, _marma: bool = false) -> void:
+func apply_hit(_dmg: float, _marma: bool = false) -> bool:
 	# Struck: scream, flee, never fight back. (Heat consequences in OW3.)
 	flee_t = 3.0
 	_say("Ayyo! Guard! Guard!" if randf() < 0.5 else "Ayyo! My cart!")
+	return true
 
 func _physics_process(delta: float) -> void:
 	combat.tick(delta)

@@ -417,7 +417,8 @@ func _deal_melee() -> void:
 		var facing: float = e_fwd.normalized().dot((-to).normalized())
 		var is_marma: bool = facing < 0.0
 		if e.has_method("apply_hit"):
-			e.apply_hit(cur_damage * _buff_marma, is_marma)
-			_hit_sound(is_marma)
-			if is_marma:
-				_say("MARMA!" if facing < -0.5 else "MARMA flank!")
+			# Immune frames land nothing: no spark, sound or shout on a miss.
+			if e.apply_hit(cur_damage * _buff_marma, is_marma):
+				_hit_sound(is_marma)
+				if is_marma:
+					_say("MARMA!" if facing < -0.5 else "MARMA flank!")
