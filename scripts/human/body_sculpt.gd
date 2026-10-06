@@ -770,7 +770,9 @@ static func _sideburns() -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for side in [-1.0, 1.0]:
-		_quad(st, Vector3(side * 0.088, 0.02, -0.035), Vector3(side * 0.094, 0.02, -0.035), Vector3(side * 0.094, -0.025, -0.040), Vector3(side * 0.088, -0.025, -0.040))
+		# Wide span (0.088..0.106) so the outer edge always clears head widths
+		# across DNA jaw variation; the buried inner part simply clips.
+		_quad(st, Vector3(side * 0.088, 0.02, -0.035), Vector3(side * 0.106, 0.02, -0.035), Vector3(side * 0.106, -0.025, -0.040), Vector3(side * 0.088, -0.025, -0.040))
 	st.generate_normals()
 	return st.commit()
 
