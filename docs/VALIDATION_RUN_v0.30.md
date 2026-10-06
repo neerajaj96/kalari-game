@@ -18,7 +18,32 @@ Baseline commit: `v0.30.0-cinematic` tag on `main`.
 
 Static proves CONSTRUCTION ONLY. No visual claim.
 
-## Tier 1 — HEADLESS: IN PROGRESS
+## Tier 1 — HEADLESS: PASS (with fixes)
+
+- `Godot_v4.6.3-stable_linux.arm64` installed locally (official 4.6.3).
+- `--editor --quit` and `--import` SEGFAULT in this container (proot
+  environment); editor import unavailable, so no `.godot` class cache.
+  CI (GitHub runners) is unaffected — this is a sandbox limitation.
+- Game-mode headless (`--headless --path . --quit`) WORKS and became the
+  real GDScript compiler. Full boot (main → school → player → HUD) is
+  error-free.
+- `tools/hero_audit_headless.gd` (`-s`): DNA, 42 bones, 25 meshes — OK.
+- Audit scene 40 s self-cycle: all views/poses/expressions/LOD-pins — OK.
+
+### Defects found by real engine parsing (all fixed, commit `125f6e9`)
+
+| ID | Severity | Defect | Fix |
+|----|----------|--------|-----|
+| H1 | P0 | `Array.reversed()` does not exist → dialogue briefings failed to parse (quest briefings dead) | `duplicate()` + `reverse()` |
+| H2 | P0 | `mesh_builder.gd` indent corruption from an earlier edit: `noisy_ground` tri calls outside loop (`a/b/c` undeclared) → ground visuals broken | re-indented |
+| H3 | P0 | `:=` inferred from Variant treated as error (drill latch, avatar inst, ped variant, ped DayNight node, dna `gset`) | explicit types |
+| H4 | P0 | Cross-file `class_name` types unresolvable without editor class cache (`HumanDNA` in factory + materials, self-ref in human_dna) | `preload` consts in all 7 human modules; DNA self-construct via runtime `load()` |
+| H5 | P0 | Duplicate `skin` var + duplicate `iris_material` in human_materials (edit collisions) | removed dupes |
+| H6 | P0 | `add_child` during parent setup rejected (`HumanFactory.build` from child `_ready`) → cinematic bodies never attached | deferred attach |
+| H7 | P1 | Save `get_value(..., null)` errors on missing keys (old/partial saves) | `has_section_key` guard |
+| H8 | P1 | `iris_material` lost its `browns` palette (all irises one color) | restored |
+
+Static audits could catch NONE of H1–H8 (all passed throughout).
 
 - Environment: ARM64 host, no system Godot, no GPU (`/dev/dri` denied).
 - Correct binary for host: `Godot_v4.6.3-stable_linux.arm64.zip` (~60 MB).
