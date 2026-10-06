@@ -455,6 +455,12 @@ func _process(_delta: float) -> void:
 	if _flash > 0.0:
 		_flash = maxf(0.0, _flash - _delta * 1.8)
 		vignette.color = Color(0.6, 0, 0, _flash * 0.6)
+	elif player != null and player.get("combat") != null and float(player.combat.hp) < 30.0 and float(player.combat.hp) > 0.0:
+		# Low-HP heartbeat: breathing vignette while critical (no extra audio).
+		var beat := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 350.0)
+		vignette.color = Color(0.6, 0, 0, 0.12 + 0.18 * beat)
+	else:
+		vignette.color = Color(0.6, 0, 0, 0.0)
 	if _st_flash > 0.0:
 		_st_flash = maxf(0.0, _st_flash - _delta * 2.5)
 		st_bar.modulate = Color(1, 0.35 + 0.65 * (1.0 - _st_flash), 0.35 + 0.65 * (1.0 - _st_flash))
