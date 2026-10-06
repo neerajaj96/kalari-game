@@ -72,7 +72,9 @@ func _process(delta: float) -> void:
 func _finish(xp_gain: int, tab: String, msg: String) -> void:
 	var game = get_tree().get_first_node_in_group("game")
 	if game and game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
-		game.xp_rank.add_xp(xp_gain)
+		var up: bool = game.xp_rank.add_xp(xp_gain)
+		if up and game.get("audio") != null and game.audio.has_method("fanfare"):
+			game.audio.fanfare()
 	_say("%s (+%d XP)" % [msg, xp_gain])
 	var hud = get_tree().get_first_node_in_group("hud")
 	if hud and hud.has_method("show_tab_by_id"):

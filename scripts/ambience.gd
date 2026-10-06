@@ -60,6 +60,9 @@ func fanfare() -> void:
 func breath_tick(high: bool) -> void:
 	_sting(_breath_buf(high), -22.0)
 
+func step() -> void:
+	_sting(_step_buf(), -26.0)
+
 const BLIP_PITCH := {
 	"Gurukkal": 180.0, "Unniyarcha": 260.0, "Aromal": 220.0,
 	"Villager": 300.0, "Kunjiraman": 300.0, "Crier": 340.0,
@@ -301,6 +304,16 @@ func _breath_buf(high: bool) -> AudioStreamWAV:
 		var t := float(i) / RATE
 		var env := sin(PI * clampf(t / 0.18, 0.0, 1.0))
 		_put(bytes, i, sin(TAU * f * t) * 0.4 * env)
+	s.data = bytes
+	return s
+
+func _step_buf() -> AudioStreamWAV:
+	# Footfall: soft earth tap, felt more than heard.
+	var s := _mk(0.09)
+	var bytes := _bytes(0.09)
+	for i in range(int(0.09 * RATE)):
+		var t := float(i) / RATE
+		_put(bytes, i, sin(TAU * 110.0 * t) * exp(-t * 45.0) * 0.5)
 	s.data = bytes
 	return s
 

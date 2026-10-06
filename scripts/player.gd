@@ -242,6 +242,9 @@ func _physics_process(delta: float) -> void:
 	_step_dist += planar * delta
 	if planar > 0.5 and is_on_floor() and combat.state != CombatState.S.BLOCK:
 		_bob_t += delta * planar * 2.2
+		if _step_dist >= 2.2:
+			_step_dist = 0.0
+			_step()
 		var dust := get_node_or_null("Dust") as CPUParticles3D
 		if dust:
 			dust.emitting = true
@@ -250,6 +253,11 @@ func _physics_process(delta: float) -> void:
 		if dust2:
 			dust2.emitting = false
 	_apply_bob()
+
+func _step() -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if game != null and game.get("audio") != null and game.audio.has_method("step"):
+		game.audio.step()
 
 	if want_strike:
 		want_strike = false
