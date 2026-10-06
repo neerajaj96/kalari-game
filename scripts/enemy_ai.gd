@@ -8,6 +8,9 @@ const FLASH_MAT = preload("res://materials/shrine_yellow.tres")
 @export var attack_range := 2.2
 @export var damage := 10.0
 @export var max_hp := 120.0
+# Archetype presets (tscn overrides per spawn; default = current club bandit).
+# spear: long reach, softer hits, slower feet. swift: fast feet, slips often, frail.
+@export var archetype := "club"
 
 var combat := CombatState.new()
 var target: Node3D = null
@@ -18,9 +21,25 @@ var is_guard := false
 func _ready() -> void:
 	add_to_group("bandit")
 	add_child(combat)
+	_apply_archetype()
 	combat.hp = max_hp
 	combat.state = CombatState.S.STANCE
 	think_cd = randf_range(0.3, 1.1) # stagger pack attacks
+
+func _apply_archetype() -> void:
+	match archetype:
+		"spear":
+			speed = 3.0
+			attack_range = 3.2
+			damage = 8.0
+			max_hp = 100.0
+		"swift":
+			speed = 4.2
+			attack_range = 2.0
+			damage = 8.0
+			max_hp = 80.0
+		_:
+			pass
 
 var _dead := false
 
@@ -28,7 +47,8 @@ func apply_hit(dmg: float, is_marma: bool = false) -> void:
 	if _dead:
 		return
 	combat.take_hit(dmg, is_marma)
-	if combat.state != CombatState.S.DOWN and randf() < 0.35:
+	var slip := 0.6 if archetype == "swift" else 0.35
+	if combat.state != CombatState.S.DOWN and randf() < slip:
 		combat.try_dodge() # slip back, uses own stamina
 	_flash(is_marma)
 	_hitstop(is_marma)
