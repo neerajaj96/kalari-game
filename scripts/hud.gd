@@ -18,6 +18,7 @@ var _tabs: Array = []
 
 var _last_hp := 100.0
 var _flash := 0.0
+var _st_flash := 0.0
 var _last_hp_text := ""
 var _last_xp_text := ""
 var _boot_warned := false
@@ -454,6 +455,14 @@ func _process(_delta: float) -> void:
 	if _flash > 0.0:
 		_flash = maxf(0.0, _flash - _delta * 1.8)
 		vignette.color = Color(0.6, 0, 0, _flash * 0.6)
+	if _st_flash > 0.0:
+		_st_flash = maxf(0.0, _st_flash - _delta * 2.5)
+		st_bar.modulate = Color(1, 0.35 + 0.65 * (1.0 - _st_flash), 0.35 + 0.65 * (1.0 - _st_flash))
+	else:
+		st_bar.modulate = Color.WHITE
+
+func flash_stamina() -> void:
+	_st_flash = 1.0
 
 func say(msg: String) -> void:
 	msg_label.text = msg

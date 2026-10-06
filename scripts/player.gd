@@ -310,10 +310,15 @@ func _step() -> void:
 	_check_death()
 
 func _deny() -> void:
-	# Failed input (stamina/cooldown/state): short blip so presses never feel dead.
+	# Failed input (stamina/cooldown/state): short blip + red stamina pulse
+	# so exhausted presses read instantly instead of feeling dead.
 	var game = get_tree().get_first_node_in_group("game")
-	if game != null and game.get("audio") != null and game.audio.has_method("blip"):
+	if game == null:
+		return
+	if game.get("audio") != null and game.audio.has_method("blip"):
 		game.audio.blip("System")
+	if game.get("hud") != null and game.hud.has_method("flash_stamina"):
+		game.hud.flash_stamina()
 
 func _apply_bob() -> void:
 	# X-only sway: Vadivu owns all Y (crouch + base) so they never fight.
