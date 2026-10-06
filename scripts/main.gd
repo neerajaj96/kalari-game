@@ -89,7 +89,7 @@ func _ready() -> void:
 var _ov_lines := [
 	"Gurukkal: This is Chirakkal. The pit made warriors; the temple will make them endure.",
 	"Gurukkal: Train your breath, your hands, your eyes. The bandits test all three.",
-	"Gurukkal: The temple rises — if you help raise it. Touch earth: 5 reps (Attack).",
+	"Gurukkal: The temple rises — if you help raise it. Touch earth: 5 reps (Attack). Drill (Drill button) hones guard and slip.",
 ]
 var _ov_i := -1
 
