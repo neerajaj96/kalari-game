@@ -53,6 +53,13 @@ func _ready() -> void:
 	_body = HumanFactory.build(self, dna)
 	if _body != null:
 		_face = _body.get_node_or_null("FaceAnim")
+	# Neutral stage gray: the default white plane blows out under noon sun.
+	var ground := get_node_or_null("Ground") as MeshInstance3D
+	if ground != null:
+		var gm := StandardMaterial3D.new()
+		gm.albedo_color = Color(0.32, 0.31, 0.30, 1.0)
+		gm.roughness = 0.95
+		ground.material_override = gm
 	_make_overlay()
 	_apply_view()
 	_log("ready headless=%s auto_quit=%s (v0.30.0-cinematic baseline, NOT validated)" % [str(_headless), str(_auto_quit)])
@@ -108,12 +115,12 @@ func _apply_view() -> void:
 		return
 	match VIEW_NAMES[_view]:
 		"front":
-			_cam.position = Vector3(0, 1.55, -2.3)
+			_cam.position = Vector3(0, 1.50, -1.5)
 		"three_quarter":
-			_cam.position = Vector3(-1.7, 1.7, -1.7)
+			_cam.position = Vector3(-1.1, 1.6, -1.1)
 		_:
-			_cam.position = Vector3(-2.4, 1.55, 0.1)
-	_cam.look_at(Vector3(0, 1.25, 0))
+			_cam.position = Vector3(-1.55, 1.5, 0.1)
+	_cam.look_at(Vector3(0, 1.20, 0))
 	_seen_views[_view] = true
 	_log("view=%s" % VIEW_NAMES[_view])
 	if _auto_quit:
