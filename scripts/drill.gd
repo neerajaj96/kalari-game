@@ -57,7 +57,9 @@ func _process(delta: float) -> void:
 		if reps % 5 == 0:
 			var game = get_tree().get_first_node_in_group("game")
 			if game and game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
-				game.xp_rank.add_xp(25)
+				var up: bool = game.xp_rank.add_xp(25)
+				if up and game.get("audio") != null and game.audio.has_method("fanfare"):
+					game.audio.fanfare()
 			_say(PRAISE[randi() % PRAISE.size()] + " (+25 XP)")
 			_call()
 		else:

@@ -122,6 +122,13 @@ func _input(event: InputEvent) -> void:
 		_ov_i = -1
 		hud.say("Vanakkam. Touch earth: do 5 reps (Attack) then go Village.")
 
+func _notification(what: int) -> void:
+	# Mobile backgrounding / desktop quit: persist before the OS reclaims us.
+	# Saves only happen on world travel otherwise, so this is the only guard.
+	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_PAUSED:
+		if save != null and save.has_method("save_game"):
+			save.save_game()
+
 func _attach(n: Node, path: String) -> bool:
 	var s: Script = load(path)
 	if s == null:
