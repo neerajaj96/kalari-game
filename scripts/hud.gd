@@ -117,10 +117,17 @@ func bind(p, x) -> void:
 	xp = x
 
 func _on_attack() -> void:
-	var game = get_tree().get_first_node_in_group("game")
-	if game and game.get("dialogue") != null and game.dialogue.has_method("advance"):
-		if game.dialogue.advance():
-			return
+	# Mid-fight strikes win over queued chatter: a briefing must never disarm
+	# a swing already in motion (IDLE/STANCE may still advance dialogue).
+	var in_fight := false
+	if player != null and player.get("combat") != null:
+		var st: int = player.combat.state
+		in_fight = st != 0 and st != 1
+	if not in_fight:
+		var game = get_tree().get_first_node_in_group("game")
+		if game and game.get("dialogue") != null and game.dialogue.has_method("advance"):
+			if game.dialogue.advance():
+				return
 	if player:
 		var s := _strike_for_rank()
 		player.request_strike(s.x, s.y)
