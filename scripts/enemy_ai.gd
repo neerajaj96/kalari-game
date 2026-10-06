@@ -79,6 +79,8 @@ func _die(marma: bool) -> void:
 				var up: bool = game.xp_rank.add_xp(90 if marma else 60)
 				if up and game.get("hud") != null:
 					game.hud.say("Rank up! %s" % game.xp_rank.title())
+				if up and game.get("audio") != null and game.audio.has_method("fanfare"):
+					game.audio.fanfare()
 			if game.get("quest_log") != null and game.quest_log.has_method("add_kill"):
 				var k: int = game.quest_log.add_kill(marma)
 				if game.get("hud") != null:
@@ -132,6 +134,9 @@ func _telegraph() -> void:
 	var orig = body.material_override
 	var wink: StandardMaterial3D = load("res://materials/cloth_white.tres")
 	body.material_override = wink
+	var game0 = get_tree().get_first_node_in_group("game")
+	if game0 != null and game0.get("audio") != null and game0.audio.has_method("whoosh"):
+		game0.audio.whoosh()
 	await get_tree().create_timer(0.18, true, false, true).timeout
 	if is_instance_valid(body) and combat.state == CombatState.S.STRIKE:
 		body.material_override = orig

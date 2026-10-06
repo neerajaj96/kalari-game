@@ -45,6 +45,18 @@ func thock() -> void:
 func marma_sting() -> void:
 	_sting(_marma_buf(), -14.0)
 
+func whoosh() -> void:
+	_sting(_whoosh_buf(), -20.0)
+
+func clang() -> void:
+	_sting(_clang_buf(), -16.0)
+
+func hurt() -> void:
+	_sting(_hurt_buf(), -16.0)
+
+func fanfare() -> void:
+	_sting(_fanfare_buf(), -14.0)
+
 const BLIP_PITCH := {
 	"Gurukkal": 180.0, "Unniyarcha": 260.0, "Aromal": 220.0,
 	"Villager": 300.0, "Kunjiraman": 300.0, "Crier": 340.0,
@@ -226,6 +238,54 @@ func _thunder_buf() -> AudioStreamWAV:
 		var t := float(i) / RATE
 		last = last * 0.97 + (randf() * 2.0 - 1.0) * 0.03
 		_put(bytes, i, last * 10.0 * exp(-t * 2.5))
+	s.data = bytes
+	return s
+
+func _whoosh_buf() -> AudioStreamWAV:
+	# Staff swing: filtered noise swell with fast decay.
+	var s := _mk(0.25)
+	var bytes := _bytes(0.25)
+	var last := 0.0
+	for i in range(int(0.25 * RATE)):
+		var t := float(i) / RATE
+		last = last * 0.92 + (randf() * 2.0 - 1.0) * 0.08
+		var env := sin(PI * clampf(t / 0.25, 0.0, 1.0))
+		_put(bytes, i, last * 6.0 * env)
+	s.data = bytes
+	return s
+
+func _clang_buf() -> AudioStreamWAV:
+	# Guard parry: bright metallic partials, short ring.
+	var s := _mk(0.4)
+	var bytes := _bytes(0.4)
+	for i in range(int(0.4 * RATE)):
+		var t := float(i) / RATE
+		var env := exp(-t * 12.0)
+		var v := sin(TAU * 1244.0 * t) * 0.35 + sin(TAU * 1866.0 * t) * 0.2 + sin(TAU * 830.0 * t) * 0.2
+		_put(bytes, i, v * env)
+	s.data = bytes
+	return s
+
+func _hurt_buf() -> AudioStreamWAV:
+	# Player hurt: low thud + downward chirp.
+	var s := _mk(0.3)
+	var bytes := _bytes(0.3)
+	for i in range(int(0.3 * RATE)):
+		var t := float(i) / RATE
+		var env := exp(-t * 10.0)
+		_put(bytes, i, (sin(TAU * 140.0 * t) * 0.6 + sin(TAU * (400.0 - t * 800.0) * t) * 0.3) * env)
+	s.data = bytes
+	return s
+
+func _fanfare_buf() -> AudioStreamWAV:
+	# Rank up: rising triad sting.
+	var s := _mk(0.7)
+	var bytes := _bytes(0.7)
+	for i in range(int(0.7 * RATE)):
+		var t := float(i) / RATE
+		var env := exp(-t * 4.0)
+		var f := 523.0 if t < 0.22 else (659.0 if t < 0.44 else 784.0)
+		_put(bytes, i, sin(TAU * f * t) * 0.45 * env)
 	s.data = bytes
 	return s
 

@@ -29,11 +29,23 @@ func request_strike(damage: float = 8.0, cost: float = 10.0) -> void:
 	want_strike = true
 
 func apply_hit(dmg: float, is_marma: bool = false) -> void:
+	var was_block := combat.state == CombatState.S.BLOCK
 	combat.take_hit(dmg, is_marma)
 	_hitstop(0.05)
 	_shake(0.5)
 	if is_marma:
 		_say("MARMA! +50%")
+	_cue_hit(was_block)
+
+func _cue_hit(was_block: bool) -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if game == null or game.get("audio") == null:
+		return
+	if was_block and combat.state != CombatState.S.DOWN:
+		if game.audio.has_method("clang"):
+			game.audio.clang()
+	elif game.audio.has_method("hurt"):
+		game.audio.hurt()
 
 func _hitstop(dur: float = 0.06) -> void:
 	# 60ms freeze frames the hit on mobile without particles.
@@ -122,6 +134,13 @@ func _hit_sound(marma: bool) -> void:
 		game.audio.marma_sting()
 	elif game.audio.has_method("thock"):
 		game.audio.thock()
+
+func _whoosh() -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if game == null or game.get("audio") == null:
+		return
+	if game.audio.has_method("whoosh"):
+		game.audio.whoosh()
 
 func _ring_bell() -> void:	# Attack doubles as temple bell only at the sanctum door (OFFER phase).
 	var game = get_tree().get_first_node_in_group("game")
@@ -248,6 +267,7 @@ func _physics_process(delta: float) -> void:
 				cam0.kick_fov(4.0)
 			_ring_bell()
 			_count_rep()
+			_whoosh()
 			var spark := get_node_or_null("HitSpark") as CPUParticles3D
 			if spark:
 				spark.restart()
