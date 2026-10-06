@@ -192,7 +192,7 @@ static func build_chest_sash(dna: HumanDNA, lod: int) -> ArrayMesh:
 static func build_kurta(dna: HumanDNA, lod: int) -> ArrayMesh:
 	var h := dna.stature
 	var chest_r := lerpf(0.155, 0.195, dna.build) + 0.038
-	var hem_r := chest_r + 0.015
+	var hem_r := chest_r + 0.030
 	var radial := 20 if lod == 0 else 12
 	var rows := 6 if lod == 0 else 4
 	var st := SurfaceTool.new()
@@ -231,7 +231,7 @@ static func build_kurta(dna: HumanDNA, lod: int) -> ArrayMesh:
 # Blouse for sari wearers (fitted, short sleeve hint).
 static func build_blouse(dna: HumanDNA, lod: int) -> ArrayMesh:
 	var h := dna.stature
-	var r := lerpf(0.145, 0.175, dna.build) + 0.033
+	var r := lerpf(0.145, 0.175, dna.build) + 0.020
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var radial := 18 if lod == 0 else 10
