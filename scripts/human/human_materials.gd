@@ -40,16 +40,6 @@ static func skin_material(dna: HumanDNA) -> ShaderMaterial:
 	_cache[k] = sm
 	return sm
 
-static func eye_white_material() -> StandardMaterial3D:
-	if _cache.has("eye_white"):
-		return _cache["eye_white"]
-	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.92, 0.90, 0.85, 1.0)
-	m.roughness = 0.18
-	m.metallic_specular = 0.7
-	_cache["eye_white"] = m
-	return m
-
 static func iris_material(dna: HumanDNA) -> StandardMaterial3D:
 	var k := "iris_%d" % [dna.seed % 4]
 	if _cache.has(k):
