@@ -33,6 +33,7 @@ godot --path . res://scenes/hero_audit.tscn
   village/school gameplay baseline, so the audit happens under gameplay lighting.
 - Work the checklist in `docs/HERO_RUNTIME_AUDIT_PENDING.md`: front,
   three-quarter, profile × all combat poses × all 8 expressions × march.
+  Press `L` to pin Hero/Mid/Far LODs when inspecting silhouette pops.
 - Screenshots (`S`/`F12`) save to `user://hero_audit_*.png`.
 - For every visible defect: OBSERVE → IDENTIFY WEAKEST DEFECT → FIX → RUN →
   COMPARE → KEEP ONLY IF BETTER → REPEAT.

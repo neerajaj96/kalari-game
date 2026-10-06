@@ -100,10 +100,11 @@ if "Collision" in fac and "untouched" not in fac:
     warns.append("factory: collision wording changed (keep separation comment)")
 
 # 9. LOD budgets (analytic): Hero <= 18k, Mid <= 7k, Far <= 1.5k.
-# Hero head 28x20x2=1120 + torso 20x14x2=560 + limbs ~1200 + hands ~800
-# + feet ~400 + garments ~1500 + hair ~400 = ~6k skin + ~2k cloth.
-hero_est = 1120 + 560 + 1200 + 800 + 400 + 1500 + 400
-mid_est = 500 + 300 + 600 + 200 + 150 + 700 + 200
+# Hero head 28x20x2=1120 + torso sculpt ~900 + limbs ~1200 + hands ~800
+# + feet ~400 + garments ~1500 + hair ~400 + neck/ears/lids/nails ~900
+# + joint caps 10x280=2800.
+hero_est = 1120 + 900 + 1200 + 800 + 400 + 1500 + 400 + 900 + 2800
+mid_est = 500 + 500 + 600 + 200 + 150 + 900 + 200
 far_est = 160 + 100 + 200 + 60 + 60 + 250 + 80
 print(f"LOD tri estimate: hero ~{hero_est}, mid ~{mid_est}, far ~{far_est}")
 if hero_est > 18000:
