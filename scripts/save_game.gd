@@ -55,7 +55,12 @@ func load_game() -> Dictionary:
 		return {}
 	var d := {}
 	for k in ["xp", "kills", "reps", "q02", "q03", "sevas", "phase", "supply", "visit_h", "visit_s", "vama_stage", "vama_on", "vama_forest", "storms", "muted", "shadows", "world", "sadh_cool", "p_buff_regen", "p_buff_regen_t", "p_buff_marma", "p_buff_marma_t"]:
-		d[k] = cfg.get_value("progress", k, null)
+		# Old saves predate newer keys (and boot order writes partial files):
+		# missing keys read as null instead of erroring.
+		if cfg.has_section_key("progress", k):
+			d[k] = cfg.get_value("progress", k)
+		else:
+			d[k] = null
 	return d
 
 func apply_save(d: Dictionary, game: Node) -> void:

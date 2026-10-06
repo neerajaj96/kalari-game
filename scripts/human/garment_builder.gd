@@ -9,6 +9,8 @@ extends RefCounted
 # on Mobile for perf — drape bones instead).
 class_name GarmentBuilder
 
+const HumanDNA = preload("res://scripts/human/human_dna.gd")
+
 # Waist wrap: layered mundu/langoti/kaccha cylinder with pleat fan front.
 static func build_waist_wrap(dna: HumanDNA, lod: int) -> ArrayMesh:
 	var h := dna.stature

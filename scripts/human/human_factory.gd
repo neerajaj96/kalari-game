@@ -6,6 +6,17 @@ extends RefCounted
 # Fallback-first: returns null headless-safe; caller keeps primitives.
 class_name HumanFactory
 
+const HumanDNA = preload("res://scripts/human/human_dna.gd")
+const BodySculpt = preload("res://scripts/human/body_sculpt.gd")
+const GarmentBuilder = preload("res://scripts/human/garment_builder.gd")
+const HumanMaterials = preload("res://scripts/human/human_materials.gd")
+const HumanRig = preload("res://scripts/human/human_rig.gd")
+const FaceAnim = preload("res://scripts/human/face_anim.gd")
+const IKSolver = preload("res://scripts/human/ik_solver.gd")
+const HumanAnim = preload("res://scripts/human/human_anim.gd")
+const HumanLOD = preload("res://scripts/human/human_lod.gd")
+const JointCap = preload("res://scripts/human/joint_cap.gd")
+
 static var _mesh_cache: Dictionary = {}
 
 static func cache_size() -> int:
@@ -35,7 +46,9 @@ static func build(parent: Node, dna: HumanDNA) -> Node3D:
 		return null
 	var body := Node3D.new()
 	body.name = "CinematicBody"
-	parent.add_child(body)
+	# Deferred attach: callers build from inside _ready (child setup phase),
+	# where a direct add_child to the parent is rejected by the scene tree.
+	parent.add_child.call_deferred(body)
 	var sk := HumanRig.build_skeleton(dna)
 	sk.name = "HumanSkeleton"
 	body.add_child(sk)

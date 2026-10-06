@@ -58,7 +58,7 @@ func _ready() -> void:
 
 func _build_cinematic() -> void:
 	# Deterministic per-villager identity from instance id (stable per spawn).
-	var variant := abs(int(get_instance_id()) % 8)
+	var variant: int = abs(int(get_instance_id()) % 8)
 	var dna: Resource = HumanDNA.villager_dna(variant)
 	_cinematic = HumanFactory.build(self, dna)
 
@@ -211,7 +211,7 @@ func _storm_watch(_delta: float) -> bool:
 			if w.current.get("storm") != null:
 				storm = float(w.current.storm)
 			else:
-				var dn := w.current.get_node_or_null("DayNight")
+				var dn: Node = w.current.get_node_or_null("DayNight")
 				if dn != null and dn.get("storm") != null:
 					storm = float(dn.get("storm"))
 	if storm >= 0.5 and not _storm_told:

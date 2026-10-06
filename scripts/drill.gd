@@ -53,8 +53,8 @@ func _process(delta: float) -> void:
 	var st: int = p.combat.state
 	# Strike outlives the 5Hz sampler: latch via cooldown for the full pose
 	# life (0.45s cd down to the 0.15s settle), not just its first half.
-	var struck := st == CombatState.S.STRIKE or (call == "strike" and p.combat.strike_cd > 0.15)
-	var hit := (call == "strike" and struck) or (call == "block" and st == CombatState.S.BLOCK) or (call == "dodge" and st == CombatState.S.DODGE)
+	var struck: bool = st == CombatState.S.STRIKE or (call == "strike" and p.combat.strike_cd > 0.15)
+	var hit: bool = (call == "strike" and struck) or (call == "block" and st == CombatState.S.BLOCK) or (call == "dodge" and st == CombatState.S.DODGE)
 	if hit:
 		reps += 1
 		if reps % 5 == 0:

@@ -54,14 +54,15 @@ class_name HumanDNA
 @export var gait_bounce: float = 0.5
 @export var idle_energy: float = 0.5
 
-static func _base(s: int, label_: String) -> HumanDNA:
-	var d := HumanDNA.new()
+static func _base(s: int, label_: String):
+	var DNA = load("res://scripts/human/human_dna.gd")
+	var d = DNA.new()
 	d.seed = s
 	d.label = label_
 	return d
 
-static func player_dna() -> HumanDNA:
-	var d := _base(101, "player")
+static func player_dna():
+	var d = _base(101, "player")
 	d.age_years = 22.0
 	d.stature = 1.72
 	d.build = 0.55
@@ -99,8 +100,8 @@ static func player_dna() -> HumanDNA:
 	d.idle_energy = 0.75
 	return d
 
-static func gurukkal_dna() -> HumanDNA:
-	var d := _base(202, "gurukkal")
+static func gurukkal_dna():
+	var d = _base(202, "gurukkal")
 	d.age_years = 66.0
 	d.stature = 1.68
 	d.build = 0.38
@@ -139,10 +140,10 @@ static func gurukkal_dna() -> HumanDNA:
 	d.idle_energy = 0.30
 	return d
 
-static func bandit_dna(variant: int) -> HumanDNA:
+static func bandit_dna(variant: int):
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 300 + variant
-	var d := _base(300 + variant, "bandit_%d" % variant)
+	var d = _base(300 + variant, "bandit_%d" % variant)
 	d.age_years = rng.randf_range(28.0, 44.0)
 	d.stature = rng.randf_range(1.70, 1.84)
 	d.build = rng.randf_range(0.62, 0.92)
@@ -186,10 +187,10 @@ static func bandit_dna(variant: int) -> HumanDNA:
 	d.idle_energy = rng.randf_range(0.5, 0.8)
 	return d
 
-static func villager_dna(seed_: int) -> HumanDNA:
+static func villager_dna(seed_: int):
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 1000 + seed_
-	var d := _base(1000 + seed_, "villager_%d" % seed_)
+	var d = _base(1000 + seed_, "villager_%d" % seed_)
 	d.is_female = (seed_ % 3 == 1)
 	d.age_years = rng.randf_range(18.0, 68.0)
 	var fem_scale := 0.94 if d.is_female else 1.0
@@ -226,7 +227,7 @@ static func villager_dna(seed_: int) -> HumanDNA:
 		d.beard_style = [0, 0, 1, 2, 3][seed_ % 5]
 	d.hair_grey = clampf((d.age_years - 40.0) / 40.0, 0.0, 1.0)
 	d.brow_thick = rng.randf_range(0.4, 0.85)
-	var gset := 3 if d.is_female else [1, 2, 2, 4, 1][seed_ % 5]
+	var gset: int = 3 if d.is_female else [1, 2, 2, 4, 1][seed_ % 5]
 	# Elder priest figure for one seed.
 	if seed_ == 0:
 		gset = 5

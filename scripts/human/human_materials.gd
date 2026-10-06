@@ -4,6 +4,9 @@ extends RefCounted
 # shader params + bone scale, not duplicate resources.
 class_name HumanMaterials
 
+const HumanDNA = preload("res://scripts/human/human_dna.gd")
+const BodySculpt = preload("res://scripts/human/body_sculpt.gd")
+
 static var _cache: Dictionary = {}
 
 static func clear_cache() -> void:
@@ -41,6 +44,7 @@ static func iris_material(dna: HumanDNA) -> StandardMaterial3D:
 	var k := "iris_%d" % [dna.seed % 4]
 	if _cache.has(k):
 		return _cache[k]
+	var browns: Array = [Color(0.16, 0.10, 0.06, 1.0), Color(0.22, 0.13, 0.07, 1.0), Color(0.12, 0.08, 0.05, 1.0), Color(0.28, 0.17, 0.09, 1.0)]
 	var m := StandardMaterial3D.new()
 	m.albedo_color = browns[dna.seed % browns.size()]
 	m.roughness = 0.12
@@ -72,7 +76,6 @@ static func caruncle_material(dna: HumanDNA) -> StandardMaterial3D:
 	var k := "caruncle_%d_%d" % [int(skin.r * 20.0), int(skin.g * 20.0)]
 	if _cache.has(k):
 		return _cache[k]
-	var skin := BodySculpt.skin_tone(dna)
 	var m := StandardMaterial3D.new()
 	m.albedo_color = Color(clampf(skin.r * 0.75, 0.0, 1.0), clampf(skin.g * 0.42, 0.0, 1.0), clampf(skin.b * 0.40, 0.0, 1.0), 1.0)
 	m.roughness = 0.45

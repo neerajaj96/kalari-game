@@ -7,6 +7,8 @@ extends RefCounted
 # without soft-skin weight painting (robust headless + mobile safe).
 class_name HumanRig
 
+const HumanDNA = preload("res://scripts/human/human_dna.gd")
+
 static func bone_list() -> Array:
 	# Finger/toe bones are reserved for runtime-gated per-digit articulation
 	# (pending hero audit); hands/feet bind merged segments until then.

@@ -98,8 +98,8 @@ static func noisy_ground(w: float, d: float, amp: float, flat_r: float = 3.0) ->
 			var u1 := float(ix + 1) / nx
 			var v0 := float(iz) / nz
 			var v1 := float(iz + 1) / nz
-		_tri_uv(st, a, c, b, Vector2(u0, v0), Vector2(u1, v1), Vector2(u1, v0))
-		_tri_uv(st, a, e, c, Vector2(u0, v0), Vector2(u0, v1), Vector2(u1, v1))
+			_tri_uv(st, a, c, b, Vector2(u0, v0), Vector2(u1, v1), Vector2(u1, v0))
+			_tri_uv(st, a, e, c, Vector2(u0, v0), Vector2(u0, v1), Vector2(u1, v1))
 	st.generate_normals()
 	return st.commit()
 

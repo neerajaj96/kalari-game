@@ -5,6 +5,8 @@ extends Node
 # Expression states: neutral/focus/anger/fear/pain/surprise/effort/recovery.
 class_name FaceAnim
 
+const HumanDNA = preload("res://scripts/human/human_dna.gd")
+
 var _sk: Skeleton3D
 var _dna: HumanDNA
 var _blink_t := 2.0

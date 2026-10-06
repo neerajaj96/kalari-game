@@ -7,6 +7,10 @@ extends Node
 # Aswa(strike) lunge, Gaja(stance) neutral.
 class_name HumanAnim
 
+const HumanDNA = preload("res://scripts/human/human_dna.gd")
+const FaceAnim = preload("res://scripts/human/face_anim.gd")
+const IKSolver = preload("res://scripts/human/ik_solver.gd")
+
 var _sk: Skeleton3D
 var _dna: HumanDNA
 var _face: FaceAnim

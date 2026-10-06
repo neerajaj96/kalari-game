@@ -36,7 +36,7 @@ var _cinematic_active := false
 func _dna_for_path() -> Resource:
 	var rp := str(rig_path)
 	var p := get_parent()
-	var inst := abs(int(p.get_instance_id()) % 8) if p != null else 0
+	var inst: int = abs(int(p.get_instance_id()) % 8) if p != null else 0
 	if rp.find("gurukkal") >= 0 or rp.find("elder") >= 0:
 		return HumanDNA.gurukkal_dna()
 	if rp.find("bandit") >= 0 or rp.find("brute") >= 0:

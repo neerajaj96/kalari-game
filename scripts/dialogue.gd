@@ -19,9 +19,11 @@ const COLORS := {
 }
 
 func say(speaker: String, lines: Array, priority: bool = false) -> void:
-	# Priority briefings jump the queue but keep narrative order: push_front
-	# in reverse so [l1,l2,l3] still plays l1 first.
-	var ordered: Array = lines.reversed() if priority else lines
+	# Priority briefings jump the queue but keep narrative order: reversed
+	# copy into push_front so [l1,l2,l3] still plays l1 first.
+	var ordered: Array = lines.duplicate()
+	if priority:
+		ordered.reverse()
 	for ln in ordered:
 		var item := {"speaker": speaker, "text": str(ln)}
 		if priority:

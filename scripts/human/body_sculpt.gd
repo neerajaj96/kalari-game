@@ -5,6 +5,8 @@ extends RefCounted
 # LOD: 0 Hero, 1 Mid, 2 Far. Units in meters. Faces -Z (Godot forward).
 class_name BodySculpt
 
+const HumanDNA = preload("res://scripts/human/human_dna.gd")
+
 static func skin_tone(dna: HumanDNA) -> Color:
 	var m: float = clampf(dna.melanin, 0.0, 1.0)
 	var w: float = clampf(dna.skin_warm, 0.0, 1.0)
