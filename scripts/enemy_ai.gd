@@ -181,7 +181,8 @@ func _physics_process(delta: float) -> void:
 		velocity.z = 0.0
 		_marma_mark(target)
 		if think_cd <= 0.0:
-			think_cd = 1.1
+			# Desync pack rhythm so volleys don't land on the same frame.
+			think_cd = randf_range(0.9, 1.3)
 			if combat.try_strike(10.0):
 				_telegraph()
 				_deal_delayed()
