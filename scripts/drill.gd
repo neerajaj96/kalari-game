@@ -27,8 +27,13 @@ func toggle() -> String:
 	_say("Drill off. Rest.")
 	return "Drill off."
 
+var _last_call := ""
+
 func _call() -> void:
 	call = CALLS[randi() % CALLS.size()]
+	if call == _last_call:
+		call = CALLS[(CALLS.find(call) + 1) % CALLS.size()]
+	_last_call = call
 	window_t = WINDOW
 	_say(LINES[call])
 

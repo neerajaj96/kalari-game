@@ -40,6 +40,12 @@ func _apply_archetype() -> void:
 			max_hp = 80.0
 		_:
 			pass
+	# Rank scaling: late-game bandits stay relevant as the player ranks up.
+	var game = get_tree().get_first_node_in_group("game")
+	if game != null and game.get("xp_rank") != null and game.xp_rank.get("rank") != null:
+		var r: float = maxf(1.0, float(game.xp_rank.rank))
+		max_hp = max_hp * (1.0 + 0.15 * (r - 1.0))
+		damage = damage * (1.0 + 0.10 * (r - 1.0))
 
 var _dead := false
 
