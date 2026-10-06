@@ -31,6 +31,8 @@ static func hitstop(tree: SceneTree, dur: float = 0.06) -> void:
 
 static func release_hitstop() -> void:
 	# Scene exit during a freeze: drop leaked locks so time never sticks.
+	# Accepted tradeoff: this also cuts a concurrent other's remaining ~60ms
+	# freeze short. Correctness (never stuck at 0.15x) beats 60ms of slow-mo.
 	_hitstop_locks = 0
 	Engine.time_scale = 1.0
 
