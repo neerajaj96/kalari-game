@@ -43,12 +43,18 @@ func tap() -> String:
 		return "Start Sadhana first (Sadhana button)."
 	count += 1
 	half = not half
+	_tick(not half)
 	if count >= TARGET:
 		return _complete()
 	# Odd taps are inhales starting breath N; even taps exhale to close it.
 	var done: int = count / 2
 	var phase := "in... (%d/11)" % (done + 1) if not half else "out... (%d/11 done)" % done
 	return phase
+
+func _tick(inhale: bool) -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if game != null and game.get("audio") != null and game.audio.has_method("breath_tick"):
+		game.audio.breath_tick(inhale)
 
 func stop() -> String:
 	if not active:
@@ -66,6 +72,8 @@ func _complete() -> String:
 		var up: bool = game.xp_rank.add_xp(xp_gain)
 		if up and game.get("hud") != null:
 			game.hud.say("Rank up! %s" % game.xp_rank.title())
+		if up and game.get("audio") != null and game.audio.has_method("fanfare"):
+			game.audio.fanfare()
 	# Stamina blessing for kalari/forest kinds; marma eye for temple/forest.
 	var p = get_tree().get_first_node_in_group("player")
 	if kind in ["kalari", "forest"] and p and p.has_method("add_buff"):

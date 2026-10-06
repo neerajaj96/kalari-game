@@ -57,6 +57,9 @@ func hurt() -> void:
 func fanfare() -> void:
 	_sting(_fanfare_buf(), -14.0)
 
+func breath_tick(high: bool) -> void:
+	_sting(_breath_buf(high), -22.0)
+
 const BLIP_PITCH := {
 	"Gurukkal": 180.0, "Unniyarcha": 260.0, "Aromal": 220.0,
 	"Villager": 300.0, "Kunjiraman": 300.0, "Crier": 340.0,
@@ -286,6 +289,18 @@ func _fanfare_buf() -> AudioStreamWAV:
 		var env := exp(-t * 4.0)
 		var f := 523.0 if t < 0.22 else (659.0 if t < 0.44 else 784.0)
 		_put(bytes, i, sin(TAU * f * t) * 0.45 * env)
+	s.data = bytes
+	return s
+
+func _breath_buf(high: bool) -> AudioStreamWAV:
+	# Sadhana metronome: soft in/out sine ticks (inhale higher).
+	var s := _mk(0.18)
+	var bytes := _bytes(0.18)
+	var f := 520.0 if high else 390.0
+	for i in range(int(0.18 * RATE)):
+		var t := float(i) / RATE
+		var env := sin(PI * clampf(t / 0.18, 0.0, 1.0))
+		_put(bytes, i, sin(TAU * f * t) * 0.4 * env)
 	s.data = bytes
 	return s
 
