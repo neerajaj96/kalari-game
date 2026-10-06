@@ -189,10 +189,15 @@ func _detail_swap(world: Node) -> void:
 		["TempleComplex/RoofMain", "pyramid", [4.6, 4.6, 1.2, 0.65], -0.125],
 		["TempleComplex/Shikhara", "stepped", [1.6, 5, 0.17], -0.4],
 		["TempleComplex/Kalasham", "lathe", [], -0.22],
-		["Ground", "ground", [30.0, 24.0, 0.15, 8.0], 0.1],
 		["House1Roof", "pyramid", [4.6, 4.6, 0.9, 0.4], -0.15],
 		["House2Roof", "pyramid", [4.6, 4.6, 0.9, 0.4], -0.15],
 	]
+	# Ground visual matches the world's own slab: village 30x24, ksetra 70x70.
+	# A mismatched patch leaves a visible void with floating feet beyond it.
+	if str(world.name) == "Village":
+		jobs.append(["Ground", "ground", [30.0, 24.0, 0.15, 8.0], 0.1])
+	elif str(world.name) == "Ksetra":
+		jobs.append(["Ground", "ground", [70.0, 70.0, 0.25, 12.0], 0.1])
 	for j in jobs:
 		var orig := world.get_node_or_null(j[0]) as CSGShape3D
 		if orig == null:
@@ -219,7 +224,9 @@ func _detail_swap(world: Node) -> void:
 		mi.visibility_range_end = 45.0
 		mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 		# LOD follows the hidden original so dressing culls as one.
-		if "visibility_range_end" in orig:
+		# Guard: CSG defaults to end=0 (infinite); only copy real ranges,
+		# otherwise the 45m fade above would be disabled.
+		if "visibility_range_end" in orig and orig.visibility_range_end > 0.0:
 			mi.visibility_range_begin = orig.visibility_range_begin
 			mi.visibility_range_end = orig.visibility_range_end
 			mi.visibility_range_fade_mode = orig.visibility_range_fade_mode

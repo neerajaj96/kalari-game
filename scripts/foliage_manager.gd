@@ -178,6 +178,7 @@ static func _kmake(world: Node, mm_name: String, mesh: Mesh, mat: Material,
 	mmi.visibility_range_begin = 0.0
 	mmi.visibility_range_end = 45.0
 	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	mmi.add_to_group("foliage_sway")
 	if mat:
 		mmi.material_override = mat
 	world.add_child(mmi)
@@ -243,6 +244,11 @@ static func _make(world: Node, mm_name: String, mesh: Mesh, mat: Material, count
 	mmi.multimesh = mm
 	if mat:
 		mmi.material_override = mat
+	# Cull with distance fade like the ksetra fields (village never culled before).
+	mmi.visibility_range_begin = 0.0
+	mmi.visibility_range_end = 45.0
+	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	mmi.add_to_group("foliage_sway")
 	world.add_child(mmi)
 	for n in ["Grass1", "Grass2", "Grass3", "Grass4", "Grass5"]:
 		var old := world.get_node_or_null(n)

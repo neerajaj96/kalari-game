@@ -46,7 +46,8 @@ func _bone_pose(bone: String, rot: Vector3, pos: Vector3) -> void:
 		return
 	var rest: Transform3D = _sk.get_bone_rest(i)
 	_sk.set_bone_pose_position(i, rest.origin + pos)
-	_sk.set_bone_pose_rotation(i, Quaternion(Basis.from_euler(rot) * rest.basis))
+	# Pure euler rotation: the engine composes it with the rest basis.
+	_sk.set_bone_pose_rotation(i, Quaternion(Basis.from_euler(rot)))
 
 func _tick_blink(delta: float) -> void:
 	_blink_t -= delta
@@ -75,7 +76,8 @@ func _tick_gaze(delta: float) -> void:
 	_gaze_t -= delta
 	if _gaze_t <= 0.0:
 		_gaze_t = randf_range(0.7, 2.4)
-		_gaze_target = Vector3(randf_range(-0.12, 0.12), randf_range(-0.06, 0.08), 0)
+		# Saccades stay inside the orbit: ~3-4mm on a 13.5mm ball.
+		_gaze_target = Vector3(randf_range(-0.004, 0.004), randf_range(-0.003, 0.003), 0)
 	var k: float = minf(1.0, 8.0 * delta)
 	var li := _sk.find_bone("eye_L")
 	var ri := _sk.find_bone("eye_R")
@@ -132,7 +134,7 @@ func _tick_expr(delta: float) -> void:
 	if ji >= 0:
 		var rest: Transform3D = _sk.get_bone_rest(ji)
 		_sk.set_bone_pose_position(ji, rest.origin + Vector3(0, -jaw_open * 0.05, -jaw_open * 0.02))
-		_sk.set_bone_pose_rotation(ji, Quaternion(Basis(Vector3(1, 0, 0), jaw_open * 0.9) * rest.basis))
+		_sk.set_bone_pose_rotation(ji, Quaternion(Basis(Vector3(1, 0, 0), jaw_open * 0.9)))
 	_bone_pose("brow_L", brow + Vector3(micro * 0.3, 0, 0), brow_pos)
 	_bone_pose("brow_R", Vector3(brow.x, brow.y, -brow.z) + Vector3(-micro * 0.3, 0, 0), brow_pos)
 	_bone_pose("cheek_L", cheek + Vector3(0, micro * 0.2, 0), cheek_pos)

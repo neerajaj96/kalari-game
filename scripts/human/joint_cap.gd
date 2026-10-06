@@ -27,4 +27,7 @@ func _process(_delta: float) -> void:
 		return
 	var pa: Vector3 = _sk.get_bone_global_pose(ia).origin
 	var pb: Vector3 = _sk.get_bone_global_pose(ib).origin
-	position = pa.lerp(pb, _w)
+	# Global poses include the skeleton's world transform; caps live inside
+	# the skeleton, so strip it back to skeleton-local space.
+	var inv: Transform3D = _sk.global_transform.affine_inverse()
+	position = inv * pa.lerp(pb, _w)

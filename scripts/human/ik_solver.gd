@@ -93,7 +93,7 @@ func plant_feet(skel_local_ground: float = 0.0, swing_phase: float = 0.0, stride
 			var ph := swing_phase + (0.0 if side == "L" else PI)
 			lift = maxf(0.0, sin(ph)) * 0.06 * minf(stride, 1.0)
 		var gy := skel_local_ground + lift
-		# Blend toward planted height without snapping the whole leg.
+		# Blend toward planted height (sole thickness) without snapping the leg.
 		var cur_y := p.y
-		p.y = lerpf(cur_y, gy + 0.09, foot_plant * 0.5)
+		p.y = lerpf(cur_y, gy + 0.012, foot_plant * 0.5)
 		_sk.set_bone_pose_position(fi, p)

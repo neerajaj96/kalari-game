@@ -57,9 +57,9 @@ func _set_rot(bone: String, euler: Vector3, speed: float, delta: float) -> void:
 	var i := _sk.find_bone(bone)
 	if i < 0:
 		return
-	var rest: Transform3D = _sk.get_bone_rest(i)
 	var cur: Quaternion = _sk.get_bone_pose_rotation(i)
-	var goal := Quaternion(Basis.from_euler(euler) * rest.basis)
+	# Pose composes with rest inside the engine: store pure euler rotation.
+	var goal := Quaternion(Basis.from_euler(euler))
 	var k: float = minf(1.0, speed * delta)
 	_sk.set_bone_pose_rotation(i, cur.slerp(goal, k))
 

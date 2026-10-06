@@ -13,7 +13,7 @@ static func _key(dna: HumanDNA, kind: String) -> String:
 	return "%s_%d_%d" % [kind, dna.seed, dna.garment_set]
 
 static func skin_material(dna: HumanDNA) -> ShaderMaterial:
-	var k := "skin_%d" % [int(dna.melanin * 20.0)]
+	var k := "skin_%d_%d_%d_%d_%d_%d" % [int(dna.melanin * 20.0), int(dna.wrinkle * 10.0), int(dna.scar_amount * 10.0), int(dna.skin_mottle * 10.0), int(dna.skin_warm * 10.0), dna.beard_style]
 	if _cache.has(k):
 		return _cache[k]
 	var sm := ShaderMaterial.new()
@@ -54,7 +54,6 @@ static func iris_material(dna: HumanDNA) -> StandardMaterial3D:
 	var k := "iris_%d" % [dna.seed % 4]
 	if _cache.has(k):
 		return _cache[k]
-	var browns: Array = [Color(0.16, 0.10, 0.06, 1.0), Color(0.22, 0.13, 0.07, 1.0), Color(0.12, 0.08, 0.05, 1.0), Color(0.28, 0.17, 0.09, 1.0)]
 	var m := StandardMaterial3D.new()
 	m.albedo_color = browns[dna.seed % browns.size()]
 	m.roughness = 0.12
@@ -82,7 +81,8 @@ static func cornea_material() -> StandardMaterial3D:
 	return m
 
 static func caruncle_material(dna: HumanDNA) -> StandardMaterial3D:
-	var k := "caruncle"
+	var skin := BodySculpt.skin_tone(dna)
+	var k := "caruncle_%d_%d" % [int(skin.r * 20.0), int(skin.g * 20.0)]
 	if _cache.has(k):
 		return _cache[k]
 	var skin := BodySculpt.skin_tone(dna)
@@ -144,7 +144,7 @@ static func hair_material(dna: HumanDNA) -> ShaderMaterial:
 	return sm
 
 static func cloth_material(dna: HumanDNA, accent_border: float = 0.0) -> ShaderMaterial:
-	var k := "cloth_%s_%d" % [str(dna.cloth_primary.to_html()), int(accent_border * 10.0)]
+	var k := "cloth_%s_%s_%d_%d_%d" % [str(dna.cloth_primary.to_html()), str(dna.cloth_accent.to_html()), int(accent_border * 10.0), int(dna.cloth_wear * 10.0), int(dna.cloth_dirt * 10.0)]
 	if _cache.has(k):
 		return _cache[k]
 	var sm := ShaderMaterial.new()

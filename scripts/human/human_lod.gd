@@ -48,6 +48,13 @@ func _process(_delta: float) -> void:
 		return
 	var gp: Vector3 = (host as Node3D).global_position if host is Node3D else Vector3.ZERO
 	var d := (gp - cam.global_position).length()
+	# 1m hysteresis band so boundary crossings don't pop every frame.
+	if _cur == 0 and d < hero_dist + 1.0:
+		return
+	if _cur == 1 and d > hero_dist - 1.0 and d < mid_dist + 1.0:
+		return
+	if _cur == 2 and d > mid_dist - 1.0:
+		return
 	if d < hero_dist:
 		_show(0)
 	elif d < mid_dist:
@@ -59,4 +66,4 @@ func current_lod() -> int:
 	return _cur
 
 static func tri_estimate() -> Dictionary:
-	return {"hero": 15000, "mid": 6000, "far": 1200}
+	return {"hero": 10500, "mid": 6000, "far": 1200}

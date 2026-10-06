@@ -16,7 +16,8 @@ static func clear_cache() -> void:
 	HumanMaterials.clear_cache()
 
 static func _mkey(kind: String, dna: HumanDNA, lod: int) -> String:
-	return "%s_%d_%d_%d" % [kind, dna.seed, dna.garment_set, lod]
+	var face := "%d_%d_%d_%d_%d" % [int(dna.jaw_width * 10.0), int(dna.nose_width * 10.0), int(dna.cheek_full * 10.0), int(dna.brow_ridge * 10.0), int(dna.lip_full * 10.0)]
+	return "%s_%d_%d_%d_%s_%d_%d_%d_%d" % [kind, dna.seed, dna.garment_set, lod, face, int(dna.stature * 100.0), int(dna.build * 10.0), dna.hair_style, dna.beard_style]
 
 static func _cached_mesh(kind: String, dna: HumanDNA, lod: int, builder: Callable) -> ArrayMesh:
 	var k := _mkey(kind, dna, lod)
@@ -102,12 +103,17 @@ static func bone_global_rest(sk: Skeleton3D, bone: String) -> Vector3:
 	var i := sk.find_bone(bone)
 	if i < 0:
 		return Vector3.ZERO
-	var acc := Vector3.ZERO
+	# Full rest-chain accumulation (rotation included) so stooped
+	# skeletons (elder crouch pitch) compensate correctly.
+	var acc := Transform3D.IDENTITY
 	var c := i
+	var chain: Array = []
 	while c >= 0:
-		acc += (sk.get_bone_rest(c) as Transform3D).origin
+		chain.push_front(c)
 		c = sk.get_bone_parent(c)
-	return acc
+	for bi in chain:
+		acc = acc * (sk.get_bone_rest(bi) as Transform3D)
+	return acc.origin
 
 static func _pupil_xform() -> Transform3D:
 	var b := Basis.from_scale(Vector3(0.22, 0.22, 0.18))
@@ -127,11 +133,11 @@ static func _build_lod_into(sk: Skeleton3D, dna: HumanDNA, lod: int, out_sets: A
 	_add_seg(sk, "eye_L", eye_mesh, HumanMaterials.cornea_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.002)), lod, out_sets, false)
 	_add_seg(sk, "eye_R", eye_mesh, HumanMaterials.cornea_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.002)), lod, out_sets, false)
 	var iris_mesh: ArrayMesh = _cached_mesh("iris_disc", dna, lod, func() -> ArrayMesh: return BodySculpt.build_iris_disc())
-	_add_seg(sk, "eye_L", iris_mesh, HumanMaterials.iris_material(dna), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0115)), lod, out_sets, false)
-	_add_seg(sk, "eye_R", iris_mesh, HumanMaterials.iris_material(dna), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0115)), lod, out_sets, false)
+	_add_seg(sk, "eye_L", iris_mesh, HumanMaterials.iris_material(dna), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0145)), lod, out_sets, false)
+	_add_seg(sk, "eye_R", iris_mesh, HumanMaterials.iris_material(dna), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0145)), lod, out_sets, false)
 	var pupil_mesh: ArrayMesh = _cached_mesh("pupil_disc", dna, lod, func() -> ArrayMesh: return BodySculpt.build_pupil_disc())
-	_add_seg(sk, "eye_L", pupil_mesh, HumanMaterials.pupil_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0118)), lod, out_sets, false)
-	_add_seg(sk, "eye_R", pupil_mesh, HumanMaterials.pupil_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0118)), lod, out_sets, false)
+	_add_seg(sk, "eye_L", pupil_mesh, HumanMaterials.pupil_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0149)), lod, out_sets, false)
+	_add_seg(sk, "eye_R", pupil_mesh, HumanMaterials.pupil_material(), Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.0149)), lod, out_sets, false)
 	if lod == 0:
 		_add_seg(sk, "lid_upper_L", BodySculpt.build_eyelid_rim(true, lod), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 		_add_seg(sk, "lid_upper_R", BodySculpt.build_eyelid_rim(true, lod), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)

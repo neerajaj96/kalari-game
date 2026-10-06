@@ -180,9 +180,16 @@ func _apply_frame() -> void:
 				_last_lamp = want_lamp
 				lamp.set("base", want_lamp)
 	# Vegetation gusts follow storm (shared sway material, write on change).
+	# Duplicated card materials (foliage_sway group) get the same value so
+	# monsoon gusts visibly move palms/reeds instead of dying on duplicate.
 	var sway = load("res://shaders/sway_leaf.tres") as ShaderMaterial
 	if sway:
 		sway.set_shader_parameter("strength", 0.06 + storm * 0.1)
+	if get_tree() != null:
+		for mmi in get_tree().get_nodes_in_group("foliage_sway"):
+			var mo := (mmi as MultiMeshInstance3D).material_override as ShaderMaterial
+			if mo != null:
+				mo.set_shader_parameter("strength", 0.06 + storm * 0.1)
 
 func _apply_wetness(w: float) -> void:
 	# Dry day: rough bright earth. Monsoon: dark wet soil, specular sky response.
