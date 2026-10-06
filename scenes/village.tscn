@@ -861,10 +861,12 @@ intensity = 0.7
 size = Vector3(28, 6, 8)
 
 [node name="DeepaLight" type="OmniLight3D" parent="."]
+script = ExtResource("22")
 position = Vector3(12.5, 3.6, -8.5)
 light_color = Color(1, 0.75, 0.4, 1)
 light_energy = 0.8
 omni_range = 6.0
+base = 0.8
 
 [node name="SanctumLamp" type="OmniLight3D" parent="."]
 script = ExtResource("22")
@@ -899,16 +901,20 @@ omni_range = 4.0
 base = 0.6
 
 [node name="HermitageLamp" type="OmniLight3D" parent="."]
+script = ExtResource("22")
 position = Vector3(-8.0, 1.8, 8.5)
 light_color = Color(1, 0.72, 0.38, 1)
 light_energy = 0.6
 omni_range = 4.0
+base = 0.6
 
 [node name="BoatLamp" type="OmniLight3D" parent="."]
+script = ExtResource("22")
 position = Vector3(-12.0, 1.6, 12.0)
 light_color = Color(1, 0.72, 0.38, 1)
 light_energy = 0.5
 omni_range = 3.0
+base = 0.5
 
 [node name="Rain" type="CPUParticles3D" parent="."]
 emitting = false
