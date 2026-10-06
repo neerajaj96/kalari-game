@@ -52,13 +52,10 @@ func _flash(is_marma: bool = false) -> void:
 		body.material_override = orig
 
 func _hitstop(marma: bool = false) -> void:
-	Engine.time_scale = 0.15
-	await get_tree().create_timer(0.08 if marma else 0.05, true, false, true).timeout
-	if is_inside_tree():
-		Engine.time_scale = 1.0
+	await CombatState.hitstop(get_tree(), 0.08 if marma else 0.05)
 
 func _exit_tree() -> void:
-	Engine.time_scale = 1.0
+	CombatState.release_hitstop()
 
 func _die(marma: bool) -> void:
 	_dead = true

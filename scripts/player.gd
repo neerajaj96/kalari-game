@@ -49,13 +49,10 @@ func _cue_hit(was_block: bool) -> void:
 
 func _hitstop(dur: float = 0.06) -> void:
 	# 60ms freeze frames the hit on mobile without particles.
-	Engine.time_scale = 0.15
-	await get_tree().create_timer(dur, true, false, true).timeout
-	if is_inside_tree():
-		Engine.time_scale = 1.0
+	await CombatState.hitstop(get_tree(), dur)
 
 func _exit_tree() -> void:
-	Engine.time_scale = 1.0
+	CombatState.release_hitstop()
 
 var _dead := false
 

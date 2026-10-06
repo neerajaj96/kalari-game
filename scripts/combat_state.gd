@@ -16,6 +16,24 @@ var hurt_cd: float = 0.0 # post-hit i-frames: alternating attackers can't stunlo
 const STAMINA_REGEN := 18.0
 var regen_mult := 1.0
 
+static var _hitstop_locks := 0
+
+static func hitstop(tree: SceneTree, dur: float = 0.06) -> void:
+	# Central freeze-frame: simultaneous player+enemy hits ref-count instead
+	# of racing Engine.time_scale back to 1.0 early.
+	_hitstop_locks += 1
+	Engine.time_scale = 0.15
+	await tree.create_timer(dur, true, false, true).timeout
+	_hitstop_locks -= 1
+	if _hitstop_locks <= 0:
+		_hitstop_locks = 0
+		Engine.time_scale = 1.0
+
+static func release_hitstop() -> void:
+	# Scene exit during a freeze: drop leaked locks so time never sticks.
+	_hitstop_locks = 0
+	Engine.time_scale = 1.0
+
 func can_act() -> bool:
 	return state == S.IDLE or state == S.STANCE
 
