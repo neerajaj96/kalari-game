@@ -28,6 +28,8 @@ real PC (Tier 2) and Android ARM64 (Tier 3) close-up observation per
 ## Deformation (shoulder/elbow/wrist/hip/knee/ankle)
 
 - [ ] PENDING — STRIKE lunge: shoulder caps hide seams, no gaps
+- [ ] PENDING — Unified 2-bone skinning (torso/head/wrap) lands only after the
+  rigid + joint-cap baseline passes this audit (too risky to ship blind)
 - [ ] PENDING — BLOCK guard: hands reach targets (IK assist), no interpenetration
 - [ ] PENDING — DODGE/HIT/DOWN: joint balls track, feet stay planted
 - [ ] PENDING — MARCH: gait sway/bounce reads per DNA, feet plant without slide
@@ -42,6 +44,7 @@ real PC (Tier 2) and Android ARM64 (Tier 3) close-up observation per
 ## Performance (Mobile renderer, ARM64)
 
 - [ ] PENDING — Overlay fps stable vs village baseline, Hero LOD switches at 9m/22m
+  (pin LODs with `L` in the audit scene when inspecting silhouette pops)
 
 ## Defect loop (per defect)
 
