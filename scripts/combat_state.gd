@@ -70,8 +70,8 @@ func take_hit(dmg: float, is_marma: bool = false) -> bool:
 		return false # i-frames: already reeling, extra hits don't chain
 	var guard_broke := false
 	if state == S.BLOCK:
-		if stamina >= 8.0:
-			stamina -= 8.0
+		if stamina >= 12.0:
+			stamina -= 12.0
 			dmg *= 0.25
 		else:
 			guard_broke = true # guard broken: full damage + long stagger
@@ -94,7 +94,11 @@ func tick(delta: float) -> void:
 	dodge_cd = maxf(0.0, dodge_cd - delta)
 	hurt_cd = maxf(0.0, hurt_cd - delta)
 	recover_cd = maxf(0.0, recover_cd - delta)
-	stamina = minf(100.0, stamina + STAMINA_REGEN * regen_mult * delta)
+	# Braced guard breathes slowly: turtling drains against focus pressure.
+	var regen := STAMINA_REGEN * regen_mult
+	if state == S.BLOCK:
+		regen *= 0.35
+	stamina = minf(100.0, stamina + regen * delta)
 	if state == S.STRIKE and strike_cd <= 0.15:
 		state = S.STANCE
 	elif state in [S.HIT, S.BLOCK, S.DODGE] and recover_cd <= 0.0:

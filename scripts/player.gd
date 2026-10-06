@@ -32,18 +32,20 @@ func request_strike(damage: float = 8.0, cost: float = 10.0) -> void:
 
 func apply_hit(dmg: float, is_marma: bool = false) -> void:
 	var was_block := combat.state == CombatState.S.BLOCK
+	var hp_before: float = combat.hp
 	combat.take_hit(dmg, is_marma)
 	_hitstop(0.05)
 	_shake(0.5)
 	if is_marma:
 		_say("MARMA! +50%")
-	_cue_hit(was_block)
+	_cue_hit(was_block, hp_before, dmg * (1.5 if is_marma else 1.0))
 
-func _cue_hit(was_block: bool) -> void:
+func _cue_hit(was_block: bool, hp_before: float, full_dmg: float) -> void:
 	var game = get_tree().get_first_node_in_group("game")
 	if game == null or game.get("audio") == null:
 		return
-	if was_block and combat.state != CombatState.S.DOWN:
+	# Clang only when the guard actually absorbed (breaks thud instead).
+	if was_block and hp_before - float(combat.hp) < full_dmg * 0.5 and combat.state != CombatState.S.DOWN:
 		if game.audio.has_method("clang"):
 			game.audio.clang()
 	elif game.audio.has_method("hurt"):
