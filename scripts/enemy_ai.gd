@@ -185,9 +185,21 @@ func _physics_process(delta: float) -> void:
 	var dist := to.length()
 	if dist > attack_range:
 		var dir: Vector3 = to.normalized()
-		velocity.x = dir.x * speed
-		velocity.z = dir.z * speed
-		rotation.y = lerp_angle(rotation.y, atan2(-dir.x, -dir.z), 8.0 * delta)
+		# Pack separation: bandits steer off each other so the pack doesn't
+		# merge into one body on the chase.
+		var sep := Vector3.ZERO
+		for b in get_tree().get_nodes_in_group("bandit"):
+			if b == self or not is_instance_valid(b) or not (b is Node3D):
+				continue
+			var off: Vector3 = global_position - (b as Node3D).global_position
+			off.y = 0.0
+			var d := off.length()
+			if d > 0.01 and d < 1.6:
+				sep += off.normalized() * (1.6 - d)
+		var heading: Vector3 = (dir + sep * 0.8).normalized() if sep.length() > 0.01 else dir
+		velocity.x = heading.x * speed
+		velocity.z = heading.z * speed
+		rotation.y = lerp_angle(rotation.y, atan2(-heading.x, -heading.z), 8.0 * delta)
 		_marma_mark(null)
 	else:
 		velocity.x = 0.0
