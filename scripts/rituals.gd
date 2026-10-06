@@ -7,6 +7,7 @@ var slots: Array = []
 var idx := 0
 var phase := "IDLE" # IDLE, FETCH, OFFER
 var window_t := 0.0
+var _warned := false
 
 const WINDOW := 6.0
 
@@ -43,6 +44,7 @@ func on_market_zone() -> String:
 		return ""
 	phase = "OFFER"
 	window_t = WINDOW
+	_warned = false
 	return "Got %s. Go to the sanctum door and press Attack as bell within %ds." % [current().get("fetch", "flowers"), int(WINDOW)]
 
 func on_sanctum_zone() -> String:
@@ -81,8 +83,12 @@ func _complete() -> String:
 func _process(delta: float) -> void:
 	if phase == "OFFER":
 		window_t -= delta
+		var hud = get_tree().get_first_node_in_group("hud")
+		if window_t <= 2.0 and not _warned and window_t > 0.0:
+			_warned = true
+			if hud and hud.has_method("say"):
+				hud.say("Ring NOW! (Attack at the sanctum door)")
 		if window_t <= 0.0:
 			phase = "FETCH"
-			var hud = get_tree().get_first_node_in_group("hud")
 			if hud and hud.has_method("say"):
 				hud.say("Bell missed. Fetch again from market.")
