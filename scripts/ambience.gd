@@ -376,6 +376,9 @@ func _process(delta: float) -> void:
 	var wmarket := _w(pp, ZONES["market"], 8.0) if in_village else 0.0
 	var wtemple := _w(pp, ZONES["temple"], 8.0) if in_village else 0.0
 	var wwater := _w(pp, ZONES["water"], 7.0) if in_village else 0.0
+	if in_ksetra:
+		# Temple tank water laps like the backwater beds.
+		wwater = maxf(wwater, _w(pp, Vector3(-13.3, 0, 13.3), 7.0))
 	# Ksetra visit: the whole shrine ground carries the temple drone.
 	var wksetra := 1.0 if in_ksetra else 0.0
 	var storm := 0.0
