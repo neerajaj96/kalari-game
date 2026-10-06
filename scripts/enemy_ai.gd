@@ -222,7 +222,7 @@ func _telegraph() -> void:
 		game0.audio.whoosh()
 	# Flash spans the full 0.3s windup so the cue never drops before the hit.
 	await get_tree().create_timer(0.28, true, false, true).timeout
-	if combat.state != CombatState.S.STRIKE:
+	if _dead:
 		return
 	for i in range(targets.size()):
 		if is_instance_valid(targets[i]):
