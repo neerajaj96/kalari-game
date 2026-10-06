@@ -11,6 +11,7 @@ const HumanFactory = preload("res://scripts/human/human_factory.gd")
 var combat := CombatState.new()
 var move_vec := Vector2.ZERO
 var want_strike := false
+var _strike_buf := 0.0
 var want_block := false
 var want_dodge := false
 var cur_damage := 8.0
@@ -27,6 +28,7 @@ func request_strike(damage: float = 8.0, cost: float = 10.0) -> void:
 	cur_damage = damage
 	cur_cost = cost
 	want_strike = true
+	_strike_buf = 0.25
 
 func apply_hit(dmg: float, is_marma: bool = false) -> void:
 	var was_block := combat.state == CombatState.S.BLOCK
@@ -305,7 +307,13 @@ func _step() -> void:
 
 	if want_strike:
 		want_strike = false
+		# Input buffer: presses during recovery are retried while the buffer
+		# holds, so fast mobile taps stop feeling dropped.
+		_strike_buf = 0.25
+	if _strike_buf > 0.0:
+		_strike_buf = maxf(0.0, _strike_buf - delta)
 		if combat.try_strike(cur_cost):
+			_strike_buf = 0.0
 			# Aswa lunge: 3.5 m/s forward burst so strikes connect.
 			var fwd := -global_transform.basis.z
 			fwd.y = 0.0
@@ -321,7 +329,7 @@ func _step() -> void:
 			if spark:
 				spark.restart()
 			_deal_melee_delayed()
-		else:
+		elif _strike_buf <= 0.0:
 			_deny()
 	if want_block:
 		if not combat.try_block():
