@@ -49,6 +49,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _body == null:
 		return
+	if not _body.visible:
+		return # cinematic body carries the frame; legacy limbs stay parked.
 	var p = get_parent()
 	var st: int = 1 # STANCE default
 	if "combat" in p and p.combat != null:
