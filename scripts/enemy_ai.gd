@@ -59,6 +59,9 @@ func _exit_tree() -> void:
 
 func _die(marma: bool) -> void:
 	_dead = true
+	var mark := get_node_or_null("MarmaMark") as Label3D
+	if mark != null:
+		mark.visible = false
 	var cam = get_tree().get_first_node_in_group("main_camera")
 	if cam and cam.has_method("add_shake"):
 		cam.add_shake(0.4)
@@ -110,9 +113,11 @@ func _physics_process(delta: float) -> void:
 		velocity.x = dir.x * speed
 		velocity.z = dir.z * speed
 		rotation.y = lerp_angle(rotation.y, atan2(-dir.x, -dir.z), 8.0 * delta)
+		_marma_mark(null)
 	else:
 		velocity.x = 0.0
 		velocity.z = 0.0
+		_marma_mark(target)
 		if think_cd <= 0.0:
 			think_cd = 1.1
 			if combat.try_strike(10.0):
@@ -121,6 +126,22 @@ func _physics_process(delta: float) -> void:
 		if _pending_hit:
 			_pending_hit = false
 			_land_hit()
+
+func _marma_mark(target: Node3D) -> void:
+	# Gold "!" while the player holds side/back: teaches flanking without words.
+	var mark := get_node_or_null("MarmaMark") as Label3D
+	if mark == null or target == null or not is_instance_valid(target) or _dead:
+		if mark != null:
+			mark.visible = false
+		return
+	var to: Vector3 = target.global_position - global_position
+	to.y = 0.0
+	if to.length() < 0.01:
+		mark.visible = false
+		return
+	var e_fwd: Vector3 = -global_transform.basis.z
+	e_fwd.y = 0.0
+	mark.visible = e_fwd.normalized().dot((-to).normalized()) < 0.0
 
 func _telegraph() -> void:
 	# Fair windup cue: brief white flash on the body so mobile players
