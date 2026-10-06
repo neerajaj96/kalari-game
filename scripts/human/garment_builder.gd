@@ -360,7 +360,8 @@ static func build_pouch(dna: HumanDNA, _lod: int) -> ArrayMesh:
 	var h := dna.stature
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	_box(st, Vector3(0.10, h * 0.52, 0.10), 0.09, 0.11, 0.05)
+	# Rides proud of the hip wrap (wrap radius ~0.22): offset keeps it visible.
+	_box(st, Vector3(0.20, h * 0.52, 0.14), 0.09, 0.11, 0.05)
 	st.generate_normals()
 	return st.commit()
 
