@@ -40,7 +40,13 @@ func _dna_for_path() -> Resource:
 	if rp.find("gurukkal") >= 0 or rp.find("elder") >= 0:
 		return HumanDNA.gurukkal_dna()
 	if rp.find("bandit") >= 0 or rp.find("brute") >= 0:
-		return HumanDNA.bandit_dna(inst % 4)
+		# Archetype-stable faces: clubs brawl scarred, spears lean, swifts wiry.
+		var arch := str(p.get("archetype")) if p != null and p.get("archetype") != null else "club"
+		if arch == "spear":
+			return HumanDNA.bandit_dna(2)
+		if arch == "swift":
+			return HumanDNA.bandit_dna(3)
+		return HumanDNA.bandit_dna(inst % 2)
 	if rp.find("ped") >= 0 or rp.find("villager") >= 0:
 		return HumanDNA.villager_dna(inst)
 	return HumanDNA.player_dna()
