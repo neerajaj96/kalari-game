@@ -90,7 +90,17 @@ for token in ["build_waist_wrap", "build_shoulder_drape", "build_belt",
     if token.lower() not in gar.lower():
         errs.append(f"garment_builder: '{token}' missing")
 
-# 8. Factory: Hero/Mid/Far + collision separation + cache + rank + weapon.
+# 8. Audit-harness + expression-channel + LOD contracts.
+_ha = open(os.path.join(BASE, "scripts", "hero_audit.gd")).read()
+for token in ["face_lock", "force_lod", "_pin_lod", "MARCH_SPEED", "--audit-quit"]:
+    if token not in _ha:
+        errs.append(f"hero_audit: '{token}' missing")
+_han = open(os.path.join(HUMAN, "human_anim.gd")).read()
+if 'face_lock: String = ""' not in _han:
+    errs.append("human_anim: face_lock channel missing")
+_lod = open(os.path.join(HUMAN, "human_lod.gd")).read()
+if "force_lod" not in _lod or "hero_dist" not in _lod:
+    errs.append("human_lod: pin/hysteresis missing")
 fac = open(os.path.join(HUMAN, "human_factory.gd")).read()
 for token in ["bone_global_rest", "follow_weapon", "update_rank_accent",
               "_hide_primitives", "clear_cache", "absolute"]:
