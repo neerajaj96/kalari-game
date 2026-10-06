@@ -41,6 +41,9 @@ var _shots := 0
 var _auto_quit := false
 var _headless := false
 var _pin_lod := -1
+var _seen_views := {}
+var _seen_poses := {}
+var _seen_exprs := {}
 
 func _ready() -> void:
 	_cam = get_node_or_null("Camera3D") as Camera3D
@@ -76,7 +79,7 @@ func _process(delta: float) -> void:
 	_drive(delta)
 	_tick_label(delta)
 	if _auto_quit and _t_run >= 30.0:
-		_log("auto-quit after full cycle (headless log only, NOT a visual pass)")
+		_log("auto-quit coverage views=%d/3 poses=%d/8 exprs=%d/8 (headless log only, NOT a visual pass)" % [_seen_views.size(), _seen_poses.size(), _seen_exprs.size()])
 		get_tree().quit()
 
 func _drive(delta: float) -> void:
@@ -106,14 +109,17 @@ func _apply_view() -> void:
 		_:
 			_cam.position = Vector3(-2.4, 1.55, 0.1)
 	_cam.look_at(Vector3(0, 1.25, 0))
+	_seen_views[_view] = true
 	_log("view=%s" % VIEW_NAMES[_view])
 
 func _apply_pose() -> void:
 	_t_pose = 0.0
+	_seen_poses[_pose_i] = true
 	_log("pose=%s" % POSE_NAMES[_pose_i])
 
 func _apply_expr() -> void:
 	_t_expr = 0.0
+	_seen_exprs[_expr_i] = true
 	if _face != null and _face.has_method("set_expression"):
 		_face.set_expression(EXPRESSIONS[_expr_i])
 	_log("expression=%s" % EXPRESSIONS[_expr_i])
