@@ -51,7 +51,7 @@ func _spawn_guards() -> void:
 	if world == null or world.get("current") == null:
 		return
 	if "School" in str(world.current.name):
-		return # pit stays clean; heat is a village affair
+		return # pit stays clean; guards hunt village streets + temple grounds
 	for i in range(want - have):
 		var g = ps.instantiate()
 		g.set("is_guard", true)
