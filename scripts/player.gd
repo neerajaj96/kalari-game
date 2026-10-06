@@ -438,7 +438,7 @@ func _damage_number(e: Node, amount: float, marma: bool) -> void:
 	tag.modulate = Color(1.0, 0.85, 0.3) if marma else Color(1, 1, 1, 0.9)
 	tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	tag.no_depth_test = false
-	tag.position = Vector3(randf_range(-0.2, 0.2), 2.1, 0)
+	tag.position = Vector3(randf_range(-0.2, 0.2), 2.25, 0)
 	e.add_child(tag)
 	var tw := tag.create_tween()
 	tw.set_parallel(true)
