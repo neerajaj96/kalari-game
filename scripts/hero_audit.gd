@@ -55,7 +55,7 @@ func _ready() -> void:
 		_face = _body.get_node_or_null("FaceAnim")
 	_make_overlay()
 	_apply_view()
-	_log("ready headless=%s auto_quit=%s (commit 7bff612 baseline, NOT validated)" % [str(_headless), str(_auto_quit)])
+	_log("ready headless=%s auto_quit=%s (v0.30.0-cinematic baseline, NOT validated)" % [str(_headless), str(_auto_quit)])
 
 func _process(delta: float) -> void:
 	if _body == null or not is_instance_valid(_body):
