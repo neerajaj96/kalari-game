@@ -422,6 +422,26 @@ func _deal_melee() -> void:
 		if e.has_method("apply_hit"):
 			# Immune frames land nothing: no spark, sound or shout on a miss.
 			if e.apply_hit(cur_damage * _buff_marma, is_marma):
+				_damage_number(e, cur_damage * _buff_marma, is_marma)
 				_hit_sound(is_marma)
 				if is_marma:
 					_say("MARMA!" if facing < -0.5 else "MARMA flank!")
+
+func _damage_number(e: Node, amount: float, marma: bool) -> void:
+	# Floating combat text at the wound: white damage, gold marma crits.
+	if e == null or not is_instance_valid(e) or not (e is Node3D):
+		return
+	var tag := Label3D.new()
+	tag.text = "%d" % int(round(amount))
+	tag.font_size = 72 if marma else 48
+	tag.pixel_size = 0.006
+	tag.modulate = Color(1.0, 0.85, 0.3) if marma else Color(1, 1, 1, 0.9)
+	tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	tag.no_depth_test = false
+	tag.position = Vector3(randf_range(-0.2, 0.2), 2.1, 0)
+	e.add_child(tag)
+	var tw := tag.create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(tag, "position:y", tag.position.y + 0.5, 0.7)
+	tw.tween_property(tag, "modulate:a", 0.0, 0.7)
+	tw.chain().tween_callback(tag.queue_free)
