@@ -8,6 +8,8 @@ extends RefCounted
 class_name HumanRig
 
 static func bone_list() -> Array:
+	# Finger/toe bones are reserved for runtime-gated per-digit articulation
+	# (pending hero audit); hands/feet bind merged segments until then.
 	return [
 		"pelvis", "spine", "chest", "neck", "head", "jaw",
 		"eye_L", "eye_R", "lid_upper_L", "lid_upper_R", "lid_lower_L", "lid_lower_R",
