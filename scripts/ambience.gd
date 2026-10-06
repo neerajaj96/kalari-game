@@ -317,7 +317,7 @@ func _step_buf() -> AudioStreamWAV:
 	s.data = bytes
 	return s
 
-func _events(delta: float, wmarket: float, wtemple: float, storm: float, night: float) -> void:
+func _events(delta: float, wmarket: float, wtemple: float, storm: float, night: float, in_village: bool = true) -> void:
 	_bell_t += delta
 	_crier_t += delta
 	_watch_t += delta
@@ -335,7 +335,7 @@ func _events(delta: float, wmarket: float, wtemple: float, storm: float, night: 
 			_say("Lightning split the lamp row! The Tantri will ask for oil and guards.")
 	elif storm < 0.5:
 		_storm_was = false
-	if night >= 0.8 and _watch_t >= 120.0:
+	if night >= 0.8 and _watch_t >= 120.0 and in_village:
 		_watch_t = 0.0
 		_say("Watchman: All is well. Sleep, Chirakkal.")
 
@@ -391,7 +391,7 @@ func _process(delta: float) -> void:
 	_set_db("lap", -60.0 + wwater * 44.0)
 	_set_db("wash", -60.0 + storm * 44.0)
 	_set_db("insects", -60.0 + night * 40.0)
-	_events(delta, wmarket, maxf(wtemple, wksetra), storm, night)
+	_events(delta, wmarket, maxf(wtemple, wksetra), storm, night, in_village)
 
 func _w(pp: Vector3, c: Vector3, r: float) -> float:
 	var d: Vector3 = pp - c
