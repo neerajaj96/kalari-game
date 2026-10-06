@@ -714,7 +714,7 @@ static func build_hair(dna: HumanDNA, lod: int) -> ArrayMesh:
 	var segs := 18 if lod == 0 else 12
 	match dna.hair_style:
 		0: # kuduma: cap + topknot + tie band + sideburns + strand shells.
-			var cap := _hair_cap(0.103, 0.06, segs)
+			var cap := _hair_cap(0.103 + dna.jaw_width * 0.010, 0.06, segs)
 			var knot_prof := PackedVector2Array([Vector2(0.001, 0.0), Vector2(0.028, 0.005), Vector2(0.032, 0.030), Vector2(0.018, 0.055), Vector2(0.001, 0.060)])
 			var knot := _offset(lathe(knot_prof, 10), Vector3(0.0, 0.075, 0.075))
 			var tie := _offset(lathe(PackedVector2Array([Vector2(0.030, -0.006), Vector2(0.033, 0.0), Vector2(0.030, 0.006)]), 10), Vector3(0.0, 0.080, 0.075))
@@ -723,19 +723,19 @@ static func build_hair(dna: HumanDNA, lod: int) -> ArrayMesh:
 				return _merge(_merge(with_tie, _sideburns()), _hair_strands())
 			return with_tie
 		2: # headwrap: full cloth-like wrap over crown.
-			return _hair_cap(0.112, 0.02, segs)
+			return _hair_cap(0.112 + dna.jaw_width * 0.010, 0.02, segs)
 		3: # long tie: cap + pony tail.
-			var cap3 := _hair_cap(0.103, 0.06, segs)
+			var cap3 := _hair_cap(0.103 + dna.jaw_width * 0.010, 0.06, segs)
 			var tail := _offset(lathe(limb_profile(0.22, 0.028, 0.014, 0.3, 0.004, lod), 8), Vector3(0.0, 0.03, 0.105))
 			return _merge(cap3, tail)
 		4: # shaven: scalp shadow only.
 			return _hair_cap(0.099, 0.075, 8)
 		5: # bun + cover: cap + rear bun.
-			var cap5 := _hair_cap(0.104, 0.055, segs)
+			var cap5 := _hair_cap(0.104 + dna.jaw_width * 0.010, 0.055, segs)
 			var bun := _offset(lathe(PackedVector2Array([Vector2(0.001, 0.0), Vector2(0.035, 0.01), Vector2(0.030, 0.045), Vector2(0.001, 0.055)]), 10), Vector3(0.0, 0.01, 0.10))
 			return _merge(cap5, bun)
 		_: # short crop (default).
-			return _hair_cap(0.103, 0.045, segs)
+			return _hair_cap(0.103 + dna.jaw_width * 0.010, 0.045, segs)
 
 static func _hair_cap(r: float, top_cut: float, segs: int) -> ArrayMesh:
 	var st := SurfaceTool.new()
