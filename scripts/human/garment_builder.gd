@@ -321,41 +321,6 @@ static func build_headband(dna: HumanDNA, lod: int) -> ArrayMesh:
 	st.generate_normals()
 	return st.commit()
 
-static func build_thigh_wraps(dna: HumanDNA, lod: int) -> ArrayMesh:
-	# Kalari kaccha thigh bands: wrapped cloth rings around upper thighs with
-	# fold ripples + hem rolls. Thigh-local (origin at thigh joint).
-	if dna.garment_set != 0:
-		return null
-	var parts: Array = []
-	for side in [-1.0, 1.0]:
-		var st := SurfaceTool.new()
-		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-		var radial := 14 if lod == 0 else 8
-		var rows := 4 if lod == 0 else 2
-		var r0 := 0.095
-		var r1 := 0.082
-		for r in range(rows):
-			for s in range(radial):
-				var a0 := TAU * float(s) / float(radial)
-				var a1 := TAU * float(s + 1) / float(radial)
-				var t0 := float(r) / float(rows)
-				var t1 := float(r + 1) / float(rows)
-				var y0 := lerpf(-0.06, -0.22, t0)
-				var y1 := lerpf(-0.06, -0.22, t1)
-				var rr0 := lerpf(r0, r1, t0) + sin(a0 * 6.0) * 0.003
-				var rr1 := lerpf(r0, r1, t1) + sin(a1 * 6.0) * 0.003
-				var p00 := Vector3(cos(a0) * rr0, y0, sin(a0) * rr0)
-				var p01 := Vector3(cos(a1) * rr0, y0, sin(a1) * rr0)
-				var p10 := Vector3(cos(a0) * rr1, y1, sin(a0) * rr1)
-				var p11 := Vector3(cos(a1) * rr1, y1, sin(a1) * rr1)
-				_quad_c(st, p00, p01, p11, p10)
-		st.generate_normals()
-		var side_off := -0.095 if side < 0.0 else 0.095
-		parts.append(_offset_mesh(st.commit(), Vector3(side_off * 0.0, 0.0, 0.0)))
-	var out: ArrayMesh = parts[0]
-	# NOTE: wraps are thigh-local each side; split by caller per thigh bone.
-	return out
-
 static func build_thigh_wrap_single(lod: int) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
