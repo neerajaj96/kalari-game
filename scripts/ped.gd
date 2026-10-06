@@ -79,9 +79,13 @@ func _process(delta: float) -> void:
 				face.set_expression("surprise")
 
 func apply_hit(_dmg: float, _marma: bool = false) -> bool:
-	# Struck: scream, flee, never fight back. (Heat consequences in OW3.)
+	# Struck: scream, flee, never fight back. Raising hands on villagers
+	# draws Kolathiri heat.
 	flee_t = 3.0
 	_say("Ayyo! Guard! Guard!" if randf() < 0.5 else "Ayyo! My cart!")
+	var game = get_tree().get_first_node_in_group("game")
+	if game != null and game.get("heat") != null and game.heat.has_method("add"):
+		game.heat.add(1)
 	return true
 
 func _physics_process(delta: float) -> void:
