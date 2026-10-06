@@ -182,6 +182,11 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = 0.0
 		velocity.z = 0.0
+		# Track the player in range so strikes (and the marma tell) face true.
+		var fto: Vector3 = target.global_position - global_position if target != null and is_instance_valid(target) else Vector3.ZERO
+		fto.y = 0.0
+		if fto.length() > 0.05:
+			rotation.y = lerp_angle(rotation.y, atan2(-fto.x, -fto.z), 8.0 * delta)
 		_marma_mark(target)
 		if think_cd <= 0.0:
 			# Desync pack rhythm so volleys don't land on the same frame.
