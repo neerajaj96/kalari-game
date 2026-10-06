@@ -50,7 +50,7 @@ func status() -> String:
 	var want_kills := maxi(int(needs.get("kills", 0)), int(needs.get("kills_total", 0)))
 	if want_kills > 0 and game and game.get("quest_log") != null and game.quest_log.get("kills") != null:
 		extra = " (bandits down: %d/%d)" % [game.quest_log.kills, want_kills]
-	return "Phase %d/7 %s%s: %s (supply %d)%s" % [int(p.get("n", 0)), p.get("name", "?"), lock, p.get("brief", ""), supply, extra]
+	return "Phase %d/%d %s%s: %s (supply %d)%s" % [int(p.get("n", 0)), phases.size(), p.get("name", "?"), lock, p.get("brief", ""), supply, extra]
 
 func _process(delta: float) -> void:
 	_t += delta
