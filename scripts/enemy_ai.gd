@@ -170,6 +170,14 @@ func _physics_process(delta: float) -> void:
 		target = get_tree().get_first_node_in_group("player")
 	if target == null:
 		return
+	if target.get("combat") != null and int(target.combat.state) == CombatState.S.DOWN:
+		# Victor's patience: stand ground while Gurukkal lifts the player.
+		velocity.x = 0.0
+		velocity.z = 0.0
+		velocity.y = -0.5
+		move_and_slide()
+		_marma_mark(null)
+		return
 	var to: Vector3 = target.global_position - global_position
 	to.y = 0.0
 	var dist := to.length()
