@@ -64,6 +64,11 @@ func load_world(path: String) -> void:
 	if game0 and game0.get("save") != null and game0.save.has_method("save_game"):
 		game0.save.save_game()
 	_spawn_peds(path)
+	# Stale briefings never cross worlds: the DlgPanel backlog belongs to
+	# the place that queued it.
+	var game2 = get_tree().get_first_node_in_group("game")
+	if game2 != null and game2.get("dialogue") != null and game2.dialogue.has_method("clear"):
+		game2.dialogue.clear()
 	# Zone label follows actual loads (not just HUD buttons) so boot-restore
 	# and drill travel never leave a stale world name on the radar.
 	var hud = get_tree().get_first_node_in_group("hud")
