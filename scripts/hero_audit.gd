@@ -4,7 +4,7 @@ extends Node3D
 # headless (fast self-cycle + optional auto-quit for CI logs).
 # NOT a gameplay scene: visual audit only. Gameplay collision, CombatState and
 # world wiring are untouched; open with: godot --path . res://scenes/hero_audit.tscn
-# Controls (PC): 1/2/3 views, SPACE next pose, E next expression, M march,
+# Controls (PC): 1-4 views, SPACE next pose, E next expression, M march,
 #   L LOD pin (auto/hero/mid/far), S/F12 screenshot to user://,
 #   single click advances view.
 # Controls (Android): single tap advances view, two-finger tap screenshots.
@@ -15,7 +15,7 @@ class_name HeroAudit
 const HumanDNA = preload("res://scripts/human/human_dna.gd")
 const HumanFactory = preload("res://scripts/human/human_factory.gd")
 
-const VIEW_NAMES := ["front", "three_quarter", "profile"]
+const VIEW_NAMES := ["front", "three_quarter", "profile", "face"]
 const POSE_STATES := [1, 2, 3, 4, 5, 0, 6, -1]
 const POSE_NAMES := ["STANCE", "STRIKE", "BLOCK", "DODGE", "HIT", "IDLE", "DOWN", "MARCH"]
 const EXPRESSIONS := ["neutral", "focus", "anger", "fear", "pain", "surprise", "effort", "recovery"]
@@ -91,7 +91,7 @@ func _process(delta: float) -> void:
 	_drive(delta)
 	_tick_label(delta)
 	if _auto_quit and _t_run >= 40.0:
-		_log("auto-quit coverage views=%d/3 poses=%d/8 exprs=%d/8 (headless log only, NOT a visual pass)" % [_seen_views.size(), _seen_poses.size(), _seen_exprs.size()])
+		_log("auto-quit coverage views=%d/%d poses=%d/%d exprs=%d/%d (headless log only, NOT a visual pass)" % [_seen_views.size(), VIEW_NAMES.size(), _seen_poses.size(), POSE_STATES.size(), _seen_exprs.size(), EXPRESSIONS.size()])
 		get_tree().quit()
 
 func _drive(delta: float) -> void:
@@ -118,13 +118,16 @@ func _apply_view() -> void:
 			_cam.position = Vector3(0, 1.50, -1.5)
 		"three_quarter":
 			_cam.position = Vector3(-1.1, 1.6, -1.1)
-		_:
+		"profile":
 			_cam.position = Vector3(-1.55, 1.5, 0.1)
-	_cam.look_at(Vector3(0, 1.20, 0))
+		_:
+			_cam.position = Vector3(0, 1.62, -0.75)
+	_cam.look_at(Vector3(0, 1.20, 0) if VIEW_NAMES[_view] != "face" else Vector3(0, 1.58, 0))
 	_seen_views[_view] = true
 	_log("view=%s" % VIEW_NAMES[_view])
-	if _auto_quit:
+	if _auto_quit and _t_run > 1.5:
 		# Unattended runs capture every view for later visual inspection.
+		# First-frame shot skipped: the environment needs a frame to settle.
 		_shot("auto")
 
 func _apply_pose() -> void:
@@ -165,6 +168,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				_apply_view()
 			KEY_3:
 				_view = 2
+				_t_view = 0.0
+				_apply_view()
+			KEY_4:
+				_view = 3
 				_t_view = 0.0
 				_apply_view()
 			KEY_SPACE:
