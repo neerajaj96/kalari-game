@@ -975,8 +975,14 @@ func _build_all() -> void:
 		var fang := TAU * float(fi) / 8.0
 		parita_xf.append(Transform3D(Basis(Vector3.UP, -fang),
 			Vector3(cos(fang) * 17.5, 1.6, sin(fang) * 17.5)))
+	var parita_flag := ShaderMaterial.new()
+	parita_flag.shader = load("res://shaders/flag.gdshader")
+	parita_flag.set_shader_parameter("tint", Color(0.85, 0.55, 0.2, 1.0))
+	parita_flag.set_shader_parameter("edge_axis", 1)
+	parita_flag.set_shader_parameter("edge_min", 0.3)
+	parita_flag.set_shader_parameter("edge_span", -0.6)
 	_mmi(root, "ParitaFlagSet", _shared_box("parita", Vector3(0.3, 0.6, 0.05)),
-		parita_xf, cream, dhvaja_prov, 40.0)
+		parita_xf, parita_flag, dhvaja_prov, 40.0)
 	# shuddhi platform + poles by the east gate (SESHA-P8V05 dig-bandha/nadi)
 	var shuddhi_prov: Array = ["SESHA-P8V05-digbandha"]
 	_box(root, "ShuddhiPlatform", granite, Vector3(1.6, 0.3, 1.6), Vector3((uh + 18.0) / 2.0, 0.15, 3.0), shuddhi_prov)

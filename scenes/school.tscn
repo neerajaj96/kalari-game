@@ -161,6 +161,13 @@ light_energy = 0.7
 omni_range = 4.0
 base = 0.7
 
+[node name="ProbePit" type="ReflectionProbe" parent="."]
+position = Vector3(0, 2.0, 0)
+cull_mask = 1
+update_mode = 0
+intensity = 0.4
+size = Vector3(10, 4, 8)
+
 [node name="RackPostL" type="CSGBox3D" parent="."]
 use_collision = true
 material = ExtResource("3")

@@ -215,6 +215,13 @@ update_mode = 0
 intensity = 0.4
 size = Vector3(8, 5, 8)
 
+[node name="ProbeKulam" type="ReflectionProbe" parent="."]
+position = Vector3(-13.0, 1.5, 13.0)
+cull_mask = 1
+update_mode = 0
+intensity = 0.4
+size = Vector3(10, 4, 10)
+
 [node name="SanctumTrigger" type="Area3D" parent="."]
 script = ExtResource("8")
 position = Vector3(4.0, 1.0, 0)
