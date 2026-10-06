@@ -44,7 +44,9 @@ func _process(delta: float) -> void:
 	if p == null or p.get("combat") == null:
 		return
 	var st: int = p.combat.state
-	var hit := (call == "strike" and st == 2) or (call == "block" and st == 3) or (call == "dodge" and st == 4)
+	# Strike flashes past the 5Hz sampler: latch via cooldown as well as pose.
+	var struck := st == 2 or (call == "strike" and p.combat.strike_cd > 0.3)
+	var hit := (call == "strike" and struck) or (call == "block" and st == 3) or (call == "dodge" and st == 4)
 	if hit:
 		reps += 1
 		if reps % 5 == 0:

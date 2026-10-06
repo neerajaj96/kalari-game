@@ -342,9 +342,10 @@ func _process(delta: float) -> void:
 	var pp: Vector3 = player.global_position
 	var w = get_tree().get_first_node_in_group("world")
 	var in_ksetra := w != null and w.get("current") != null and "Ksetra" in str(w.current.name)
-	var wmarket := _w(pp, ZONES["market"], 8.0)
-	var wtemple := _w(pp, ZONES["temple"], 8.0)
-	var wwater := _w(pp, ZONES["water"], 7.0)
+	var in_village := w != null and w.get("current") != null and "Village" in str(w.current.name)
+	var wmarket := _w(pp, ZONES["market"], 8.0) if in_village else 0.0
+	var wtemple := _w(pp, ZONES["temple"], 8.0) if in_village else 0.0
+	var wwater := _w(pp, ZONES["water"], 7.0) if in_village else 0.0
 	# Ksetra visit: the whole shrine ground carries the temple drone.
 	var wksetra := 1.0 if in_ksetra else 0.0
 	var storm := 0.0
