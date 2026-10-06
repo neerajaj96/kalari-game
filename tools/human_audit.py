@@ -92,7 +92,7 @@ for token in ["build_waist_wrap", "build_shoulder_drape", "build_belt",
 
 # 8. Audit-harness + expression-channel + LOD contracts.
 _ha = open(os.path.join(BASE, "scripts", "hero_audit.gd")).read()
-for token in ["face_lock", "force_lod", "_pin_lod", "MARCH_SPEED", "--audit-quit"]:
+for token in ["Vector3.ZERO, lock", "force_lod", "_pin_lod", "MARCH_SPEED", "--audit-quit"]:
     if token not in _ha:
         errs.append(f"hero_audit: '{token}' missing")
 _han = open(os.path.join(HUMAN, "human_anim.gd")).read()
