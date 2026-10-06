@@ -46,9 +46,9 @@ func _draw() -> void:
 		# temple gold square + market dot (village landmarks)
 		draw_rect(Rect2(_w2m(Vector3(-1, 0, -11)) , Vector2(6, 6)), Color(0.83, 0.63, 0.09, 0.9))
 		draw_circle(_w2m(Vector3(-3, 0, 2)), 3.0, Color(0.2, 0.75, 0.3))
-	# plot target pulse
+	# plot target pulse (village geography; hidden where it would mislead)
 	var game = get_tree().get_first_node_in_group("game")
-	var tp: Variant = _plot_target(game)
+	var tp: Variant = _plot_target(game) if in_home else null
 	if tp != null:
 		var tpp: Vector3 = tp
 		var pr: float = 4.0 + sin(Time.get_ticks_msec() / 300.0) * 1.5
