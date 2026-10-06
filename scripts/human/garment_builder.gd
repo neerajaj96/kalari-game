@@ -104,8 +104,8 @@ static func build_shoulder_drape(dna: HumanDNA, lod: int) -> ArrayMesh:
 			# Drape curve: chest-hugging top, free-hanging bottom + fold ripple.
 			var ripple0 := sin(fx0 * 12.0 + fy0 * 4.0) * 0.012 * fy0
 			var ripple1 := sin(fx1 * 12.0 + fy1 * 4.0) * 0.012 * fy1
-			var pz0 := -0.155 - fy0 * 0.035 + ripple0
-			var pz1 := -0.155 - fy1 * 0.035 + ripple1
+			var pz0 := -0.190 - fy0 * 0.035 + ripple0
+			var pz1 := -0.190 - fy1 * 0.035 + ripple1
 			var ao := 1.0 - absf(ripple0) * 8.0
 			var c := Color(ao, ao, ao, 1.0)
 			st.set_color(c)
@@ -169,7 +169,7 @@ static func build_chest_sash(dna: HumanDNA, lod: int) -> ArrayMesh:
 			var cx1 := lerpf(0.14, -0.16, fy1) + (fx - 0.5) * 0.10
 			var cy0 := lerpf(h * 0.80, h * 0.58, fy0)
 			var cy1 := lerpf(h * 0.80, h * 0.58, fy1)
-			var cz := -0.175 + sin(fy0 * 9.0) * 0.006
+			var cz := -0.210 + sin(fy0 * 9.0) * 0.006
 			var c := Color(0.95, 0.95, 0.95, 1.0)
 			st.set_color(c)
 			st.set_uv(Vector2(fx, fy0))
@@ -191,7 +191,7 @@ static func build_chest_sash(dna: HumanDNA, lod: int) -> ArrayMesh:
 # Kurta / shirt torso cover for villagers/priest.
 static func build_kurta(dna: HumanDNA, lod: int) -> ArrayMesh:
 	var h := dna.stature
-	var chest_r := lerpf(0.155, 0.195, dna.build) + 0.020
+	var chest_r := lerpf(0.155, 0.195, dna.build) + 0.038
 	var hem_r := chest_r + 0.015
 	var radial := 20 if lod == 0 else 12
 	var rows := 6 if lod == 0 else 4
@@ -231,7 +231,7 @@ static func build_kurta(dna: HumanDNA, lod: int) -> ArrayMesh:
 # Blouse for sari wearers (fitted, short sleeve hint).
 static func build_blouse(dna: HumanDNA, lod: int) -> ArrayMesh:
 	var h := dna.stature
-	var r := lerpf(0.145, 0.175, dna.build) + 0.015
+	var r := lerpf(0.145, 0.175, dna.build) + 0.033
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var radial := 18 if lod == 0 else 10
@@ -278,11 +278,11 @@ static func build_chest_jewellery(dna: HumanDNA) -> ArrayMesh:
 	var parts: Array = []
 	var h := dna.stature
 	if dna.jewellery & 2:
-		parts.append(_offset_mesh(_torus(0.055, 0.005, 14, 6), Vector3(0, h * 0.78, -0.09)))
+		parts.append(_offset_mesh(_torus(0.055, 0.005, 14, 6), Vector3(0, h * 0.78, -0.15)))
 	if dna.jewellery & 16:
 		var st := SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-		_quad_c(st, Vector3(0.10, h * 0.80, -0.14), Vector3(0.12, h * 0.80, -0.14), Vector3(-0.10, h * 0.58, -0.16), Vector3(-0.12, h * 0.58, -0.16))
+		_quad_c(st, Vector3(0.10, h * 0.80, -0.175), Vector3(0.12, h * 0.80, -0.175), Vector3(-0.10, h * 0.58, -0.195), Vector3(-0.12, h * 0.58, -0.195))
 		st.generate_normals()
 		parts.append(st.commit())
 	if parts.is_empty():
@@ -346,40 +346,12 @@ static func build_waist_knot(dna: HumanDNA) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var ky := h * 0.575
-	var kz := -0.175
+	var kz := -0.205
 	_box(st, Vector3(0, ky, kz), 0.055, 0.045, 0.035)
 	_quad_c(st, Vector3(-0.02, ky - 0.02, kz - 0.015), Vector3(0.0, ky - 0.02, kz - 0.015), Vector3(-0.005, ky - 0.13, kz - 0.005), Vector3(-0.025, ky - 0.13, kz - 0.005))
 	_quad_c(st, Vector3(0.0, ky - 0.02, kz - 0.015), Vector3(0.02, ky - 0.02, kz - 0.015), Vector3(0.025, ky - 0.11, kz - 0.005), Vector3(0.005, ky - 0.11, kz - 0.005))
 	st.generate_normals()
 	return st.commit()
-
-static func build_jewellery(dna: HumanDNA) -> ArrayMesh:
-	var parts: Array = []
-	var h := dna.stature
-	if dna.jewellery & 1:
-		for side in [-1.0, 1.0]:
-			parts.append(_offset_mesh(_torus(0.012, 0.0035, 8, 6), Vector3(side * 0.098, h * 0.935, -0.005)))
-	if dna.jewellery & 2:
-		parts.append(_offset_mesh(_torus(0.055, 0.005, 14, 6), Vector3(0, h * 0.78, -0.09)))
-	if dna.jewellery & 4:
-		for side in [-1.0, 1.0]:
-			parts.append(_offset_mesh(_torus(0.032, 0.006, 10, 6), Vector3(side * 0.19, h * 0.52, 0.0)))
-	if dna.jewellery & 8:
-		for side in [-1.0, 1.0]:
-			parts.append(_offset_mesh(_torus(0.045, 0.005, 10, 6), Vector3(side * 0.10, 0.09, 0.0)))
-	if dna.jewellery & 16:
-		# Sacred thread: diagonal cord across torso.
-		var st := SurfaceTool.new()
-		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-		_quad_c(st, Vector3(0.10, h * 0.80, -0.14), Vector3(0.12, h * 0.80, -0.14), Vector3(-0.10, h * 0.58, -0.16), Vector3(-0.12, h * 0.58, -0.16))
-		st.generate_normals()
-		parts.append(st.commit())
-	if parts.is_empty():
-		return null
-	var out: ArrayMesh = parts[0]
-	for i in range(1, parts.size()):
-		out = _merge_mesh(out, parts[i])
-	return out
 
 static func build_pouch(dna: HumanDNA, _lod: int) -> ArrayMesh:
 	# Bandit/market pouch on belt + weapon strap.
