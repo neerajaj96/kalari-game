@@ -116,10 +116,12 @@ func _count_rep() -> void:
 		game.quest_log.brief("q01_first_earth")
 	if game.get("xp_rank") != null and game.xp_rank.has_method("add_xp"):
 		if n == 5:
-			game.xp_rank.add_xp(120)
+			var up: bool = game.xp_rank.add_xp(120)
 			if game.quest_log.has_method("mark_q01_done"):
 				game.quest_log.mark_q01_done()
 			_say("5 reps! Gurukkal nods. First quest done (+120 XP). Go Village.")
+			if up and game.get("audio") != null and game.audio.has_method("fanfare"):
+				game.audio.fanfare()
 		elif n > 5:
 			game.xp_rank.add_xp(1)
 

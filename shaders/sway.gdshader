@@ -18,6 +18,8 @@ void fragment() {
 	if (use_card) {
 		vec4 c = texture(card_tex, UV);
 		ALBEDO = c.rgb;
+		// Scissor cutout matches the depth prepass: no halo fringe on cards.
+		ALPHA_SCISSOR_THRESHOLD = 0.5;
 		ALPHA = c.a;
 	} else {
 		ALBEDO = tint.rgb;
