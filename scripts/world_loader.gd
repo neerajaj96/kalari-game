@@ -64,6 +64,16 @@ func load_world(path: String) -> void:
 	if game0 and game0.get("save") != null and game0.save.has_method("save_game"):
 		game0.save.save_game()
 	_spawn_peds(path)
+	# Zone label follows actual loads (not just HUD buttons) so boot-restore
+	# and drill travel never leave a stale world name on the radar.
+	var hud = get_tree().get_first_node_in_group("hud")
+	if hud != null and hud.has_method("_set_zone"):
+		if path == school_path:
+			hud._set_zone("Kuzhi-Kalari")
+		elif path == ksetra_path:
+			hud._set_zone("Vishnu Dvitala Ksetra")
+		else:
+			hud._set_zone("Chirakkal Village")
 	# Fresh world, fresh flags: stale zone state never crosses worlds.
 	# An active breath session ends at the border (place changed its meaning).
 	var game = get_tree().get_first_node_in_group("game")
@@ -198,6 +208,9 @@ func _detail_swap(world: Node) -> void:
 		jobs.append(["Ground", "ground", [30.0, 24.0, 0.15, 8.0], 0.1])
 	elif str(world.name) == "Ksetra":
 		jobs.append(["Ground", "ground", [70.0, 70.0, 0.25, 12.0], 0.1])
+	elif str(world.name) == "School":
+		# Kalari hall roof: shallow tiled pyramid over the flat slab.
+		jobs.append(["Roof", "pyramid", [15.0, 8.6, 1.6, 0.5], 0.1])
 	for j in jobs:
 		var orig := world.get_node_or_null(j[0]) as CSGShape3D
 		if orig == null:
