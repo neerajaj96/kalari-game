@@ -111,7 +111,7 @@ func _on_slot(slot_id: String) -> void:
 	# Lamp program: night slots burn brighter (deeparadhana/athazha 1.1, else 0.7).
 	# Deeparadhana also rings the temple bell where the world audio lives (kalari).
 	var lamp_base := 1.1 if slot_id in ["deeparadhana", "athazha"] else 0.7
-	for lamp_name in ["LampE", "LampW", "LampN"]:
+	for lamp_name in ["LampE", "LampW", "LampN", "GarbhaDeepa"]:
 		var lamp = get_node_or_null(lamp_name)
 		if lamp and lamp.get("base") != null:
 			lamp.set("base", lamp_base)
