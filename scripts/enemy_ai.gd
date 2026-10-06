@@ -220,7 +220,8 @@ func _telegraph() -> void:
 	var game0 = get_tree().get_first_node_in_group("game")
 	if game0 != null and game0.get("audio") != null and game0.audio.has_method("whoosh"):
 		game0.audio.whoosh()
-	await get_tree().create_timer(0.18, true, false, true).timeout
+	# Flash spans the full 0.3s windup so the cue never drops before the hit.
+	await get_tree().create_timer(0.28, true, false, true).timeout
 	if combat.state != CombatState.S.STRIKE:
 		return
 	for i in range(targets.size()):
