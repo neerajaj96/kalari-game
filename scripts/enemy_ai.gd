@@ -42,7 +42,8 @@ func _make_hp_pips() -> void:
 	_refresh_pips()
 
 func _refresh_pips() -> void:
-	var pips := get_node_or_null("HpPips") as Label3D
+	# Code-built node: find_child (get_node_or_null paths must resolve in tscn).
+	var pips := find_child("HpPips", true, false) as Label3D
 	if pips == null:
 		return
 	var n := clampi(int(ceil(combat.hp / max_hp * 5.0)), 0, 5)
