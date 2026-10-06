@@ -142,8 +142,11 @@ static func _build_lod_into(sk: Skeleton3D, dna: HumanDNA, lod: int, out_sets: A
 	_add_seg(sk, "jaw", BodySculpt.build_teeth_strip(), HumanMaterials.teeth_material(), Transform3D(Basis.IDENTITY, Vector3(0, -0.01, -0.055)), lod, out_sets, false)
 	_add_seg(sk, "jaw", BodySculpt.build_mouth_cavity(), HumanMaterials.mouth_inner_material(), Transform3D.IDENTITY, lod, out_sets, false)
 	if lod < 2:
-		_add_seg(sk, "brow_L", BodySculpt.build_eyebrow(dna, -1.0, lod), HumanMaterials.hair_material(dna), Transform3D.IDENTITY, lod, out_sets, false)
-		_add_seg(sk, "brow_R", BodySculpt.build_eyebrow(dna, 1.0, lod), HumanMaterials.hair_material(dna), Transform3D.IDENTITY, lod, out_sets, false)
+		# Brow strips ride the sculpted ridge: offset matches the brow_ridge
+		# surface shift so they never sink or float across DNA.
+		var brow_fwd := Vector3(0, 0, -0.002 - dna.brow_ridge * 0.010)
+		_add_seg(sk, "brow_L", BodySculpt.build_eyebrow(dna, -1.0, lod), HumanMaterials.hair_material(dna), Transform3D(Basis.IDENTITY, brow_fwd), lod, out_sets, false)
+		_add_seg(sk, "brow_R", BodySculpt.build_eyebrow(dna, 1.0, lod), HumanMaterials.hair_material(dna), Transform3D(Basis.IDENTITY, brow_fwd), lod, out_sets, false)
 		_add_seg(sk, "head", BodySculpt.build_ear(dna, -1.0, lod), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 		_add_seg(sk, "head", BodySculpt.build_ear(dna, 1.0, lod), skin_mat, Transform3D.IDENTITY, lod, out_sets, false)
 		var lip_mat: Material = HumanMaterials.lip_material(dna)
