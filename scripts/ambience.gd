@@ -353,6 +353,7 @@ const CRIES := [
 
 func _crier() -> void:
 	_say(CRIES[randi() % CRIES.size()])
+	blip("Crier")
 
 func _say(msg: String) -> void:
 	var hud = get_tree().get_first_node_in_group("hud")

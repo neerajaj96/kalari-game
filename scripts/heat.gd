@@ -55,6 +55,8 @@ func _spawn_guards() -> void:
 	for i in range(want - have):
 		var g = ps.instantiate()
 		g.set("is_guard", true)
+		# Mixed patrol: club/spear/swift rotate so heat waves read differently.
+		g.set("archetype", ["club", "spear", "swift"][(have + i) % 3])
 		world.current.add_child(g)
 		# Post farthest from the player: guards march in instead of popping
 		# into view on top of the fight.
