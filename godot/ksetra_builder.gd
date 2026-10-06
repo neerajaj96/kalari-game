@@ -1025,6 +1025,14 @@ func _build_all() -> void:
 		Vector3((uh + 6.0) / 2.0 - 1.0, 0.5, (uh + 6.0) / 2.0 - 1.0), prov_pr)
 	_box(root, "KulamWater", water_mat, Vector3(6.0, 0.1, 6.0),
 		Vector3(-(uh / 2.0 + 9.0), 0.05, uh / 2.0 + 9.0), prov_pr, false)
+	# Living surface: subdivided shader-water sheet on the tank top so storm
+	# waves and reflections read (the box below stays flat-shaded mass).
+	var kulam_sheet := MeshInstance3D.new()
+	kulam_sheet.name = "KulamSheet"
+	kulam_sheet.mesh = MeshBuilder.flat_grid(6.0, 6.0, 8, 8)
+	kulam_sheet.material_override = load("res://shaders/water_fx.tres")
+	kulam_sheet.position = Vector3(-(uh / 2.0 + 9.0), 0.105, uh / 2.0 + 9.0)
+	root.add_child(kulam_sheet)
 	# stepped tank curb ring (TS-P1V39B-supadma water architecture; 0.2 rises)
 	var kcx := -(uh / 2.0 + 9.0)
 	var kcz := uh / 2.0 + 9.0
