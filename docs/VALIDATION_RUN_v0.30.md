@@ -69,10 +69,12 @@ Static audits could catch NONE of H1–H8 (all passed throughout).
 
 | ID | Severity | Observation |
 |----|----------|-------------|
-| V1 | P0? | Head reads all-hair, no face visible — verify at 640px before grading |
-| V2 | P0? | White wrap mass dominates torso — verify proportion at 640px |
-| V3 | P1 | Audit ground was blown-out white (no material) — fixed: stage gray |
-| V4 | P1 | Anomaly: first frame dark sky, then light blue — watch in re-shoot |
+| V1 | P1 | Head reads all-hair at 1.5 m, face unverifiable — added 4th `face` view (0.75 m) for the close-up audit |
+| V2 | P1 | Wrap reads as smooth tube at 640px, pleat/fold character weak — revisit after face audit |
+| V3 | FIXED | Audit ground was blown-out white (no material) — stage gray in harness |
+| V4 | INFO | First-frame navy background = uninitialized env on frame 1 only; all later frames correct light blue — auto-shots now gated past 1.5 s |
+| V5 | P1 | No shadow visible under hero (Compatibility + softpipe?) — verify against PC Forward+ run; do not tune blind |
+| V6 | P2 | Overlay text white-on-white at frame bottom — cosmetic, harness-only |
 
 - Rendered run needs Vulkan/GL + display; sandbox has neither.
 - Headless dummy drivers cannot produce screenshots or lighting reads.
