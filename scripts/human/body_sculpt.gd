@@ -775,12 +775,12 @@ static func _sideburns() -> ArrayMesh:
 	return st.commit()
 
 static func _hair_strands() -> ArrayMesh:
-	# Hero shell strips over the crown: combed flow lines that catch
+	# Hero shell strips around the full crown: combed flow lines that catch
 	# anisotropic highlight (no transparency, Mobile-safe opaque shells).
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for k in range(5):
-		var a := TAU * (0.08 + float(k) * 0.035)
+	for k in range(12):
+		var a := TAU * float(k) / 12.0
 		var r0 := 0.098
 		for j in range(4):
 			var t0 := float(j) / 4.0
