@@ -76,7 +76,8 @@ func _flash_cinematic() -> void:
 				if mi is MeshInstance3D and _chain_visible(mi):
 					targets.append(mi)
 					break
-			break
+			if not targets.is_empty():
+				break
 	if targets.is_empty():
 		return
 	var origs: Array = []

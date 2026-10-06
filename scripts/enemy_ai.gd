@@ -105,7 +105,8 @@ func _visible_bodies() -> Array:
 						if mi is MeshInstance3D and _chain_visible(mi):
 							out.append(mi)
 							break
-					break
+					if not out.is_empty():
+						break
 	if out.is_empty():
 		var legacy := get_node_or_null("Body") as MeshInstance3D
 		if legacy != null:
