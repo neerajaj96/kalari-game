@@ -17,7 +17,7 @@ python3 tools/balance.py      # economy sanity (ranks land in minutes)
 ```sh
 godot --headless --editor --quit          # import + class cache (as in CI)
 godot --headless --path . -s res://tools/hero_audit_headless.gd   # expect exit 0 + OK lines
-godot --headless --path . res://scenes/hero_audit.tscn -- --audit-quit  # 30s self-cycle log, then quits
+godot --headless --path . res://scenes/hero_audit.tscn -- --audit-quit  # 40s self-cycle log, then quits
 ```
 
 Expected: `[HERO_AUDIT_HEADLESS] OK` and a `[HERO_AUDIT] ready headless=true`

@@ -76,9 +76,14 @@ func _process(delta: float) -> void:
 		_t_view = 0.0
 		_view = (_view + 1) % VIEW_NAMES.size()
 		_apply_view()
+		if _auto_quit:
+			# Headless coverage includes LOD pins (auto/hero/mid/far).
+			var order := [-1, 0, 1, 2]
+			_pin_lod = order[(order.find(_pin_lod) + 1) % order.size()]
+			_apply_lod_pin()
 	_drive(delta)
 	_tick_label(delta)
-	if _auto_quit and _t_run >= 30.0:
+	if _auto_quit and _t_run >= 40.0:
 		_log("auto-quit coverage views=%d/3 poses=%d/8 exprs=%d/8 (headless log only, NOT a visual pass)" % [_seen_views.size(), _seen_poses.size(), _seen_exprs.size()])
 		get_tree().quit()
 
