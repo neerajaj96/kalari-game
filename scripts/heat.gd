@@ -8,6 +8,7 @@ var heat := 0
 var _calm := 0.0
 
 const GUARD_POSTS := [Vector3(14, 1, 2), Vector3(9, 1, -6), Vector3(3, 1, 5)]
+const KSETRA_POSTS := [Vector3(24, 1, 4), Vector3(20, 1, -4), Vector3(28, 1, 8)]
 
 func add(n: int) -> void:
 	var before := heat
@@ -58,14 +59,18 @@ func _spawn_guards() -> void:
 		# Mixed patrol: club/spear/swift rotate so heat waves read differently.
 		g.set("archetype", ["club", "spear", "swift"][(have + i) % 3])
 		world.current.add_child(g)
+		# Posts belong to the world: village streets or temple gate approach.
+		var posts := GUARD_POSTS
+		if "Ksetra" in str(world.current.name):
+			posts = KSETRA_POSTS
 		# Post farthest from the player: guards march in instead of popping
 		# into view on top of the fight.
 		var player = get_tree().get_first_node_in_group("player")
-		var post: Vector3 = GUARD_POSTS[(have + i) % GUARD_POSTS.size()]
+		var post: Vector3 = posts[(have + i) % posts.size()]
 		if player != null and is_instance_valid(player):
 			var best := post
 			var best_d := -1.0
-			for p in GUARD_POSTS:
+			for p in posts:
 				var d: float = (player.global_position - p).length()
 				if d > best_d:
 					best_d = d
