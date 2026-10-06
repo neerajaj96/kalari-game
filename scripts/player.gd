@@ -33,7 +33,8 @@ func request_strike(damage: float = 8.0, cost: float = 10.0) -> void:
 func apply_hit(dmg: float, is_marma: bool = false) -> void:
 	var was_block := combat.state == CombatState.S.BLOCK
 	var hp_before: float = combat.hp
-	combat.take_hit(dmg, is_marma)
+	if not combat.take_hit(dmg, is_marma):
+		return # dodged or i-frames: silent, like the bandit side
 	_hitstop(0.05)
 	_shake(0.5)
 	if is_marma:
@@ -302,11 +303,6 @@ func _physics_process(delta: float) -> void:
 			dust2.emitting = false
 	_apply_bob()
 
-func _step() -> void:
-	var game = get_tree().get_first_node_in_group("game")
-	if game != null and game.get("audio") != null and game.audio.has_method("step"):
-		game.audio.step()
-
 	if want_strike:
 		want_strike = false
 		# Input buffer: presses during recovery are retried while the buffer
@@ -367,6 +363,11 @@ func _step() -> void:
 		else:
 			_deny()
 	_check_death()
+
+func _step() -> void:
+	var game = get_tree().get_first_node_in_group("game")
+	if game != null and game.get("audio") != null and game.audio.has_method("step"):
+		game.audio.step()
 
 func _deny() -> void:
 	# Failed input (stamina/cooldown/state): short blip + red stamina pulse

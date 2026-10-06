@@ -219,7 +219,7 @@ func _detail_swap(world: Node) -> void:
 	if str(world.name) == "Village":
 		# Still-water sheets: subdivided grids so vertex waves move.
 		jobs.append(["Backwater", "water", [30.0, 6.0, 24, 5], 0.05])
-		jobs.append(["TempleComplex/Pushkarni", "water", [4.0, 4.0, 6, 6], 0.05)
+		jobs.append(["TempleComplex/Pushkarni", "water", [4.0, 4.0, 6, 6], 0.05])
 	for j in jobs:
 		var orig := world.get_node_or_null(j[0]) as CSGShape3D
 		if orig == null:

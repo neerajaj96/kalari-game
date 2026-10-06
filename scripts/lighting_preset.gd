@@ -178,13 +178,14 @@ func _apply_frame() -> void:
 		_last_wet = wet_step
 		_apply_wetness(wet_step / 20.0)
 	var lamp_list := _flicker_lamps()
-	for lamp in lamp_list:
-		if lamp and lamp.get("base") != null:
-			var night: float = clampf((day_t - 0.75) / 0.2, 0.0, 1.0)
-			var want_lamp: float = 1.3 + night * 0.4 + storm * 0.2
-			if not is_equal_approx(want_lamp, _last_lamp):
-				_last_lamp = want_lamp
-				lamp.set("base", want_lamp)
+	if not lamp_list.is_empty():
+		var night: float = clampf((day_t - 0.75) / 0.2, 0.0, 1.0)
+		var want_lamp: float = 1.3 + night * 0.4 + storm * 0.2
+		if not is_equal_approx(want_lamp, _last_lamp):
+			_last_lamp = want_lamp
+			for lamp in lamp_list:
+				if lamp and lamp.get("base") != null:
+					lamp.set("base", want_lamp)
 	# Vegetation gusts follow storm (shared sway material, write on change).
 	# Duplicated card materials (foliage_sway group) get the same value so
 	# monsoon gusts visibly move palms/reeds instead of dying on duplicate.

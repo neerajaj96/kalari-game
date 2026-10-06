@@ -55,11 +55,13 @@ var _dead := false
 func apply_hit(dmg: float, is_marma: bool = false) -> bool:
 	if _dead:
 		return false
-	if not combat.take_hit(dmg, is_marma):
-		return false # i-frames: no flash, freeze or sound on immune frames
+	# Slip check FIRST: a successful dodge puts us in DODGE, which take_hit
+	# then honors with zero damage (rolling after HIT could never fire).
 	var slip := 0.6 if archetype == "swift" else 0.35
 	if combat.state != CombatState.S.DOWN and randf() < slip:
 		combat.try_dodge() # slip back, uses own stamina
+	if not combat.take_hit(dmg, is_marma):
+		return false # i-frames: no flash, freeze or sound on immune frames
 	_flash(is_marma)
 	_hitstop(is_marma)
 	if combat.state == CombatState.S.DOWN:
@@ -174,6 +176,8 @@ func _physics_process(delta: float) -> void:
 		return
 	if target.get("combat") != null and int(target.combat.state) == CombatState.S.DOWN:
 		# Victor's patience: stand ground while Gurukkal lifts the player.
+		# Drop any primed windup so no stale hit fires after the wake-up.
+		_pending_hit = false
 		velocity.x = 0.0
 		velocity.z = 0.0
 		velocity.y = -0.5
