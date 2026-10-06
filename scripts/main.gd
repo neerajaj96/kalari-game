@@ -112,6 +112,8 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if event.position.x / maxf(1.0, get_viewport().get_visible_rect().size.x) >= 0.4:
 			adv = true
+	elif event.is_action_pressed("ui_accept"):
+		adv = true
 	if adv:
 		_ov_i += 1
 	if _ov_i < _ov_lines.size():

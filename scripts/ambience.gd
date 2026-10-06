@@ -392,8 +392,16 @@ func _process(delta: float) -> void:
 	var wtemple := _w(pp, ZONES["temple"], 8.0) if in_village else 0.0
 	var wwater := _w(pp, ZONES["water"], 7.0) if in_village else 0.0
 	if in_ksetra:
-		# Temple tank water laps like the backwater beds.
-		wwater = maxf(wwater, _w(pp, Vector3(-13.3, 0, 13.3), 7.0))
+		# Temple tank water laps like the backwater beds. Position follows the
+		# live KulamSheet node so builder layout drift can't detach audio.
+		var kx := -13.3
+		var kz := 13.3
+		if w != null and w.get("current") != null:
+			var sheet := w.current.find_child("KulamSheet", true, false) as Node3D
+			if sheet != null:
+				kx = sheet.global_position.x
+				kz = sheet.global_position.z
+		wwater = maxf(wwater, _w(pp, Vector3(kx, 0, kz), 7.0))
 	# Ksetra visit: the whole shrine ground carries the temple drone.
 	var wksetra := 1.0 if in_ksetra else 0.0
 	var storm := 0.0

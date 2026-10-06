@@ -206,8 +206,14 @@ func _storm_watch(_delta: float) -> bool:
 	var storm := 0.0
 	if game:
 		var w = get_tree().get_first_node_in_group("world")
-		if w != null and w.get("current") != null and w.current.get("storm") != null:
-			storm = float(w.current.storm)
+		if w != null and w.get("current") != null:
+			# Storm lives on the world root, except ksetra where DayNight owns it.
+			if w.current.get("storm") != null:
+				storm = float(w.current.storm)
+			else:
+				var dn := w.current.get_node_or_null("DayNight")
+				if dn != null and dn.get("storm") != null:
+					storm = float(dn.get("storm"))
 	if storm >= 0.5 and not _storm_told:
 		_storm_told = true
 		_say("Rain takes the road — walk high ground.")

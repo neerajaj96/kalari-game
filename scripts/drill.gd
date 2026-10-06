@@ -3,6 +3,8 @@ extends Node
 # Clean hits score reps; 5 clean reps = +25 XP + praise. Anywhere, pit-flavored.
 class_name Drill
 
+const CombatState = preload("res://scripts/combat_state.gd")
+
 var active := false
 var call := ""
 var reps := 0
@@ -30,9 +32,9 @@ func toggle() -> String:
 var _last_call := ""
 
 func _call() -> void:
-	call = CALLS[randi() % CALLS.size()]
-	if call == _last_call:
-		call = CALLS[(CALLS.find(call) + 1) % CALLS.size()]
+	# Uniform among the calls that AREN'T the last one (no predictable ping-pong).
+	var pool: Array = CALLS.filter(func(c: String) -> bool: return c != _last_call)
+	call = pool[randi() % pool.size()] if not pool.is_empty() else CALLS[randi() % CALLS.size()]
 	_last_call = call
 	window_t = WINDOW
 	_say(LINES[call])
@@ -49,9 +51,10 @@ func _process(delta: float) -> void:
 	if p == null or p.get("combat") == null:
 		return
 	var st: int = p.combat.state
-	# Strike flashes past the 5Hz sampler: latch via cooldown as well as pose.
-	var struck := st == 2 or (call == "strike" and p.combat.strike_cd > 0.3)
-	var hit := (call == "strike" and struck) or (call == "block" and st == 3) or (call == "dodge" and st == 4)
+	# Strike outlives the 5Hz sampler: latch via cooldown for the full pose
+	# life (0.45s cd down to the 0.15s settle), not just its first half.
+	var struck := st == CombatState.S.STRIKE or (call == "strike" and p.combat.strike_cd > 0.15)
+	var hit := (call == "strike" and struck) or (call == "block" and st == CombatState.S.BLOCK) or (call == "dodge" and st == CombatState.S.DODGE)
 	if hit:
 		reps += 1
 		if reps % 5 == 0:
