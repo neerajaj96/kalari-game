@@ -165,6 +165,12 @@ func _apply_frame() -> void:
 		env.background_color = f[5]
 		env.fog_density = f[6]
 		env.fog_light_color = f[7]
+		# Day-night sky follows the keyframe: background_color is dead while
+		# BG_SKY owns the backdrop, so tint the procedural sky instead.
+		if env.sky != null and env.sky.sky_material is ProceduralSkyMaterial:
+			var psm := env.sky.sky_material as ProceduralSkyMaterial
+			psm.sky_top_color = (f[5] as Color).darkened(0.35)
+			psm.sky_horizon_color = (f[5] as Color).lightened(0.15)
 	# Wet earth: storm drives shared ground materials dark + glossy.
 	# One step (0.05) granularity so writes happen only while transitioning.
 	var wet_step := int(storm * 20.0)
