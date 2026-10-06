@@ -116,6 +116,9 @@ func _apply_view() -> void:
 	_cam.look_at(Vector3(0, 1.25, 0))
 	_seen_views[_view] = true
 	_log("view=%s" % VIEW_NAMES[_view])
+	if _auto_quit:
+		# Unattended runs capture every view for later visual inspection.
+		_shot("auto")
 
 func _apply_pose() -> void:
 	_t_pose = 0.0
