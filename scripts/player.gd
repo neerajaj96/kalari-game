@@ -46,6 +46,36 @@ func _cue_hit(was_block: bool) -> void:
 			game.audio.clang()
 	elif game.audio.has_method("hurt"):
 		game.audio.hurt()
+	if combat.state == CombatState.S.HIT:
+		_flash_cinematic()
+
+func _flash_cinematic() -> void:
+	# Brief red-readable hit blink on the visible torso (primitives hide).
+	var body := find_child("CinematicBody", true, false) as Node3D
+	if body == null:
+		return
+	var sk := body.find_child("HumanSkeleton", true, false) as Skeleton3D
+	if sk == null:
+		return
+	var FLASH := load("res://materials/shrine_red.tres")
+	var targets: Array = []
+	for ba in sk.get_children():
+		if ba is BoneAttachment3D and str(ba.name).begins_with("Attach_chest"):
+			for mi in ba.get_children():
+				if mi is MeshInstance3D and (mi as MeshInstance3D).visible:
+					targets.append(mi)
+					break
+			break
+	if targets.is_empty():
+		return
+	var origs: Array = []
+	for mi in targets:
+		origs.append(mi.material_override)
+		mi.material_override = FLASH
+	await get_tree().create_timer(0.1).timeout
+	for i in range(targets.size()):
+		if is_instance_valid(targets[i]):
+			targets[i].material_override = origs[i]
 
 func _hitstop(dur: float = 0.06) -> void:
 	# 60ms freeze frames the hit on mobile without particles.
