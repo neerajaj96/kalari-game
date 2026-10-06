@@ -98,8 +98,28 @@ static func noisy_ground(w: float, d: float, amp: float, flat_r: float = 3.0) ->
 			var u1 := float(ix + 1) / nx
 			var v0 := float(iz) / nz
 			var v1 := float(iz + 1) / nz
-			_tri_uv(st, a, c, b, Vector2(u0, v0), Vector2(u1, v1), Vector2(u1, v0))
-			_tri_uv(st, a, e, c, Vector2(u0, v0), Vector2(u0, v1), Vector2(u1, v1))
+		_tri_uv(st, a, c, b, Vector2(u0, v0), Vector2(u1, v1), Vector2(u1, v0))
+		_tri_uv(st, a, e, c, Vector2(u0, v0), Vector2(u0, v1), Vector2(u1, v1))
+	st.generate_normals()
+	return st.commit()
+
+static func flat_grid(w: float, d: float, nx: int = 24, nz: int = 6) -> ArrayMesh:
+	# Still-water sheet: subdivided plane (0-1 UVs like a CSG top face) so the
+	# water vertex waves have vertices to move. Flat at build; shader displaces.
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for iz in range(nz):
+		for ix in range(nx):
+			var x0 := (float(ix) / nx - 0.5) * w
+			var x1 := (float(ix + 1) / nx - 0.5) * w
+			var z0 := (float(iz) / nz - 0.5) * d
+			var z1 := (float(iz + 1) / nz - 0.5) * d
+			var u0 := float(ix) / nx
+			var u1 := float(ix + 1) / nx
+			var v0 := float(iz) / nz
+			var v1 := float(iz + 1) / nz
+			_tri_uv(st, Vector3(x0, 0, z0), Vector3(x1, 0, z1), Vector3(x1, 0, z0), Vector2(u0, v0), Vector2(u1, v1), Vector2(u1, v0))
+			_tri_uv(st, Vector3(x0, 0, z0), Vector3(x0, 0, z1), Vector3(x1, 0, z1), Vector2(u0, v0), Vector2(u0, v1), Vector2(u1, v1))
 	st.generate_normals()
 	return st.commit()
 

@@ -211,6 +211,10 @@ func _detail_swap(world: Node) -> void:
 	elif str(world.name) == "School":
 		# Kalari hall roof: shallow tiled pyramid over the flat slab.
 		jobs.append(["Roof", "pyramid", [15.0, 8.6, 1.6, 0.5], 0.1])
+	if str(world.name) == "Village":
+		# Still-water sheets: subdivided grids so vertex waves move.
+		jobs.append(["Backwater", "water", [30.0, 6.0, 24, 5], 0.05])
+		jobs.append(["TempleComplex/Pushkarni", "water", [4.0, 4.0, 6, 6], 0.05)
 	for j in jobs:
 		var orig := world.get_node_or_null(j[0]) as CSGShape3D
 		if orig == null:
@@ -224,6 +228,8 @@ func _detail_swap(world: Node) -> void:
 			mesh = MeshBuilder.lathed_kalasham()
 		elif j[1] == "ground":
 			mesh = MeshBuilder.noisy_ground(j[2][0], j[2][1], j[2][2], j[2][3])
+		elif j[1] == "water":
+			mesh = MeshBuilder.flat_grid(j[2][0], j[2][1], int(j[2][2]), int(j[2][3]))
 		if mesh == null:
 			continue
 		var mi := MeshInstance3D.new()
