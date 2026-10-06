@@ -36,11 +36,16 @@ func _draw() -> void:
 	draw_circle(Vector2(CX, CY), R, Color(0.05, 0.08, 0.06, 0.85))
 	draw_arc(Vector2(CX, CY), R, 0, TAU, 48, Color(0.83, 0.63, 0.09, 0.9), 2.0)
 	draw_string(ThemeDB.fallback_font, Vector2(CX - 5, 14), "N", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(0.9, 0.85, 0.7))
-	# water strip south (village z 9..15)
-	draw_rect(Rect2(_w2m(Vector3(-15, 0, 9)), _w2m(Vector3(15, 0, 15)) - _w2m(Vector3(-15, 0, 9))), Color(0.16, 0.42, 0.55, 0.8))
-	# temple gold square + market dot (village landmarks)
-	draw_rect(Rect2(_w2m(Vector3(-1, 0, -11)) , Vector2(6, 6)), Color(0.83, 0.63, 0.09, 0.9))
-	draw_circle(_w2m(Vector3(-3, 0, 2)), 3.0, Color(0.2, 0.75, 0.3))
+	var w0 = get_tree().get_first_node_in_group("world")
+	var in_home := true
+	if w0 != null and w0.get("current") != null:
+		in_home = "Village" in str(w0.current.name)
+	if in_home:
+		# water strip south (village z 9..15)
+		draw_rect(Rect2(_w2m(Vector3(-15, 0, 9)), _w2m(Vector3(15, 0, 15)) - _w2m(Vector3(-15, 0, 9))), Color(0.16, 0.42, 0.55, 0.8))
+		# temple gold square + market dot (village landmarks)
+		draw_rect(Rect2(_w2m(Vector3(-1, 0, -11)) , Vector2(6, 6)), Color(0.83, 0.63, 0.09, 0.9))
+		draw_circle(_w2m(Vector3(-3, 0, 2)), 3.0, Color(0.2, 0.75, 0.3))
 	# plot target pulse
 	var game = get_tree().get_first_node_in_group("game")
 	var tp: Variant = _plot_target(game)
