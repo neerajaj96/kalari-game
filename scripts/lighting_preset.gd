@@ -190,6 +190,11 @@ func _apply_frame() -> void:
 			var mo := (mmi as MultiMeshInstance3D).material_override as ShaderMaterial
 			if mo != null:
 				mo.set_shader_parameter("strength", 0.06 + storm * 0.1)
+	# Backwater answers the monsoon: taller chop + faster run as storm builds.
+	var water = load("res://shaders/water_fx.tres") as ShaderMaterial
+	if water:
+		water.set_shader_parameter("wave_height", 0.035 + storm * 0.05)
+		water.set_shader_parameter("wave_speed", 0.7 + storm * 0.6)
 
 func _apply_wetness(w: float) -> void:
 	# Dry day: rough bright earth. Monsoon: dark wet soil, specular sky response.

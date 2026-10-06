@@ -35,6 +35,15 @@ func save_game() -> void:
 		cfg.set_value("progress", "muted", game.audio.muted)
 	if game.get("shadows_on") != null:
 		cfg.set_value("progress", "shadows", game.shadows_on)
+	# Breath buffs + cooldown survive travel-save: quitting mid-blessing no
+	# longer wipes 300s regen/marma or the 45s settle timer.
+	if game.get("sadhana") != null and game.sadhana.get("cooldown_t") != null:
+		cfg.set_value("progress", "sadh_cool", float(game.sadhana.cooldown_t))
+	var pl = get_tree().get_first_node_in_group("player")
+	if pl != null:
+		for k in ["_buff_regen", "_buff_regen_t", "_buff_marma", "_buff_marma_t"]:
+			if pl.get(k) != null:
+				cfg.set_value("progress", "p_" + k.trim_prefix("_"), float(pl.get(k)))
 	var w = get_tree().get_first_node_in_group("world")
 	if w != null and w.get("current") != null:
 		cfg.set_value("progress", "world", str(w.current.name))
@@ -45,7 +54,7 @@ func load_game() -> Dictionary:
 	if cfg.load(PATH) != OK:
 		return {}
 	var d := {}
-	for k in ["xp", "kills", "reps", "q02", "q03", "sevas", "phase", "supply", "visit_h", "visit_s", "vama_stage", "vama_on", "vama_forest", "storms", "muted", "shadows", "world"]:
+	for k in ["xp", "kills", "reps", "q02", "q03", "sevas", "phase", "supply", "visit_h", "visit_s", "vama_stage", "vama_on", "vama_forest", "storms", "muted", "shadows", "world", "sadh_cool", "p_buff_regen", "p_buff_regen_t", "p_buff_marma", "p_buff_marma_t"]:
 		d[k] = cfg.get_value("progress", k, null)
 	return d
 
@@ -93,6 +102,13 @@ func apply_save(d: Dictionary, game: Node) -> void:
 		AudioServer.set_bus_mute(0, bool(d["muted"]))
 	if d.get("shadows") != null:
 		game.set("shadows_on", bool(d["shadows"]))
+	if game.get("sadhana") != null and d.get("sadh_cool") != null:
+		game.sadhana.set("cooldown_t", maxf(0.0, float(d["sadh_cool"])))
+	var pl2 = get_tree().get_first_node_in_group("player")
+	if pl2 != null:
+		for pair in [["p_buff_regen", "_buff_regen"], ["p_buff_regen_t", "_buff_regen_t"], ["p_buff_marma", "_buff_marma"], ["p_buff_marma_t", "_buff_marma_t"]]:
+			if d.get(pair[0]) != null:
+				pl2.set(pair[1], float(d[pair[0]]))
 
 func _recompute_rank(game: Node) -> void:
 	# Rank derives from XP against thresholds (never stored).
