@@ -29,8 +29,11 @@ func _ready() -> void:
 func _apply_archetype() -> void:
 	match archetype:
 		"spear":
+			# Long-limb lunger: steps in from outside club range. (No staff
+			# prop yet — range stays honest to barehand visuals; a spear mesh
+			# lands with the runtime weapon pass.)
 			speed = 3.0
-			attack_range = 3.2
+			attack_range = 2.6
 			damage = 8.0
 			max_hp = 100.0
 		"swift":
