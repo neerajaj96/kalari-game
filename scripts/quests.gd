@@ -87,6 +87,13 @@ func escort_tick() -> void:
 		_dismiss_pendant()
 		return
 	if _pendant != null and is_instance_valid(_pendant):
+		# Catch-up teleport: the pendant walks at player speed, but corners
+		# and fights still separate them — snap back before it strands.
+		var pl = get_tree().get_first_node_in_group("player")
+		if pl != null and is_instance_valid(pl):
+			var d: float = (_pendant.global_position - (pl as Node3D).global_position).length()
+			if d > 12.0:
+				_pendant.global_position = (pl as Node3D).global_position + Vector3(2, 1, 2)
 		return
 	var ps: PackedScene = load("res://scenes/ped.tscn")
 	if ps == null:
@@ -99,6 +106,7 @@ func escort_tick() -> void:
 	_pendant.global_position = player.global_position + Vector3(2, 1, 2)
 	_pendant.loop = []
 	_pendant.follow = player
+	_pendant.speed = 4.6 # keeps pace with the player instead of trailing forever
 	_pendant.chatter = ["Stay close...", "Is that a bandit?!", "Unniyarcha sent you? Good."]
 	stage["q02"] = "active"
 	brief("q02_market_escort")
