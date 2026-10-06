@@ -25,6 +25,32 @@ func _ready() -> void:
 	combat.hp = max_hp
 	combat.state = CombatState.S.STANCE
 	think_cd = randf_range(0.3, 1.1) # stagger pack attacks
+	_make_hp_pips()
+
+var _last_pips := -1
+
+func _make_hp_pips() -> void:
+	# Five-pip health readout above the head (code-built Label3D, no scene edit).
+	var pips := Label3D.new()
+	pips.name = "HpPips"
+	pips.font_size = 48
+	pips.pixel_size = 0.004
+	pips.modulate = Color(1, 1, 1, 0.85)
+	pips.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	pips.position = Vector3(0, 2.0, 0)
+	add_child(pips)
+	_refresh_pips()
+
+func _refresh_pips() -> void:
+	var pips := get_node_or_null("HpPips") as Label3D
+	if pips == null:
+		return
+	var n := clampi(int(ceil(combat.hp / max_hp * 5.0)), 0, 5)
+	if n == _last_pips:
+		return
+	_last_pips = n
+	pips.text = "●".repeat(n) + "○".repeat(5 - n)
+	pips.visible = n < 5 # full health needs no badge; damage earns it
 
 func _apply_archetype() -> void:
 	match archetype:
@@ -62,6 +88,7 @@ func apply_hit(dmg: float, is_marma: bool = false) -> bool:
 		combat.try_dodge() # slip back, uses own stamina
 	if not combat.take_hit(dmg, is_marma):
 		return false # i-frames: no flash, freeze or sound on immune frames
+	_refresh_pips()
 	_flash(is_marma)
 	_hitstop(is_marma)
 	if combat.state == CombatState.S.DOWN:
