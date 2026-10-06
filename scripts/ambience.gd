@@ -338,6 +338,7 @@ func _events(delta: float, wmarket: float, wtemple: float, storm: float, night: 
 	if night >= 0.8 and _watch_t >= 120.0 and in_village:
 		_watch_t = 0.0
 		_say("Watchman: All is well. Sleep, Chirakkal.")
+		blip("Watchman")
 
 var _bell_t := 90.0
 var _crier_t := 50.0

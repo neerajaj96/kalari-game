@@ -73,3 +73,6 @@ func _say(msg: String) -> void:
 	var hud = get_tree().get_first_node_in_group("hud")
 	if hud and hud.has_method("say"):
 		hud.say(msg)
+	var game = get_tree().get_first_node_in_group("game")
+	if game and game.get("audio") != null and game.audio.has_method("blip"):
+		game.audio.blip("Gurukkal")
