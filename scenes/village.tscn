@@ -623,6 +623,7 @@ position = Vector3(5, 0, 2)
 
 [node name="Bandit2" parent="." instance=ExtResource("1")]
 position = Vector3(-5, 0, 4)
+archetype = "spear"
 
 [node name="PathMain" type="CSGBox3D" parent="."]
 use_collision = true
