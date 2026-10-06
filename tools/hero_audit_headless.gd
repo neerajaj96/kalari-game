@@ -58,12 +58,18 @@ func _check_geometry() -> int:
 	var meshes := [
 		BodySculpt.build_torso(dna, 0), BodySculpt.build_head(dna, 0),
 		BodySculpt.build_neck(dna, 0), BodySculpt.build_hand(dna, 0),
-		BodySculpt.build_foot(dna, 0), BodySculpt.build_hair(dna, 0),
+		BodySculpt.build_fingernails(), BodySculpt.build_foot(dna, 0),
+		BodySculpt.build_toenails(dna), BodySculpt.build_hair(dna, 0),
 		BodySculpt.build_eyeball(0), BodySculpt.build_iris_disc(),
-		BodySculpt.build_eyelid_rim(true, 0), BodySculpt.build_ear(dna, 1.0, 0),
-		BodySculpt.build_lips(dna, true), BodySculpt.build_cheek_pad(), BodySculpt.build_teeth_strip(),
+		BodySculpt.build_pupil_disc(), BodySculpt.build_eyelid_rim(true, 0),
+		BodySculpt.build_caruncle(), BodySculpt.build_ear(dna, 1.0, 0),
+		BodySculpt.build_eyebrow(dna, 1.0, 0),
+		BodySculpt.build_lips(dna, true), BodySculpt.build_cheek_pad(),
+		BodySculpt.build_teeth_strip(), BodySculpt.build_mouth_cavity(),
+		BodySculpt.build_joint_ball(0.06, 0),
 		GarmentBuilder.build_waist_wrap(dna, 0), GarmentBuilder.build_belt(dna, 0),
 		GarmentBuilder.build_chest_sash(dna, 0), GarmentBuilder.build_headband(dna, 0),
+		GarmentBuilder.build_thigh_wrap_single(dna, 0),
 	]
 	for m in meshes:
 		if m == null or (m as ArrayMesh).get_surface_count() < 1:

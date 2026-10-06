@@ -153,6 +153,24 @@ player = open(os.path.join(BASE, "scripts", "player.gd")).read()
 if "update_rank_accent" not in player:
     errs.append("player: rank accent hook missing")
 
+# 12. Combat-feedback + audio-cue contracts (visible-flash chain, telegraphs).
+_ea = open(os.path.join(BASE, "scripts", "enemy_ai.gd")).read()
+for token in ["MarmaMark", "_visible_bodies", "_chain_visible", "_telegraph", "archetype", "0.28, true, false, true"]:
+    if token not in _ea:
+        errs.append(f"enemy_ai: '{token}' missing")
+_pg = open(os.path.join(BASE, "scripts", "player.gd")).read()
+for token in ["_flash_cinematic", "_chain_visible", "_deny", "_strike_buf", "flash_stamina"]:
+    if token not in _pg:
+        errs.append(f"player: '{token}' missing")
+_cs = open(os.path.join(BASE, "scripts", "combat_state.gd")).read()
+for token in ["hurt_cd", "guard_broke", "hitstop", "release_hitstop"]:
+    if token not in _cs:
+        errs.append(f"combat_state: '{token}' missing")
+_am = open(os.path.join(BASE, "scripts", "ambience.gd")).read()
+for token in ["whoosh", "clang", "hurt", "fanfare", "breath_tick", "_loop_seam"]:
+    if token not in _am:
+        errs.append(f"ambience: '{token}' missing")
+
 print("WARN:")
 for w in warns:
     print(" -", w)
