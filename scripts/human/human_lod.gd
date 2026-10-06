@@ -9,6 +9,7 @@ var hero_sets: Array = []
 var mid_sets: Array = []
 var far_sets: Array = []
 var force_hero := false
+var force_lod := -1 # -1 auto, 0/1/2 pinned (audit harness LOD-pop inspection)
 var hero_dist := 9.0
 var mid_dist := 22.0
 var _cur := -1
@@ -35,6 +36,9 @@ func _show(lod: int) -> void:
 
 func _process(_delta: float) -> void:
 	if hero_sets.is_empty():
+		return
+	if force_lod >= 0:
+		_show(force_lod)
 		return
 	if force_hero or not is_inside_tree():
 		_show(0)

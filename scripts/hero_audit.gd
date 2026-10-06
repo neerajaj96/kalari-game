@@ -5,7 +5,8 @@ extends Node3D
 # NOT a gameplay scene: visual audit only. Gameplay collision, CombatState and
 # world wiring are untouched; open with: godot --path . res://scenes/hero_audit.tscn
 # Controls (PC): 1/2/3 views, SPACE next pose, E next expression, M march,
-#   S/F12 screenshot to user://, single click advances view.
+#   L LOD pin (auto/hero/mid/far), S/F12 screenshot to user://,
+#   single click advances view.
 # Controls (Android): single tap advances view, two-finger tap screenshots.
 # Auto pose/expression/view cycling runs on all platforms so the audit works
 # with zero input (required for device + headless runs).
@@ -39,6 +40,7 @@ var _t_label := 0.0
 var _shots := 0
 var _auto_quit := false
 var _headless := false
+var _pin_lod := -1
 
 func _ready() -> void:
 	_cam = get_node_or_null("Camera3D") as Camera3D
@@ -152,6 +154,18 @@ func _unhandled_input(event: InputEvent) -> void:
 				_apply_expr()
 			KEY_S, KEY_F12:
 				_shot("key")
+			KEY_L:
+				# LOD pin cycle: auto -> hero -> mid -> far (pop inspection).
+				var order := [-1, 0, 1, 2]
+				_pin_lod = order[(order.find(_pin_lod) + 1) % order.size()]
+				_apply_lod_pin()
+
+func _apply_lod_pin() -> void:
+	if _body != null:
+		var lod = _body.get_node_or_null("HumanLOD")
+		if lod != null and lod.get("force_lod") != null:
+			lod.set("force_lod", _pin_lod)
+	_log("lod_pin=%s" % ("auto" if _pin_lod < 0 else str(_pin_lod)))
 
 func _shot(tag: String) -> void:
 	if _headless:
@@ -181,8 +195,8 @@ func _tick_label(delta: float) -> void:
 		return
 	_t_label = 0.0
 	var fps := Engine.get_frames_per_second()
-	_label.text = "HERO AUDIT (PENDING, not validated)\nview=%s pose=%s expr=%s fps=%d shots=%d\ntap/click=view 2-finger/S=screenshot" % [
-		VIEW_NAMES[_view], POSE_NAMES[_pose_i], EXPRESSIONS[_expr_i], fps, _shots]
+	_label.text = "HERO AUDIT (PENDING, not validated)\nview=%s pose=%s expr=%s lod=%s fps=%d shots=%d\ntap/click=view 2-finger/S=screenshot L=lod-pin" % [
+		VIEW_NAMES[_view], POSE_NAMES[_pose_i], EXPRESSIONS[_expr_i], ("auto" if _pin_lod < 0 else str(_pin_lod)), fps, _shots]
 
 func _log(msg: String) -> void:
 	print("[HERO_AUDIT] " + msg)
