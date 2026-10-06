@@ -10,9 +10,18 @@ const CY := 75.0
 func _ready() -> void:
 	set_process(true)
 
+func _extent() -> float:
+	# Village/school fit ±16m; Ksetra spans 70m. Scale the disc to the world
+	# so plot targets and bandits stay on-disc instead of clamping to the rim.
+	var w = get_tree().get_first_node_in_group("world")
+	if w != null and w.get("current") != null and "Ksetra" in str(w.current.name):
+		return 36.0
+	return 16.0
+
 func _w2m(p: Vector3) -> Vector2:
-	var x: float = clampf(p.x, -16.0, 16.0) / 16.0
-	var z: float = clampf(p.z, -16.0, 16.0) / 16.0
+	var e := _extent()
+	var x: float = clampf(p.x, -e, e) / e
+	var z: float = clampf(p.z, -e, e) / e
 	return Vector2(CX + x * R, CY + z * R)
 
 func _process(delta: float) -> void:

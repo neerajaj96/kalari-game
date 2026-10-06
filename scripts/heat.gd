@@ -1,7 +1,7 @@
 extends Node
 # Kolathiri heat 0-3: open kills +1, marma kills +2. Guards hunt while hot.
-# Exits: seva completion clears, or 5 calm minutes decay. Guard kills pay
-# no XP/quest (death spiral would never end); heat caps at 3.
+# Exits: seva completion clears, or 1 calm minute per level decays. Guard
+# kills pay no XP/quest (death spiral would never end); heat caps at 3.
 class_name Heat
 
 var heat := 0
@@ -56,7 +56,20 @@ func _spawn_guards() -> void:
 		var g = ps.instantiate()
 		g.set("is_guard", true)
 		world.current.add_child(g)
-		g.global_position = GUARD_POSTS[(have + i) % GUARD_POSTS.size()]
+		# Post farthest from the player: guards march in instead of popping
+		# into view on top of the fight.
+		var player = get_tree().get_first_node_in_group("player")
+		var post: Vector3 = GUARD_POSTS[(have + i) % GUARD_POSTS.size()]
+		if player != null and is_instance_valid(player):
+			var best := post
+			var best_d := -1.0
+			for p in GUARD_POSTS:
+				var d: float = (player.global_position - p).length()
+				if d > best_d:
+					best_d = d
+					best = p
+			post = best
+		g.global_position = post
 		var sash := g.get_node_or_null("Sash") as MeshInstance3D
 		if sash:
 			sash.material_override = load("res://materials/leaf.tres")
