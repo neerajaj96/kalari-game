@@ -152,7 +152,11 @@ static func build_belt(dna: HumanDNA, _lod: int) -> ArrayMesh:
 	ks.generate_normals()
 	return _merge_mesh(band, ks.commit())
 
-# Chest band for bandits / sash diagonal for rank.
+# Chest front depth for a DNA: mirrors BodySculpt torso pectoral shelf so
+# front garments sit on skin (+8mm) on every build instead of burying/floating.
+static func chest_front(dna: HumanDNA) -> float:
+	var chest_r := lerpf(0.145, 0.185, dna.build) * (dna.shoulder_width / 0.44)
+	return chest_r + 0.018 + dna.muscle * 0.016 + 0.008
 static func build_chest_sash(dna: HumanDNA, lod: int) -> ArrayMesh:
 	var h := dna.stature
 	var st := SurfaceTool.new()
@@ -169,7 +173,7 @@ static func build_chest_sash(dna: HumanDNA, lod: int) -> ArrayMesh:
 			var cx1 := lerpf(0.14, -0.16, fy1) + (fx - 0.5) * 0.10
 			var cy0 := lerpf(h * 0.80, h * 0.58, fy0)
 			var cy1 := lerpf(h * 0.80, h * 0.58, fy1)
-			var cz := -0.210 + sin(fy0 * 9.0) * 0.006
+			var cz := -chest_front(dna) + sin(fy0 * 9.0) * 0.006
 			var c := Color(0.95, 0.95, 0.95, 1.0)
 			st.set_color(c)
 			st.set_uv(Vector2(fx, fy0))
