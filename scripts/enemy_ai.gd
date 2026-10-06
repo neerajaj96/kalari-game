@@ -62,11 +62,15 @@ func apply_hit(dmg: float, is_marma: bool = false) -> void:
 		_die(is_marma)
 
 func _flash(is_marma: bool = false) -> void:
-	var body := get_node_or_null("Body") as MeshInstance3D
-	if body == null:
+	# Flash the VISIBLE body: cinematic segments when the rig built them,
+	# else the legacy primitive. (Primitives hide under the cinematic body.)
+	var targets := _visible_bodies()
+	if targets.is_empty():
 		return
-	var orig = body.material_override
-	body.material_override = FLASH_MAT
+	var origs: Array = []
+	for mi in targets:
+		origs.append(mi.material_override)
+		mi.material_override = FLASH_MAT
 	if is_marma:
 		var cam = get_tree().get_first_node_in_group("main_camera")
 		if cam and cam.has_method("add_shake"):
@@ -74,8 +78,28 @@ func _flash(is_marma: bool = false) -> void:
 		await get_tree().create_timer(0.15).timeout
 	else:
 		await get_tree().create_timer(0.1).timeout
-	if is_instance_valid(body):
-		body.material_override = orig
+	for i in range(targets.size()):
+		if is_instance_valid(targets[i]):
+			targets[i].material_override = origs[i]
+
+func _visible_bodies() -> Array:
+	var out: Array = []
+	var body := find_child("CinematicBody", true, false) as Node3D
+	if body != null:
+		var sk := body.find_child("HumanSkeleton", true, false) as Skeleton3D
+		if sk != null:
+			for ba in sk.get_children():
+				if ba is BoneAttachment3D and str(ba.name).begins_with("Attach_chest"):
+					for mi in ba.get_children():
+						if mi is MeshInstance3D and (mi as MeshInstance3D).visible:
+							out.append(mi)
+							break
+					break
+	if out.is_empty():
+		var legacy := get_node_or_null("Body") as MeshInstance3D
+		if legacy != null:
+			out.append(legacy)
+	return out
 
 func _hitstop(marma: bool = false) -> void:
 	await CombatState.hitstop(get_tree(), 0.08 if marma else 0.05)
@@ -170,20 +194,25 @@ func _marma_mark(target: Node3D) -> void:
 	mark.visible = e_fwd.normalized().dot((-to).normalized()) < 0.0
 
 func _telegraph() -> void:
-	# Fair windup cue: brief white flash on the body so mobile players
+	# Fair windup cue: brief white flash on the VISIBLE body so mobile players
 	# can read the incoming strike and block/dodge in time.
-	var body := get_node_or_null("Body") as MeshInstance3D
-	if body == null:
+	var targets := _visible_bodies()
+	if targets.is_empty():
 		return
-	var orig = body.material_override
 	var wink: StandardMaterial3D = load("res://materials/cloth_white.tres")
-	body.material_override = wink
+	var origs: Array = []
+	for mi in targets:
+		origs.append(mi.material_override)
+		mi.material_override = wink
 	var game0 = get_tree().get_first_node_in_group("game")
 	if game0 != null and game0.get("audio") != null and game0.audio.has_method("whoosh"):
 		game0.audio.whoosh()
 	await get_tree().create_timer(0.18, true, false, true).timeout
-	if is_instance_valid(body) and combat.state == CombatState.S.STRIKE:
-		body.material_override = orig
+	if combat.state != CombatState.S.STRIKE:
+		return
+	for i in range(targets.size()):
+		if is_instance_valid(targets[i]):
+			targets[i].material_override = origs[i]
 
 func _deal_delayed() -> void:
 	# 0.3s windup reads fairly on mobile, then the hit lands. Undilated timer
